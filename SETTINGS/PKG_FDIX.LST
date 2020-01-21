@@ -1,0 +1,19 @@
+; Package list for FDI-x86 floppy install media
+
+; These are that are on the FreeDOS x86 floppy only version.
+
+base\command
+base\kernel
+base\fdisk
+base\format
+
+base\deltree
+base\devload
+base\attrib
+
+util\shsufdrv
+base\fdapm
+base\fc
+
+util\v8power
+util\slicer
