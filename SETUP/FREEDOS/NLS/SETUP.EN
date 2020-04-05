@@ -1,0 +1,19 @@
+# Help screen
+HELP_0="usage: SETUP.BAT [options] [target]"
+HELP_1=""
+HELP_2="no options       perform setup using defaults"
+HELP_3=""
+HELP_4="adv              start setup in advanced mode. (more prompting)"
+HELP_5="auto             perform fully automated installation. (no prompting)"
+HELP_6=""
+HELP_7="[target]         pre-set a drive and/or path for the target installation"
+HELP_8=""
+HELP_9=/n
+HELP_10=/n
+
+# Error Messages
+ERROR_Option=/fLightRed error: /fGray Unknown or invalid command line option "`%1'."
+ERROR_NoCfgEnv=/fLightRed CRITICAL error: /fGray Unable to determine basic system configuration and path settings.
+ERROR_NotFreeCOM=/fLightRed CRITICAL error: /fGray This batch file requires the FreeCOM or compatible shell for FreeDOS.
+ERROR_MissingFreeCOM=/fLightRed CRITICAL error: /fGray Unable to locate FreeDOS's command shell FreeCOM.
+ERROR_MissingAUTOEXEC=/fLightRed CRITICAL error: /fGray Unable to locate FreeDOS's startup batch file FDAUTO.BAT.

@@ -1,15 +1,49 @@
 @echo off
 
-if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
+if "%0" == "SETUP" goto GoodCWD
+if "%0" == "setup" goto GoodCWD
+if "%0" == "SETUP.BAT" goto GoodCWD
+if "%0" == "setup.bat" goto GoodCWD
 
+echo ERROR: The Setup program must only be executed from it's directory.
+echo Please change directories and re-launch the SETUP program.
+goto End
+
+:GoodCWD
+
+if "%LANGFILE%" == "" goto SetLangFile
+
+:Startup
+
+if "%1" == "LANG" goto End
+if "%1" == "OPTION" goto Option
 if "%1" == "BOOT" goto CheckState
 if "%1" == "RELOAD" goto Reload
-if "%1" == "OPTION" goto Option
+if "%1" == "help" goto ShowHelp
+if "%1" == "HELP" goto ShowHelp
+
+if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
 rem Unless we were told that it is boot time or we've already reloaded,
 rem respawn ourself using FreeCOM to insure proper shell and preserve env table
 FREEDOS\BIN\COMMAND.COM /E:4096 /C %0 RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
+set LANGFILE=
 goto End
+
+
+:SetLangFile
+if "%LANG%" == "" goto SetEnglish
+if not exist FREEDOS\NLS\SETUP.%LANG% goto SetEnglish
+set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
+goto Startup
+
+:SetEnglish
+set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
+if exist %LANGFILE% goto Startup
+set LANGFILE=%0.BAT
+if exist %LANGFILE% goto Startup
+set LANGFILE=%0
+goto Startup
 
 :Option
 set VAL=
@@ -20,6 +54,7 @@ if "%VAL%" == "ADV" goto SetAdvanced
 if "%VAL%" == "EXPERT" goto SetAdvanced
 if "%VAL%" == "AUTO" goto SetAutomatic
 if "%VAL%" == "FORCE" goto SetForced
+if "%VAL%" == "HELP" goto ShowHelp
 
 echo %VAL%| vstr /n /f : 1 | vstr /n /s ' ' '' | set /p VALD=
 if "%VALD%" == "%VAL%" goto ERROR_Option
@@ -54,6 +89,10 @@ goto NextOption
 set FORCE=yes
 goto NextOption
 
+:ShowHelp
+for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /T %LANGFILE% HELP_%%i
+goto ErrorExit
+
 :Reload
 if "%_CWD%" == "" goto ERROR_NotFreeCOM
 
@@ -83,32 +122,35 @@ echo Target Drive %TDRIVE%
 
 goto Done
 
-rem Early stage untranslated error messages.
 :ERROR_Option
-echo Unknown or invalid command line option.
-verrlvl 1
-goto Cleanup
+vecho /T %LANGFILE% ERROR_Option %2
+goto ErrorExit
 
 :ERROR_NoCfgEnv
-echo Unable to determine basic system configuration and path settings.
-goto Cleanup
+vecho /T %LANGFILE% ERROR_NoCfgEnv
+goto ErrorExit
 
 :ERROR_NotFreeCOM
-echo This batch file requires the FreeCOM or compatible shell for FreeDOS.
-goto Cleanup
+vecho /T %LANGFILE% ERROR_NotFreeCOM
+goto ErrorExit
 
 :ERROR_MissingFreeCOM
-echo Unable to locate FreeDOS's command shell FreeCOM.
-goto Cleanup
+vecho /T %LANGFILE% ERROR_MissingFreeCOM
+goto ErrorExit
 
 :ERROR_MissingAUTOEXEC
-echo Unable to locate FreeDOS's startup batch file FDAUTO.BAT.
+vecho /T %LANGFILE% ERROR_MissingAUTOEXEC
+goto ErrorExit
+
+:ErrorExit
+verrlvl 1
 goto Cleanup
 
 rem Batch completed, shutdown
 :Done
 
 :Cleanup
+set LANGFILE=
 set SOURCE=
 set AUTOMATIC=
 set ADVANCED=
