@@ -1,5 +1,9 @@
 @echo off
 
+REM FreeDOS 1.3+ Installer version 1.00.
+REM Released Under GPL v2.0 License.
+REM Copyright 2020 Jerome Shidel.
+
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
 if "%0" == "SETUP.BAT" goto GoodCWD
@@ -16,8 +20,9 @@ if "%LANGFILE%" == "" goto SetLangFile
 :Startup
 
 if "%1" == "LANG" goto End
+if "%1" == "PRELOAD" goto Preload
 if "%1" == "OPTION" goto Option
-if "%1" == "BOOT" goto CheckState
+if "%1" == "BOOT" goto Configure
 if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
 if "%1" == "HELP" goto ShowHelp
@@ -29,7 +34,6 @@ rem respawn ourself using FreeCOM to insure proper shell and preserve env table
 FREEDOS\BIN\COMMAND.COM /E:4096 /C %0 RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
 set LANGFILE=
 goto End
-
 
 :SetLangFile
 if "%LANG%" == "" goto SetEnglish
@@ -46,15 +50,17 @@ set LANGFILE=%0
 goto Startup
 
 :Option
+if "%2" == "auto" goto SetAutomatic
+if "%2" == "AUTO" goto SetAutomatic
+if "%TEMP%" == "" goto NextOption
+
 set VAL=
-echo %2| vstr /n /u | set /p VAL=
+echo %2| vstr /n /l | set /p VAL=
 if "%VAL%" == "" goto Option
 
-if "%VAL%" == "ADV" goto SetAdvanced
-if "%VAL%" == "EXPERT" goto SetAdvanced
-if "%VAL%" == "AUTO" goto SetAutomatic
-if "%VAL%" == "FORCE" goto SetForced
-if "%VAL%" == "HELP" goto ShowHelp
+if "%VAL%" == "adv" goto SetAdvanced
+if "%VAL%" == "expert" goto SetAdvanced
+if "%VAL%" == "force" goto SetForced
 
 echo %VAL%| vstr /n /f : 1 | vstr /n /s ' ' '' | set /p VALD=
 if "%VALD%" == "%VAL%" goto ERROR_Option
@@ -77,6 +83,40 @@ verrlvl 0
 if not "%3" == "" call %0 OPTION %3 %4 %5 %6 %7 %8 %9
 goto End
 
+:Preload
+if not "%TDRIVE%" == "" goto End
+set VAL=
+vfdutil /x /d %2
+if errorlevel 3 set VAL=C:
+if errorlevel 4 set VAL=D:
+if errorlevel 5 set VAL=E:
+if errorlevel 6 set VAL=F:
+if errorlevel 7 set VAL=G:
+if errorlevel 8 set VAL=H:
+if errorlevel 9 set VAL=I:
+if errorlevel 10 set VAL=J:
+if errorlevel 11 set VAL=K:
+if errorlevel 12 set VAL=L:
+if errorlevel 13 set VAL=M:
+if errorlevel 14 set VAL=N:
+if errorlevel 15 set VAL=O:
+if errorlevel 16 set VAL=P:
+if errorlevel 17 set VAL=Q:
+if errorlevel 18 set VAL=R:
+if errorlevel 19 set VAL=S:
+if errorlevel 20 set VAL=T:
+if errorlevel 21 set VAL=U:
+if errorlevel 22 set VAL=V:
+if errorlevel 23 set VAL=W:
+if errorlevel 24 set VAL=X:
+if errorlevel 25 set VAL=Y:
+if errorlevel 26 set VAL=Z:
+if not "%VAL%" == "" set TDRIVE=%VAL%
+set VAL=
+verrlvl 0
+if not "%3" == "" call %0 PRELOAD %3 %4 %5 %6 %7 %8 %9
+goto End
+
 :SetAdvanced
 set ADVANCED=yes
 goto NextOption
@@ -90,7 +130,10 @@ set FORCE=yes
 goto NextOption
 
 :ShowHelp
+vecho /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
+vecho /T %LANGFILE% COPYRIGHT
 for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /T %LANGFILE% HELP_%%i
+vecho /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
 :Reload
@@ -104,21 +147,32 @@ call %_CWD%\FDAUTO.BAT ENV_ONLY
 if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
-rem Installer Defaults settings (User mode, manual launch only)
+:Configure
 set SOURCE=%_CWD%
 set AUTOMATIC=no
 set ADVANCED=no
 set FORCE=no
-set TDRIVE=C:
-set TDOSDIR=%TDRIVE%\FDOS
+set TDRIVE=
+set TDOSDIR=
 
-if not "%2" == "" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
+REM Pre-load some command line options.
+if not "%2" == "" call %0 PRELOAD %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 
-:CheckState
+if "%TDRIVE%" == "" set TDRIVE=C:
+if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FDOS
+
+if not "%1" == "BOOT" goto Install
+
+REM Boot only test for install
+vinfo /d %TDRIVE%
+if errorlevel 1 goto Install
+fc /L FREEDOS\VERSION.FDI %TDOSDIR%\VERSION.FDI>NUL
+if errorlevel 1 goto Install
+goto Done
 
 :Install
-echo Target Drive %TDRIVE%
+echo Target Drive %TDRIVE% %TDOSDIR%
 
 goto Done
 
