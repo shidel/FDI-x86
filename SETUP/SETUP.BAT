@@ -154,6 +154,7 @@ set MSG=DEF
 set FORCE=no
 set TDRIVE=
 set TDOSDIR=
+set LABEL=FreeDOS$YEAR$
 
 REM Pre-load some command line options.
 if not "%2" == "" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -189,7 +190,7 @@ REM Test Drive State
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
-rem goto DriveReady
+goto DriveTest
 
 :Partition
 if "%AUTOMATIC%" == "yes" goto PartitionAuto
@@ -254,8 +255,43 @@ vecho /g /T %LANGFILE% PARTITION_ERROR
 goto ErrorExit
 
 :Format
+vecho /g /T %LANGFILE% FORMAT %TDRIVE%
+if "%AUTOMATIC%" == "yes" goto FormatNormal
+if "%ADVANCED%" == "yes" goto FormatAdvanced
 
-:DriveReady
+:FormatNormal
+vecho /n /p /g /T %LANGFILE% FORMAT_DEF %TDRIVE%
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto AbortExit
+goto FormatQuick
+
+:FormatAdvanced
+vecho /n /p /g /T %LANGFILE% FORMAT_ADV %TDRIVE%
+choice /c:FQN
+if errorlevel 3 goto AbortExit
+if errorlevel 2 goto FormatQuick
+
+:FormatLong
+vecho /g
+format %TDRIVE% /V:%LABEL% /U /Z:seriously
+goto FormatDone
+
+:FormatQuick
+vecho /g
+format %TDRIVE% /V:%LABEL% /Q /U /Z:seriously
+goto FormatDone
+
+:FormatError
+vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
+goto ErrorExit
+
+:FormatDone
+if errorlevel 1 goto FormatError
+
+:DriveTest
+vecho /n /g /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 goto Done
 
 :ERROR_Option

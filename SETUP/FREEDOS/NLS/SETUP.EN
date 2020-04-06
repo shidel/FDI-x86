@@ -22,6 +22,13 @@ PARTITION_ACTIVE=Set drive %1 partition as active.
 PARTITION_DONE=You must reboot your computer for the new partitioning scheme to take effect.
 PARTITION_ERROR=/fLightRed A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required. /fGray
 
+FORMAT=Drive /fWhite %1 /fGray does not appear to be formatted.
+FORMAT_DEF=Do you want to format your drive /c32
+FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull, /c32 /fWhite Q /fGray uick, /c32 /fWhite N /fGray o) /c32
+FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it. /fGray
+
+FILESYSTEM_TEST=Testing filesystem on drive %1.
+
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
 
