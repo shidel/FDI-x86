@@ -14,6 +14,13 @@ AUTO_NO=/s- [Y,N]? /fWhite N /fGray
 
 ABORTED=/fLightRed The installation of %1 has been aborted. /e /fGray /bBlack
 
+PARTITION_AUTO=Automatic partition of drive %1.
+PARTITION_MBR=Update Master Boot Record for drive %1.
+PARTITION_ACTIVE=Set drive %1 partition as active.
+
+SUCCESS=/fLightGreen Success. /fGray
+FAILED=/fLightRed Failed. /fGray
+
 # Trademark
 TRADEMARK=FreeDOS is a trademark of Jim Hall, 2001-$YEAR$
 
@@ -28,7 +35,7 @@ HELP_2="[no options]    perform setup using defaults"
 HELP_3=
 HELP_4="adv             start setup in advanced mode. (more prompting)"
 HELP_5=
-HELP_6="auto            perform fully automated installation without any prompting." /p/r16/c32 "this is not recommended and should only be used on virtual" /p/r16/c32  "machines or hardware without a pre-existing operating system."
+HELP_6="auto            perform fully automated installation without any prompting." /p/r16/c32 "this is not recommended and should only be used on hardware" /p/r16/c32 "without a pre-existing operating system."
 HELP_7=
 HELP_8="[target]        pre-set a drive and/or path for the target installation"
 HELP_9=

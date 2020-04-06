@@ -22,8 +22,8 @@ if "%LANGFILE%" == "" goto SetLangFile
 if "%1" == "YES" goto AnswerYes
 if "%1" == "NO" goto AnswerNo
 if "%1" == "LANG" goto End
-if "%1" == "PRELOAD" goto Preload
 if "%1" == "OPTION" goto Option
+if "%1" == "PRELOAD" goto Option
 if "%1" == "BOOT" goto Configure
 if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
@@ -68,10 +68,12 @@ if "%2" == "adv" goto SetAdvanced
 if "%2" == "ADV" goto SetAdvanced
 if "%2" == "force" goto SetForced
 if "%2" == "FORCE" goto SetForced
-if "%TEMP%" == "" goto NextOption
+if "%1" == "PRELOAD" goto OptionPreLoad
+if "%TEMP%" == "" goto OptionPreLoad
 
 set VAL=
-echo %2| vstr /n /l | set /p VAL=
+set VALD=
+echo %2| vstr /n /d | set /p VAL=
 if "%VAL%" == "" goto Option
 
 echo %VAL%| vstr /n /f : 1 | vstr /n /s ' ' '' | set /p VALD=
@@ -84,8 +86,8 @@ if errorlevel 3 goto OptionDrive
 goto ERROR_Option
 
 :OptionDrive
-echo %VALD% %VALP%
-
+if not "%VALD%" == "" set TDRIVE=%VALD%
+if not "%VALP%" == "" set TDOSDIR=%VALP%
 set VAL=
 set VALD=
 set VALP=
@@ -95,8 +97,8 @@ verrlvl 0
 if not "%3" == "" call %0 OPTION %3 %4 %5 %6 %7 %8 %9
 goto End
 
-:Preload
-if not "%TDRIVE%" == "" goto End
+:OptionPreload
+if not "%TDRIVE%" == "" goto NextOption
 set VAL=
 vfdutil /x /d %2
 if errorlevel 3 set VAL=C:
@@ -125,9 +127,7 @@ if errorlevel 25 set VAL=Y:
 if errorlevel 26 set VAL=Z:
 if not "%VAL%" == "" set TDRIVE=%VAL%
 set VAL=
-verrlvl 0
-if not "%3" == "" call %0 PRELOAD %3 %4 %5 %6 %7 %8 %9
-goto End
+goto NextOption
 
 :SetAdvanced
 set ADVANCED=yes
@@ -161,6 +161,8 @@ if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
 :Configure
+set FDISK=%DOSDIR%\bin\fdisk131.exe
+if not exist %FDISK% set FDISK=%DOSDIR%\bin\fdisk.exe
 set SOURCE=%_CWD%
 set AUTOMATIC=no
 set ADVANCED=no
@@ -170,8 +172,6 @@ set TDRIVE=
 set TDOSDIR=
 
 REM Pre-load some command line options.
-if not "%2" == "" call %0 PRELOAD %2 %3 %4 %5 %6 %7 %8 %9
-if errorlevel 1 goto Cleanup
 if not "%2" == "" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 
@@ -199,19 +199,61 @@ if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto AbortExit
 
+vecho /g
+
 REM Test Drive State
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
-goto DriveReady
+rem goto DriveReady
 
 :Partition
 if "%AUTOMATIC%" == "yes" goto PartitionAuto
 if "%ADVANCED%" == "yes" goto PartitionManual
 
 :PartitionAuto
+vecho /g /n /T %LANGFILE% PARTITION_AUTO %TDRIVE%
+set TDRVID=
+if "%TDRIVE%" == "A:" goto NoPartitionAuto
+if "%TDRIVE%" == "B:" goto NoPartitionAuto
+if "%TDRIVE%" == "C:" set TDRVID=1
+if "%TDRIVE%" == "D:" set TDRVID=2
+if "%TDRIVE%" == "E:" set TDRVID=3
+if "%TDRIVE%" == "F:" set TDRVID=4
+if "%TDRIVE%" == "G:" set TDRVID=5
+if "%TDRIVE%" == "H:" set TDRVID=6
+if "%TDRIVE%" == "I:" set TDRVID=7
+if "%TDRIVE%" == "J:" set TDRVID=8
+if "%TDRVID%" == "" goto NoPartitionAuto
+%FDISK% /info %TDRVID% >NUL
+if errorlevel 1 goto NoPartitionAuto
+
+%FDISK% /auto %TDRVID% >NUL
+if errorlevel 1 goto NoPartitionAuto
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+
+vecho /g /n /T %LANGFILE% PARTITION_MBR %TDRIVE%
+%FDISK% /mbr %TDRVID% >NUL
+if errorlevel 1 goto NoPartitionAuto
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+
+vecho /g /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
+%FDISK% /activate:1 %TDRVID% >NUL
+if errorlevel 1 goto ManualPartition
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+
+goto NeedReboot
+
+:NoPartitionAuto
+vecho /g /r2 /c32 /T %LANGFILE% FAILED
+if "%AUTOMATIC%" == "yes" goto AbortExit
+vecho /g
+vdelay 1000
 
 :PartitionManual
+
+
+:NeedReboot
 
 :Format
 
@@ -256,6 +298,7 @@ set ADVANCED=
 set FORCE=
 set TDRIVE=
 set TDOSDIR=
+set TDRVID=
 set VAL=
 set VALD=
 set VALP=
