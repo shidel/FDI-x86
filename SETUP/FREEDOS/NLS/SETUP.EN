@@ -24,14 +24,14 @@ COPYRIGHT=/fDarkGray Released Under GPL v2.0 License./pCopyright $YEAR$ Jerome S
 # Help screen
 HELP_0="usage: SETUP.BAT [options] [target]"
 HELP_1=""
-HELP_2="no options       perform setup using defaults"
-HELP_3=""
-HELP_4="adv              start setup in advanced mode. (more prompting)"
-HELP_5="auto             perform fully automated installation. (no prompting)"
-HELP_6=""
-HELP_7="[target]         pre-set a drive and/or path for the target installation"
-HELP_8=""
-HELP_9=/n
+HELP_2="[no options]    perform setup using defaults"
+HELP_3=
+HELP_4="adv             start setup in advanced mode. (more prompting)"
+HELP_5=
+HELP_6="auto            perform fully automated installation without any prompting." /p/r16/c32 "this is not recommended and should only be used on virtual" /p/r16/c32  "machines or hardware without a pre-existing operating system."
+HELP_7=
+HELP_8="[target]        pre-set a drive and/or path for the target installation"
+HELP_9=
 HELP_10=/n
 
 # Error Messages

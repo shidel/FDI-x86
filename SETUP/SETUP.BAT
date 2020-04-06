@@ -199,6 +199,23 @@ if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto AbortExit
 
+REM Test Drive State
+vinfo /d %TDRIVE%
+if errorlevel 15 goto Partition
+if errorlevel 5 goto Format
+goto DriveReady
+
+:Partition
+if "%AUTOMATIC%" == "yes" goto PartitionAuto
+if "%ADVANCED%" == "yes" goto PartitionManual
+
+:PartitionAuto
+
+:PartitionManual
+
+:Format
+
+:DriveReady
 goto Done
 
 :ERROR_Option
