@@ -1,8 +1,24 @@
+# Welcome Message
+WELCOME_DEF=Welcome to the /fLightGreen %1 /fCyan %2 /fGray  installation program.
+WELCOME_ADV=Welcome to the /fLightRed advanced installer /fGray for /fLightGreen %1 /fGray /s- .
+WELCOME_0=/p
+WELCOME_1=/fLightGreen "%1" /fGray is a complete operating system. If you choose to install this on /p your computer, you may overwrite the operating system you have now (for /p example, Windows.)
+WELCOME_2=/c32 If this is not what you intend, please stop now.
+WELCOME_3=
+WELCOME_4=
+WELCOME_5=/p
+
+CONTINUE=/p Do you want to proceed /c32
+AUTO_YES=/s- [Y,N]? /fWhite Y /fGray
+AUTO_NO=/s- [Y,N]? /fWhite N /fGray
+
+ABORTED=/fLightRed The installation of %1 has been aborted. /e /fGray /bBlack
+
 # Trademark
 TRADEMARK=FreeDOS is a trademark of Jim Hall, 2001-$YEAR$
 
 # Copyright and License Notice
-TITLE=/fLightGreen FreeDOS /fLightCyan 1.3-RC3 /s- /fWhite + /fGray " Installer (" /fWhite FDI-x86 /fGray ")"
+TITLE=/fLightGreen %1 /fLightCyan %2 /s- /fWhite + /fGray " Installer (" /fWhite FDI-x86 /fGray ")"
 COPYRIGHT=/fDarkGray Released Under GPL v2.0 License./pCopyright $YEAR$ Jerome Shidel. /fGray /p
 
 # Help screen

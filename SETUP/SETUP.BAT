@@ -19,6 +19,8 @@ if "%LANGFILE%" == "" goto SetLangFile
 
 :Startup
 
+if "%1" == "YES" goto AnswerYes
+if "%1" == "NO" goto AnswerNo
 if "%1" == "LANG" goto End
 if "%1" == "PRELOAD" goto Preload
 if "%1" == "OPTION" goto Option
@@ -33,6 +35,16 @@ rem Unless we were told that it is boot time or we've already reloaded,
 rem respawn ourself using FreeCOM to insure proper shell and preserve env table
 FREEDOS\BIN\COMMAND.COM /E:4096 /C %0 RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
 set LANGFILE=
+goto End
+
+:AnswerYes
+vecho /g /T %LANGFILE% AUTO_YES
+verrlvl 1
+goto End
+
+:AnswerNo
+vecho /g /T %LANGFILE% AUTO_NO
+verrlvl 2
 goto End
 
 :SetLangFile
@@ -52,15 +64,15 @@ goto Startup
 :Option
 if "%2" == "auto" goto SetAutomatic
 if "%2" == "AUTO" goto SetAutomatic
+if "%2" == "adv" goto SetAdvanced
+if "%2" == "ADV" goto SetAdvanced
+if "%2" == "force" goto SetForced
+if "%2" == "FORCE" goto SetForced
 if "%TEMP%" == "" goto NextOption
 
 set VAL=
 echo %2| vstr /n /l | set /p VAL=
 if "%VAL%" == "" goto Option
-
-if "%VAL%" == "adv" goto SetAdvanced
-if "%VAL%" == "expert" goto SetAdvanced
-if "%VAL%" == "force" goto SetForced
 
 echo %VAL%| vstr /n /f : 1 | vstr /n /s ' ' '' | set /p VALD=
 if "%VALD%" == "%VAL%" goto ERROR_Option
@@ -119,6 +131,7 @@ goto End
 
 :SetAdvanced
 set ADVANCED=yes
+set MSG=ADV
 goto NextOption
 
 :SetAutomatic
@@ -130,10 +143,10 @@ set FORCE=yes
 goto NextOption
 
 :ShowHelp
-vecho /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
-vecho /T %LANGFILE% COPYRIGHT
-for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /T %LANGFILE% HELP_%%i
-vecho /T %LANGFILE% TRADEMARK
+vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
+vecho /g /T %LANGFILE% COPYRIGHT
+for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /g /T %LANGFILE% HELP_%%i
+vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
 :Reload
@@ -151,12 +164,15 @@ if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 set SOURCE=%_CWD%
 set AUTOMATIC=no
 set ADVANCED=no
+set MSG=DEF
 set FORCE=no
 set TDRIVE=
 set TDOSDIR=
 
 REM Pre-load some command line options.
 if not "%2" == "" call %0 PRELOAD %2 %3 %4 %5 %6 %7 %8 %9
+if errorlevel 1 goto Cleanup
+if not "%2" == "" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 
 if "%TDRIVE%" == "" set TDRIVE=C:
@@ -172,29 +188,41 @@ if errorlevel 1 goto Install
 goto Done
 
 :Install
-echo Target Drive %TDRIVE% %TDOSDIR%
+REM Display Welcome Message and prompt to continue
+vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
+vecho /g
+vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
+for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
+
+vecho /g /n /T %LANGFILE% CONTINUE
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto AbortExit
 
 goto Done
 
 :ERROR_Option
-vecho /T %LANGFILE% ERROR_Option %2
+vecho /g /T %LANGFILE% ERROR_Option %2
 goto ErrorExit
 
 :ERROR_NoCfgEnv
-vecho /T %LANGFILE% ERROR_NoCfgEnv
+vecho /g /T %LANGFILE% ERROR_NoCfgEnv
 goto ErrorExit
 
 :ERROR_NotFreeCOM
-vecho /T %LANGFILE% ERROR_NotFreeCOM
+vecho /g /T %LANGFILE% ERROR_NotFreeCOM
 goto ErrorExit
 
 :ERROR_MissingFreeCOM
-vecho /T %LANGFILE% ERROR_MissingFreeCOM
+vecho /g /T %LANGFILE% ERROR_MissingFreeCOM
 goto ErrorExit
 
 :ERROR_MissingAUTOEXEC
-vecho /T %LANGFILE% ERROR_MissingAUTOEXEC
+vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
 goto ErrorExit
+
+:AbortExit
+vecho /g /T %LANGFILE% ABORTED %OS_NAME%
 
 :ErrorExit
 verrlvl 1
@@ -214,6 +242,7 @@ set TDOSDIR=
 set VAL=
 set VALD=
 set VALP=
+set MSG=
 
 rem Exit point
 :End

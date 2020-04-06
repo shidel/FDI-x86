@@ -11,9 +11,11 @@ base\deltree
 base\devload
 base\attrib
 
-util\shsufdrv
 base\fdapm
 base\fc
 
 util\v8power
 archiver\slicer
+
+base\choice
+
