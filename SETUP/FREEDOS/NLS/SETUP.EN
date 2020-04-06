@@ -9,14 +9,18 @@ WELCOME_4=
 WELCOME_5=/p
 
 CONTINUE=/p Do you want to proceed /c32
+REBOOT=/p Do you want to reboot now /c32
+
 AUTO_YES=/s- [Y,N]? /fWhite Y /fGray
 AUTO_NO=/s- [Y,N]? /fWhite N /fGray
 
 ABORTED=/fLightRed The installation of %1 has been aborted. /e /fGray /bBlack
 
-PARTITION_AUTO=Automatic partition of drive %1.
-PARTITION_MBR=Update Master Boot Record for drive %1.
+PARTITION_AUTO=Automatically partition drive %1.
+PARTITION_MBR=Update Master Boot Record on drive %1.
 PARTITION_ACTIVE=Set drive %1 partition as active.
+PARTITION_DONE=You must reboot your computer for the new partitioning scheme to take effect.
+PARTITION_ERROR=/fLightRed A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required. /fGray
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray

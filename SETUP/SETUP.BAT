@@ -109,22 +109,6 @@ if errorlevel 7 set VAL=G:
 if errorlevel 8 set VAL=H:
 if errorlevel 9 set VAL=I:
 if errorlevel 10 set VAL=J:
-if errorlevel 11 set VAL=K:
-if errorlevel 12 set VAL=L:
-if errorlevel 13 set VAL=M:
-if errorlevel 14 set VAL=N:
-if errorlevel 15 set VAL=O:
-if errorlevel 16 set VAL=P:
-if errorlevel 17 set VAL=Q:
-if errorlevel 18 set VAL=R:
-if errorlevel 19 set VAL=S:
-if errorlevel 20 set VAL=T:
-if errorlevel 21 set VAL=U:
-if errorlevel 22 set VAL=V:
-if errorlevel 23 set VAL=W:
-if errorlevel 24 set VAL=X:
-if errorlevel 25 set VAL=Y:
-if errorlevel 26 set VAL=Z:
 if not "%VAL%" == "" set TDRIVE=%VAL%
 set VAL=
 goto NextOption
@@ -242,18 +226,32 @@ vecho /g /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
 if errorlevel 1 goto ManualPartition
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
-goto NeedReboot
+:NeedReboot
+vecho /g /T %LANGFILE% PARTITION_DONE
+vecho /g /n /T %LANGFILE% REBOOT
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto AbortExit
+
+vecho /n /g /fBlack /e
+vpause /d1/t1 postal
+
+goto AbortExit
 
 :NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
-if "%AUTOMATIC%" == "yes" goto AbortExit
+if "%AUTOMATIC%" == "yes" goto NoPartitionManual
 vecho /g
 vdelay 1000
 
 :PartitionManual
+%FDISK% %TDRVID%
+if errorlevel 1 goto NoPartitionManual
+goto NeedReboot
 
-
-:NeedReboot
+:NoPartitionManual
+vecho /g /T %LANGFILE% PARTITION_ERROR
+goto ErrorExit
 
 :Format
 
