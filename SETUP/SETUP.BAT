@@ -154,6 +154,7 @@ set MSG=DEF
 set FORCE=no
 set TDRIVE=
 set TDOSDIR=
+set TTMP=
 set LABEL=FreeDOS$YEAR$
 
 REM Pre-load some command line options.
@@ -291,8 +292,39 @@ if errorlevel 1 goto FormatError
 
 :DriveTest
 vecho /n /g /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
+vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
+if errorlevel 1 goto DriveError
+
+vfdutil /u %TDRIVE%\TEMP\TEST????.$$$ >NUL
+if errorlevel 1 goto NoTempDir
+set TEMP=%TDRIVE%\TEMP
+:SubTempDir
+set /e TTMP=vfdutil /u %TDRIVE%\TEMP\SETUP???.$$$
+if "%TTMP%" == "" goto DriveError
+
+mkdir %TTMP% >NUL
+vfdutil /u %TTMP%\TEST????.$$$ >NUL
+if errorlevel 1 goto DriveError
+set TEMP=%TTMP%
+goto DriveDone
+
+:NoTempDir
+mkdir %TDRIVE%\TEMP >NUL
+vfdutil /u %TDRIVE%\TEMP\TEST????.$$$ >NUL
+if errorlevel 1 goto DriveError
+set TEMP=%TDRIVE%\TEMP
+set TTMP=%TEMP%
+goto DriveDone
+
+:DriveDone
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 goto Done
+
+:DriveError
+rem set TTMP=
+vecho /g /r2 /c32 /T %LANGFILE% FAILED
+vecho /p /g /T %LANGFILE% FILESYSTEM_ERROR %TDRIVE%
+goto ErrorExit
 
 :ERROR_Option
 vecho /g /T %LANGFILE% ERROR_Option %2
@@ -325,6 +357,13 @@ rem Batch completed, shutdown
 :Done
 
 :Cleanup
+if "%TTMP%" == "" goto NoTempSpace
+if not exist %TTMP%\NUL goto NoTempSpace
+
+deltree /y %TTMP%\*.* >NUL
+rmdir %TTMP% >NUL
+
+:NoTempSpace
 set LANGFILE=
 set SOURCE=
 set AUTOMATIC=
@@ -337,6 +376,7 @@ set VAL=
 set VALD=
 set VALP=
 set MSG=
+set TTMP=
 
 rem Exit point
 :End

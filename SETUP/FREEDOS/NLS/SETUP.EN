@@ -28,6 +28,7 @@ FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull,
 FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it. /fGray
 
 FILESYSTEM_TEST=Testing filesystem on drive %1.
+FILESYSTEM_ERROR=Unable to initialize temporary space on drive %1.
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
