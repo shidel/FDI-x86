@@ -1,8 +1,10 @@
 @echo off
 
-REM FreeDOS 1.3+ Installer version 1.00.
-REM Released Under GPL v2.0 License.
-REM Copyright 2020 Jerome Shidel.
+rem FreeDOS 1.3+ Installer version 1.00.
+rem Released Under GPL v2.0 License.
+rem Copyright 2020 Jerome Shidel.
+
+rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
@@ -51,15 +53,21 @@ goto End
 if "%LANG%" == "" goto SetEnglish
 if not exist FREEDOS\NLS\SETUP.%LANG% goto SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
-goto Startup
+goto LangFileDone
 
 :SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
-if exist %LANGFILE% goto Startup
+if exist %LANGFILE% goto LangFileDone
 set LANGFILE=%0.BAT
-if exist %LANGFILE% goto Startup
+if exist %LANGFILE% goto LangFileDone
 set LANGFILE=%0
+
+:LangFileDone
 goto Startup
+
+:ChangeLangFile
+set LANGFILE=FREEDOS\NLS\SETUP.%2
+goto OptionNext
 
 :Option
 if "%2" == "auto" goto SetAutomatic
@@ -68,6 +76,7 @@ if "%2" == "adv" goto SetAdvanced
 if "%2" == "ADV" goto SetAdvanced
 if "%2" == "force" goto SetForced
 if "%2" == "FORCE" goto SetForced
+if exist FREEDOS\NLS\SETUP.%2 goto ChangeLangFile
 if "%1" == "PRELOAD" goto OptionPreLoad
 if "%TEMP%" == "" goto OptionPreLoad
 
@@ -92,13 +101,13 @@ set VAL=
 set VALD=
 set VALP=
 
-:NextOption
+:OptionNext
 verrlvl 0
 if not "%3" == "" call %0 OPTION %3 %4 %5 %6 %7 %8 %9
 goto End
 
 :OptionPreload
-if not "%TDRIVE%" == "" goto NextOption
+if not "%TDRIVE%" == "" goto OptionNext
 set VAL=
 vfdutil /x /d %2
 if errorlevel 3 set VAL=C:
@@ -111,20 +120,20 @@ if errorlevel 9 set VAL=I:
 if errorlevel 10 set VAL=J:
 if not "%VAL%" == "" set TDRIVE=%VAL%
 set VAL=
-goto NextOption
+goto OptionNext
 
 :SetAdvanced
 set ADVANCED=yes
 set MSG=ADV
-goto NextOption
+goto OptionNext
 
 :SetAutomatic
 set AUTOMATIC=yes
-goto NextOption
+goto OptionNext
 
 :SetForced
 set FORCE=yes
-goto NextOption
+goto OptionNext
 
 :ShowHelp
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
@@ -155,10 +164,12 @@ set FORCE=no
 set TDRIVE=
 set TDOSDIR=
 set TTMP=
+set LAYOUT=
+set LOADED=no
 set LABEL=FreeDOS$YEAR$
 
-REM Pre-load some command line options.
-if not "%2" == "" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
+rem Pre-load some command line options.
+if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 
 if "%TDRIVE%" == "" set TDRIVE=C:
@@ -166,7 +177,7 @@ if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FDOS
 
 if not "%1" == "BOOT" goto Install
 
-REM Boot only test for install
+rem Boot only test for install
 vinfo /d %TDRIVE%
 if errorlevel 1 goto Install
 fc /L FREEDOS\VERSION.FDI %TDOSDIR%\VERSION.FDI>NUL
@@ -174,7 +185,7 @@ if errorlevel 1 goto Install
 goto Done
 
 :Install
-REM Display Welcome Message and prompt to continue
+rem Display Welcome Message and prompt to continue
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
 vecho /g
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
@@ -187,7 +198,8 @@ if errorlevel 2 goto AbortExit
 
 vecho /g
 
-REM Test Drive State
+rem Test Drive State
+:TestDrive
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
@@ -283,10 +295,6 @@ vecho /g
 format %TDRIVE% /V:%LABEL% /Q /U /Z:seriously
 goto FormatDone
 
-:FormatError
-vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
-goto ErrorExit
-
 :FormatDone
 if errorlevel 1 goto FormatError
 
@@ -294,6 +302,8 @@ if errorlevel 1 goto FormatError
 vecho /n /g /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
 if errorlevel 1 goto DriveError
+
+if not "%TTMP%" == "" goto DriveDone
 
 vfdutil /u %TDRIVE%\TEMP\TEST????.$$$ >NUL
 if errorlevel 1 goto NoTempDir
@@ -318,12 +328,47 @@ goto DriveDone
 
 :DriveDone
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+
+rem Final load of command line options.
+if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
+if errorlevel 1 goto Cleanup
+set LOADED=yes
+
+rem Set Language & Keyboard Layout (unused at present)
+:SetLanguage
+set LANG=EN
+
+:SetKeyboard
+set LAYOUT=EN
+
+rem Reset installer language translation file
+:ResetLangFile
+set LANGFILE=
+call %0 LANG %LANG%
+
+rem Configure Target drive and directory (unused at present, can set from
+rem the command line)
+:SetDrive
+:SetDOSDIR
+
+vdelay 2000
+if "%TDRIVE%" == "C:" goto MakeD
+
 goto Done
+
+:MakeD
+set TDRIVE=D:
+set DOSDIR=D:\FREEDOS
+goto TestDrive
 
 :DriveError
 rem set TTMP=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /p /g /T %LANGFILE% FILESYSTEM_ERROR %TDRIVE%
+goto ErrorExit
+
+:FormatError
+vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
 goto ErrorExit
 
 :ERROR_Option
@@ -365,6 +410,7 @@ rmdir %TTMP% >NUL
 
 :NoTempSpace
 set LANGFILE=
+set LAYOUT=
 set SOURCE=
 set AUTOMATIC=
 set ADVANCED=
@@ -377,6 +423,7 @@ set VALD=
 set VALP=
 set MSG=
 set TTMP=
+set LOADED=
 
 rem Exit point
 :End
