@@ -32,6 +32,7 @@ FILESYSTEM_ERROR=Unable to initialize temporary space on drive %1.
 
 TARGET_ASK=Where do you wish to install %1 %2? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
+TARGET_BAD=/fLightRed Invalid drive requested. Cannot install to floppy diskette.
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray

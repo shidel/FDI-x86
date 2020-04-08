@@ -203,7 +203,7 @@ rem Test Drive State
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
-goto DriveTest
+goto FileSystemTest
 
 :Partition
 if "%AUTOMATIC%" == "yes" goto PartitionAuto
@@ -298,7 +298,7 @@ goto FormatDone
 :FormatDone
 if errorlevel 1 goto FormatError
 
-:DriveTest
+:FileSystemTest
 vecho /n /g /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
 if errorlevel 1 goto DriveError
@@ -365,7 +365,11 @@ set TDOSDIR=%VALP%
 set VALD=
 set VALP=
 vecho /g
-goto TestDrive
+vfdutil /x /d %TDOSDIR%
+if errorlevel 3 goto TestDrive
+vecho /g /n /T %LANGFILE% TARGET_BAD
+vecho /g
+goto SetTarget
 
 :SetDOSDIR
 set TDOSDIR=%VALP%
