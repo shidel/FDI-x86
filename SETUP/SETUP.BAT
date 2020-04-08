@@ -334,7 +334,7 @@ if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 set LOADED=yes
 
-rem Set Language & Keyboard Layout (unused at present)
+rem Set Language & Keyboard Layout (unused at present, maybe later, maybe not)
 :SetLanguage
 set LANG=EN
 
@@ -348,18 +348,22 @@ call %0 LANG %LANG%
 
 rem Configure Target drive and directory (unused at present, can set from
 rem the command line)
+:SetTarget
+if "%AUTOMATIC%" == "yes" goto TargetDone
+if "%ADVANCED%" == "not" goto TargetDone
+vecho /g /p /n /T %LANGFILE% TARGET_ASK %OS_NAME% %OS_VERSION%
+set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %TDOSDIR%
+set /e REPLY=vfdutil /p %REPLY%\
+vecho /fWhite /bBlack %REPLY% /e
+
 :SetDrive
 :SetDOSDIR
 
-vdelay 2000
-if "%TDRIVE%" == "C:" goto MakeD
+:TargetDone
+
 
 goto Done
 
-:MakeD
-set TDRIVE=D:
-set DOSDIR=D:\FREEDOS
-goto TestDrive
 
 :DriveError
 rem set TTMP=
@@ -424,6 +428,7 @@ set VALP=
 set MSG=
 set TTMP=
 set LOADED=
+set REPLY=
 
 rem Exit point
 :End

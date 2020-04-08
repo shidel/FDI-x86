@@ -30,6 +30,9 @@ FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %
 FILESYSTEM_TEST=Testing filesystem on drive %1.
 FILESYSTEM_ERROR=Unable to initialize temporary space on drive %1.
 
+TARGET_ASK=Where do you wish to install %1 %2? /c32
+TARGET_PROMPT=/fWhite /bBlue %1
+
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
 

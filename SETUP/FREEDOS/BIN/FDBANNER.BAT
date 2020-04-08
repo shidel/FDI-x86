@@ -1,5 +1,7 @@
 @echo off
 
+if not "%OS_NAME%" == "FreeDOS" goto End
+
 if "%1" == "" goto BOOT
 goto %1
 
@@ -134,5 +136,7 @@ vcursor small
 SET COLOR=
 SET BIT=
 SET WHEREY=
+
+:End
 
 :End
