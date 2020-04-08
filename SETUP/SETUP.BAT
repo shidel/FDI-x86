@@ -66,7 +66,8 @@ set LANGFILE=%0
 goto Startup
 
 :ChangeLangFile
-set LANGFILE=FREEDOS\NLS\SETUP.%2
+set LANG=%2
+set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto OptionNext
 
 :Option
@@ -166,6 +167,7 @@ set TDOSDIR=
 set TTMP=
 set LAYOUT=
 set LOADED=no
+set BACKUP=yes
 set LABEL=FreeDOS$YEAR$
 
 rem Pre-load some command line options.
@@ -336,10 +338,10 @@ set LOADED=yes
 
 rem Set Language & Keyboard Layout (unused at present, maybe later, maybe not)
 :SetLanguage
-set LANG=EN
+if "%LANG%" == "" set LANG=EN
 
 :SetKeyboard
-set LAYOUT=EN
+if "%LAYOUT%" == ""  set LAYOUT=EN
 
 rem Reset installer language translation file
 :ResetLangFile
@@ -349,13 +351,13 @@ call %0 LANG %LANG%
 rem Configure Target drive and directory (unused at present, can set from
 rem the command line)
 :SetTarget
-if "%AUTOMATIC%" == "yes" goto TargetDone
-if "%ADVANCED%" == "not" goto TargetDone
+if "%AUTOMATIC%" == "yes" goto TargetCheck
+if "%ADVANCED%" == "no" goto TargetCheck
 vecho /g /p /n /T %LANGFILE% TARGET_ASK %OS_NAME% %OS_VERSION%
 set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %TDOSDIR%
 set /e REPLY=vfdutil /p %REPLY%\
-vecho /fWhite /bBlack %REPLY% /e
-if "%REPLY%" == "%TDOSDIR%" goto TargetDone
+vecho /fWhite /bBlack %REPLY% /e /fGray
+if "%REPLY%" == "%TDOSDIR%" goto TargetCheck
 set /e VALD=vfdutil /d %REPLY%
 set /e VALP=vfdutil /p %REPLY%\
 if "%VALD%" == "%TDRIVE%" goto SetDOSDIR
@@ -376,11 +378,45 @@ set TDOSDIR=%VALP%
 set VALD=
 set VALP=
 
+rem Check for existing Operating System Directory
+:TargetCheck
+if not exist %TDOSDIR%\NUL goto TargetDone
+if "%AUTOMATIC%" == "yes" goto TargetDone
+if "%ADVANCED%" == "no" goto TargetDone
+
+vecho /p/g/n /T %LANGFILE% CHANGE_PATH %TDOSDIR%
+choice
+if errorlevel 2 goto TargetDone
+goto SetTarget
+
 :TargetDone
 
 
-goto Done
+rem Check for OS boot files
+:BackupCheck
+if exist %TDOSDIR%\NUL goto BackupQuery
+if exist %TDRIVE%\FDAUTO.BAT goto BackupQuery
+if exist %TDRIVE%\FDCONFIG.SYS goto BackupQuery
+if exist %TDRIVE%\AUTOEXEC.BAT goto BackupQuery
+if exist %TDRIVE%\CONFIG.SYS goto BackupQuery
+if exist %TDRIVE%\KERNEL.SYS goto BackupQuery
+if exist %TDRIVE%\COMMAND.COM goto BackupQuery
+if exist %TDRIVE%\DRDOS.386 goto BackupQuery
+if exist %TDRIVE%\WINA20.386 goto BackupQuery
+if exist %TDRIVE%\IBMBIO.COM goto BackupQuery
+if exist %TDRIVE%\IBMDOS.COM goto BackupQuery
+if exist %TDRIVE%\IO.SYS copy goto BackupQuery
+if exist %TDRIVE%\MSDOS.SYS goto BackupQuery
+set BACKUP=no
+goto BackupDone
 
+:BackupQuery
+
+
+:BackupDone
+
+
+goto Done
 
 :DriveError
 rem set TTMP=
@@ -446,6 +482,7 @@ set MSG=
 set TTMP=
 set LOADED=
 set REPLY=
+set BACKUP=
 
 rem Exit point
 :End

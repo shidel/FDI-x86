@@ -30,19 +30,19 @@ FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %
 FILESYSTEM_TEST=Testing filesystem on drive %1.
 FILESYSTEM_ERROR=Unable to initialize temporary space on drive %1.
 
-TARGET_ASK=Where do you wish to install %1 %2? /c32
+TARGET_ASK=Where do you wish to install /fLightGreen %1 /fCyan %2 /s- /fGray ? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
 TARGET_BAD=/fLightRed Invalid drive requested. Cannot install to floppy diskette.
+
+CHANGE_PATH=The path /fWhite %1 /fGray already exists. /p Do you wish to change the install directory /c32
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
 
-# Trademark
-TRADEMARK=FreeDOS is a trademark of Jim Hall, 2001-$YEAR$
-
-# Copyright and License Notice
+# Copyright and License Notices
 TITLE=/fLightGreen %1 /fLightCyan %2 /s- /fWhite + /fGray " Installer (" /fWhite FDI-x86 /fGray ")"
 COPYRIGHT=/fDarkGray Released Under GPL v2.0 License./pCopyright $YEAR$ Jerome Shidel. /fGray /p
+TRADEMARK=FreeDOS is a trademark of Jim Hall, 2001-$YEAR$
 
 # Help screen
 HELP_0="usage: SETUP.BAT [options] [target]"
