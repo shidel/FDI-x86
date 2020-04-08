@@ -87,8 +87,8 @@ if "%VAL%" == "" goto Option
 
 echo %VAL%| vstr /n /f : 1 | vstr /n /s ' ' '' | set /p VALD=
 if "%VALD%" == "%VAL%" goto ERROR_Option
-vfdutil /d %VALD%: | set /p VALD=
-vfdutil /p %VAL%\ | set /p VALP=
+set /e VALD=vfdutil /d %VALD%:
+set /e VALP=vfdutil /p %VAL%\
 
 vfdutil /x /d %VALD%
 if errorlevel 3 goto OptionDrive
@@ -355,9 +355,22 @@ vecho /g /p /n /T %LANGFILE% TARGET_ASK %OS_NAME% %OS_VERSION%
 set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %TDOSDIR%
 set /e REPLY=vfdutil /p %REPLY%\
 vecho /fWhite /bBlack %REPLY% /e
-
+if "%REPLY%" == "%TDOSDIR%" goto TargetDone
+set /e VALD=vfdutil /d %REPLY%
+set /e VALP=vfdutil /p %REPLY%\
+if "%VALD%" == "%TDRIVE%" goto SetDOSDIR
 :SetDrive
+set TDRIVE=%VALD%
+set TDOSDIR=%VALP%
+set VALD=
+set VALP=
+vecho /g
+goto TestDrive
+
 :SetDOSDIR
+set TDOSDIR=%VALP%
+set VALD=
+set VALP=
 
 :TargetDone
 
