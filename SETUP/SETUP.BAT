@@ -190,16 +190,13 @@ goto Done
 :Install
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
-vecho /g /p /fGray /bBlack /e
-vgotoxy /g up
-vline
+vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% COPYRIGHT %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% TRADEMARK %OS_NAME% %OS_VERSION%
-vecho /g /fGray /bBlack /e
-vgotoxy /g up
-vline
+vecho /g /T %LANGFILE% HRULE
 vecho /g
+
 :Welcome
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
@@ -260,7 +257,7 @@ if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto AbortExit
 
-vecho /n /g /fBlack /e
+vecho /g /n /fBlack /e
 vpause /d1/t1 postal
 
 goto AbortExit
@@ -286,14 +283,14 @@ if "%AUTOMATIC%" == "yes" goto FormatNormal
 if "%ADVANCED%" == "yes" goto FormatAdvanced
 
 :FormatNormal
-vecho /n /p /g /T %LANGFILE% FORMAT_DEF %TDRIVE%
+vecho /g /n /p /T %LANGFILE% FORMAT_DEF %TDRIVE%
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto AbortExit
 goto FormatQuick
 
 :FormatAdvanced
-vecho /n /p /g /T %LANGFILE% FORMAT_ADV %TDRIVE%
+vecho /g /n /p /T %LANGFILE% FORMAT_ADV %TDRIVE%
 choice /c:FQN
 if errorlevel 3 goto AbortExit
 if errorlevel 2 goto FormatQuick
@@ -312,7 +309,7 @@ goto FormatDone
 if errorlevel 1 goto FormatError
 
 :FileSystemTest
-vecho /n /g /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
+vecho /g /n /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
 if errorlevel 1 goto DriveError
 
@@ -367,7 +364,7 @@ if "%ADVANCED%" == "no" goto TargetCheck
 vecho /g /p /n /T %LANGFILE% TARGET_ASK %OS_NAME% %OS_VERSION%
 set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %TDOSDIR%
 set /e REPLY=vfdutil /p %REPLY%\
-vecho /fWhite /bBlack %REPLY% /e /fGray
+vecho /g /fWhite /bBlack %REPLY% /e /fGray
 if "%REPLY%" == "%TDOSDIR%" goto TargetCheck
 set /e VALD=vfdutil /d %REPLY%
 set /e VALP=vfdutil /p %REPLY%\
@@ -395,13 +392,12 @@ if not exist %TDOSDIR%\NUL goto TargetDone
 if "%AUTOMATIC%" == "yes" goto TargetDone
 if "%ADVANCED%" == "no" goto TargetDone
 
-vecho /p/g/n /T %LANGFILE% CHANGE_PATH %TDOSDIR%
+vecho /g/p/n /T %LANGFILE% CHANGE_PATH %TDOSDIR%
 choice
 if errorlevel 2 goto TargetDone
 goto SetTarget
 
 :TargetDone
-
 
 rem Check for OS boot files
 :BackupCheck
@@ -418,16 +414,47 @@ if exist %TDRIVE%\IBMBIO.COM goto BackupQuery
 if exist %TDRIVE%\IBMDOS.COM goto BackupQuery
 if exist %TDRIVE%\IO.SYS copy goto BackupQuery
 if exist %TDRIVE%\MSDOS.SYS goto BackupQuery
+:BackupDisable
 set BACKUP=no
 goto BackupDone
 
 :BackupQuery
+vecho /g /p /n /T %LANGFILE% BACKUP_OLD %TDRIVE%
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto BackupDisable
 
+set /e BACKUP=vfdutil /u %TDRIVE%\BACKUP.???
+if errorlevel 1 set /e BACKUP=vfdutil /u %TDRIVE%\FDBACKUP.???
+if errorlevel 1 goto BackupSelect
+
+if "%AUTOMATIC%" == "yes" goto BackupDone
+if "%ADVANCED%" == "yes" goto BackupSelect
+goto BackupDone
+
+:BackupSelect
+if "%AUTOMATIC%" == "yes" goto BackupError
+
+vecho /g /p /n /T %LANGFILE% BACKUP_ASK
+set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %BACKUP%
+set /e BACKUP=vfdutil /p %REPLY%\
+vecho /g/fWhite /bBlack %BACKUP% /e /fGray
+
+set /e REPLY=vfdutil /u %BACKUP%
+if not errorlevel 1 goto BackupDone
+
+vecho /g /p /T %LANGFILE% BACKUP_BAD
+goto BackupSelect
 
 :BackupDone
+vecho /g
 
 
 goto Done
+
+:BackupError
+vecho /g /p /T %LANGFILE% BACKUP_ERROR
+goto ErrorExit
 
 :DriveError
 rem set TTMP=

@@ -1,12 +1,14 @@
 # Welcome Message
 WELCOME_DEF=Welcome to the /fLightGreen %1 /fCyan %2 /fGray installation program.
-WELCOME_ADV=Welcome to the /fLightRed advanced installer /fGray for /fLightGreen %1 /fCyan %2 /fGray /s- .
+WELCOME_ADV=Welcome to the /fLightRed advanced /fGray installer for /fLightGreen %1 /fCyan %2 /fGray /s- .
 WELCOME_0=/p
 WELCOME_1=/fLightGreen "%1" /fGray is a complete operating system. If you choose to install this on /p your computer, you may overwrite the operating system you have now (for /p example, Windows.)
 WELCOME_2=/c32 If this is not what you intend, please stop now.
 WELCOME_3=
 WELCOME_4=
 WELCOME_5=/p
+
+HRULE=/fDarkGray /x 0xC4 /fGray
 
 CONTINUE=/p Do you want to proceed /c32
 REBOOT=/p Do you want to reboot now /c32
@@ -28,13 +30,19 @@ FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull,
 FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it. /fGray
 
 FILESYSTEM_TEST=Testing filesystem on drive /fWhite %1 /s- /fGray .
-FILESYSTEM_ERROR=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
+FILESYSTEM_ERROR=/fLightRed Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 
-TARGET_ASK=Where do you wish to install /fLightGreen %1 /fCyan ? /c32
+TARGET_ASK=Where do you wish to install /fLightGreen %1 /s- /fGray ? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
 TARGET_BAD=/fLightRed Invalid drive requested. Cannot install to floppy diskette.
 
 CHANGE_PATH=The path /fWhite %1 /fGray already exists. /p Do you wish to change the install directory /c32
+
+BACKUP_OLD=A previous operating system was detected on drive /fWhite %1 /fGray /s- . /s+ /p Do you want to backup the old files before installing /c32
+BACKUP_ASK=Where do you wish to place the backup files? /c32
+BACKUP_PROMPT=/fWhite /bBlue %1
+BACKUP_BAD=/fLightRed Invalid destination requested. Cannot make backup to that location. /fGray
+BACKUP_ERROR=/fLightRed Unable to configure backup directory. /fGray
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
