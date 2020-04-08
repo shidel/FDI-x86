@@ -1,6 +1,6 @@
 # Welcome Message
-WELCOME_DEF=Welcome to the /fLightGreen %1 /fCyan %2 /fGray  installation program.
-WELCOME_ADV=Welcome to the /fLightRed advanced installer /fGray for /fLightGreen %1 /fGray /s- .
+WELCOME_DEF=Welcome to the /fLightGreen %1 /fCyan %2 /fGray installation program.
+WELCOME_ADV=Welcome to the /fLightRed advanced installer /fGray for /fLightGreen %1 /fCyan %2 /fGray /s- .
 WELCOME_0=/p
 WELCOME_1=/fLightGreen "%1" /fGray is a complete operating system. If you choose to install this on /p your computer, you may overwrite the operating system you have now (for /p example, Windows.)
 WELCOME_2=/c32 If this is not what you intend, please stop now.
@@ -16,9 +16,9 @@ AUTO_NO=/s- [Y,N]? /fWhite N /fGray
 
 ABORTED=/fLightRed The installation of %1 has been aborted. /e /fGray /bBlack
 
-PARTITION_AUTO=Automatically partition drive %1.
-PARTITION_MBR=Update Master Boot Record on drive %1.
-PARTITION_ACTIVE=Set drive %1 partition as active.
+PARTITION_AUTO=Automatically partition drive /fWhite %1 /s- /fGray .
+PARTITION_MBR=Update Master Boot Record on drive /fWhite %1 /s- /fGray .
+PARTITION_ACTIVE=Set drive /fWhite %1 /fGray partition as active.
 PARTITION_DONE=You must reboot your computer for the new partitioning scheme to take effect.
 PARTITION_ERROR=/fLightRed A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required. /fGray
 
@@ -27,10 +27,10 @@ FORMAT_DEF=Do you want to format your drive /c32
 FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull, /c32 /fWhite Q /fGray uick, /c32 /fWhite N /fGray o) /c32
 FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it. /fGray
 
-FILESYSTEM_TEST=Testing filesystem on drive %1.
-FILESYSTEM_ERROR=Unable to initialize temporary space on drive %1.
+FILESYSTEM_TEST=Testing filesystem on drive /fWhite %1 /s- /fGray .
+FILESYSTEM_ERROR=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 
-TARGET_ASK=Where do you wish to install /fLightGreen %1 /fCyan %2 /s- /fGray ? /c32
+TARGET_ASK=Where do you wish to install /fLightGreen %1 /fCyan ? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
 TARGET_BAD=/fLightRed Invalid drive requested. Cannot install to floppy diskette.
 

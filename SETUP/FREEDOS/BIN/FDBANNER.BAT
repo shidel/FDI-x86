@@ -1,6 +1,7 @@
 @echo off
 
-if not "%OS_NAME%" == "FreeDOS" goto End
+if not "%OS_NAME%" == "$OSNAME$" goto End
+rem if not "%OS_NAME%" == "FreeDOS" goto End
 
 if "%1" == "" goto BOOT
 goto %1

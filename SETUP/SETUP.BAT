@@ -71,6 +71,7 @@ set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto OptionNext
 
 :Option
+if "%2" == "" goto End
 if "%2" == "auto" goto SetAutomatic
 if "%2" == "AUTO" goto SetAutomatic
 if "%2" == "adv" goto SetAdvanced
@@ -188,8 +189,18 @@ goto Done
 
 :Install
 rem Display Welcome Message and prompt to continue
+if "%ADVANCED%" == "no" goto Welcome
+vecho /g /fGray /bBlack /e
+vgotoxy /g up
+vline
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
+vecho /g /T %LANGFILE% COPYRIGHT %OS_NAME% %OS_VERSION%
+vecho /g /T %LANGFILE% TRADEMARK %OS_NAME% %OS_VERSION%
+vecho /g /fGray /bBlack /e
+vgotoxy /g up
+vline
 vecho /g
+:Welcome
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
@@ -483,6 +494,8 @@ set TTMP=
 set LOADED=
 set REPLY=
 set BACKUP=
+set LABEL=
+set FDISK=
 
 rem Exit point
 :End
