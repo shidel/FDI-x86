@@ -190,7 +190,7 @@ goto Done
 :Install
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
-vecho /g /fGray /bBlack /e
+vecho /g /p /fGray /bBlack /e
 vgotoxy /g up
 vline
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
