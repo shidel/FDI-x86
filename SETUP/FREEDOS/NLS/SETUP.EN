@@ -44,6 +44,9 @@ BACKUP_PROMPT=/fWhite /bBlue %1
 BACKUP_BAD=/fLightRed Invalid destination requested. Cannot make backup to that location. /fGray
 BACKUP_ERROR=/fLightRed Unable to configure backup directory. /fGray
 
+DELETE_OLD=Existing files in /fWhite %1 /fGray can just be written over. /p Do you want to erase the old directory before installing /c32
+
+
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
 

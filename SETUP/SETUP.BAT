@@ -416,9 +416,11 @@ if exist %TDRIVE%\IO.SYS copy goto BackupQuery
 if exist %TDRIVE%\MSDOS.SYS goto BackupQuery
 :BackupDisable
 set BACKUP=no
+set PREVOS=no
 goto BackupDone
 
 :BackupQuery
+set PREVOS=yes
 vecho /g /p /n /T %LANGFILE% BACKUP_OLD %TDRIVE%
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
@@ -447,9 +449,20 @@ vecho /g /p /T %LANGFILE% BACKUP_BAD
 goto BackupSelect
 
 :BackupDone
+
+if "%PREVOS%" == "no" goto PrevOSDone
+
+set PREVOS=overwrite
+if "%AUTOMATIC%" == "yes" goto PrevOSDone
+if "%ADVANCED%" == "no" goto PrevOSDone
+
+vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
+choice
+if errorlevel 2 goto PrevOSDone
+set PREVOS=delete
+:PrevOSDone
+
 vecho /g
-
-
 goto Done
 
 :BackupError
@@ -504,14 +517,12 @@ deltree /y %TTMP%\*.* >NUL
 rmdir %TTMP% >NUL
 
 :NoTempSpace
+rem Internal and processing variables
 set LANGFILE=
-set LAYOUT=
 set SOURCE=
 set AUTOMATIC=
 set ADVANCED=
 set FORCE=
-set TDRIVE=
-set TDOSDIR=
 set TDRVID=
 set VAL=
 set VALD=
@@ -520,9 +531,15 @@ set MSG=
 set TTMP=
 set LOADED=
 set REPLY=
+
+rem Install variables
+set TDRIVE=
+set TDOSDIR=
+set LAYOUT=
 set BACKUP=
 set LABEL=
 set FDISK=
+set PREVOS=
 
 rem Exit point
 :End
