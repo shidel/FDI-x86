@@ -166,10 +166,14 @@ set FORCE=no
 set TDRIVE=
 set TDOSDIR=
 set TTMP=
-set LAYOUT=
+set PREVOS=
 set LOADED=no
 set BACKUP=yes
 set LABEL=FreeDOS$YEAR$
+set LAYOUT=
+set FORCEMBR=yes
+set SYSFILES=yes
+set CFGFILES=yes
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -187,6 +191,7 @@ fc /L FREEDOS\VERSION.FDI %TDOSDIR%\VERSION.FDI>NUL
 if errorlevel 1 goto Install
 goto Done
 
+REM ***************************************************************************
 :Install
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
@@ -308,6 +313,8 @@ goto FormatDone
 :FormatDone
 if errorlevel 1 goto FormatError
 
+REM ***************************************************************************
+
 :FileSystemTest
 vecho /g /n /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
@@ -343,6 +350,8 @@ rem Final load of command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 set LOADED=yes
+
+REM ***************************************************************************
 
 rem Set Language & Keyboard Layout (unused at present, maybe later, maybe not)
 :SetLanguage
@@ -401,6 +410,7 @@ goto SetTarget
 
 rem Check for OS boot files
 :BackupCheck
+set PREVOS=yes
 if exist %TDOSDIR%\NUL goto BackupQuery
 if exist %TDRIVE%\FDAUTO.BAT goto BackupQuery
 if exist %TDRIVE%\FDCONFIG.SYS goto BackupQuery
@@ -414,13 +424,12 @@ if exist %TDRIVE%\IBMBIO.COM goto BackupQuery
 if exist %TDRIVE%\IBMDOS.COM goto BackupQuery
 if exist %TDRIVE%\IO.SYS copy goto BackupQuery
 if exist %TDRIVE%\MSDOS.SYS goto BackupQuery
+set PREVOS=no
 :BackupDisable
 set BACKUP=no
-set PREVOS=no
 goto BackupDone
 
 :BackupQuery
-set PREVOS=yes
 vecho /g /p /n /T %LANGFILE% BACKUP_OLD %TDRIVE%
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
@@ -451,10 +460,10 @@ goto BackupSelect
 :BackupDone
 
 if "%PREVOS%" == "no" goto PrevOSDone
-
 set PREVOS=overwrite
-if "%AUTOMATIC%" == "yes" goto PrevOSDone
-if "%ADVANCED%" == "no" goto PrevOSDone
+
+if "%AUTOMATIC%" == "yes" goto ConfirmInstall
+if "%ADVANCED%" == "no" goto ConfirmInstall
 
 vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
 choice
@@ -462,8 +471,55 @@ if errorlevel 2 goto PrevOSDone
 set PREVOS=delete
 :PrevOSDone
 
+rem Force an update to the MBR?
+vecho /g /p /n /T %LANGFILE% FORCE_MBR %TDRIVE%
+choice
+if not errorlevel 2 goto ForceMBRDone
+set FORCEMBR=no
+:ForceMBRDone
+
+rem Transfer System Files?
+vecho /g /p /n /T %LANGFILE% SYS_FILES %TDRIVE%
+choice
+if not errorlevel 2 goto SYSFILESDone
+set SYSFILES=no
+:SYSFILESDone
+
+rem Update Config Files?
+vecho /g /p /n /T %LANGFILE% CFG_FILES %TDRIVE%
+choice
+if not errorlevel 2 goto CFGFILESDone
+set CFGFILES=no
+:CFGFILESDone
+
+REM ***************************************************************************
+
+rem Display Setings
+:DisplaySettings
+
+rem Confirm and continue...
+:ConfirmInstall
+
+rem Do Backup
+
+rem Do Deletes
+
+rem Do System Transfer
+
+rem Do MBR Update
+
+rem Do Config File Transfer
+
+rem Extract Files
+
+rem Adjust LST Files
+
+rem Done Reboot
+
 vecho /g
 goto Done
+
+REM ***************************************************************************
 
 :BackupError
 vecho /g /p /T %LANGFILE% BACKUP_ERROR
@@ -540,6 +596,9 @@ set BACKUP=
 set LABEL=
 set FDISK=
 set PREVOS=
+set FORCEMBR=
+set SYSFILES=
+set CFGFILES=
 
 rem Exit point
 :End

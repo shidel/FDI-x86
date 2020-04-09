@@ -46,6 +46,11 @@ BACKUP_ERROR=/fLightRed Unable to configure backup directory. /fGray
 
 DELETE_OLD=Existing files in /fWhite %1 /fGray can just be written over. /p Do you want to erase the old directory before installing /c32
 
+FORCE_MBR=Force an update to the Master Boot Record on drive /fWhite %1 /fGray /c32
+SYS_FILES=Install new system boot files on drive /fWhite %1 /fGray /c32
+CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
+
+CONFIRM=
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
