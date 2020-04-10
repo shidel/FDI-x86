@@ -462,8 +462,8 @@ goto BackupSelect
 if "%PREVOS%" == "no" goto PrevOSDone
 set PREVOS=overwrite
 
-if "%AUTOMATIC%" == "yes" goto ConfirmInstall
-if "%ADVANCED%" == "no" goto ConfirmInstall
+if "%AUTOMATIC%" == "yes" goto PlatformCPU
+if "%ADVANCED%" == "no" goto PlatformCPU
 
 vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
 choice
@@ -492,10 +492,37 @@ if not errorlevel 2 goto CFGFILESDone
 set CFGFILES=no
 :CFGFILESDone
 
+:PlatformCPU
+vinfo /M
+if errorlevel 105 set TCPU=GVM
+if errorlevel 104 set TCPU=VMX
+if errorlevel 103 set TCPU=VBX
+if errorlevel 102 set TCPU=QEM
+if errorlevel 101 set TCPU=DBX
+if errorlevel 6 set TCPU=686
+if errorlevel 5 set TCPU=586
+if errorlevel 4 set TCPU=486
+if errorlevel 3 set TCPU=386
+if errorlevel 2 set TCPU=286
+if errorlevel 1 set TCPU=186
+if errorlevel 0 set TCPU=8086
+
+
 REM ***************************************************************************
 
 rem Display Setings
 :DisplaySettings
+if "%ADVANCED%" == "no" goto ConfirmInstall
+
+vecho /p /g /T %LANGFILE% STATUS_MSG
+vecho /g /T %LANGFILE% STATUS_CPU %TCPU%
+vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE%
+vecho /g /T %LANGFILE% STATUS_DOS %TDOSDIR%
+vecho /g /T %LANGFILE% STATUS_BAK %BACKUP%
+vecho /g /T %LANGFILE% STATUS_POS %PREVOS%
+vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
+vecho /g /T %LANGFILE% STATUS_SYS %SYSFILES%
+vecho /g /T %LANGFILE% STATUS_CFG %CFGFILES%
 
 rem Confirm and continue...
 :ConfirmInstall
@@ -591,6 +618,7 @@ set REPLY=
 rem Install variables
 set TDRIVE=
 set TDOSDIR=
+set TCPU=
 set LAYOUT=
 set BACKUP=
 set LABEL=

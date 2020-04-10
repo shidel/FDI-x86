@@ -50,6 +50,16 @@ FORCE_MBR=Force an update to the Master Boot Record on drive /fWhite %1 /fGray /
 SYS_FILES=Install new system boot files on drive /fWhite %1 /fGray /c32
 CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
 
+STATUS_MSG=Installation settings: /p
+STATUS_CPU=/r4/c32 Platform CPU /fWhite %1 /fGray
+STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray
+STATUS_DOS=/r4/c32 Install path /fWhite %1 /fGray
+STATUS_BAK=/r4/c32 Backup previous OS /fWhite %1 /fGray
+STATUS_POS=/r4/c32 Previous OS directory /fWhite %1 /fGray
+STATUS_MBR=/r4/c32 Force new MBR /fWhite %1 /fGray
+STATUS_SYS=/r4/c32 Copy system files /fWhite %1 /fGray
+STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
+
 CONFIRM=
 
 SUCCESS=/fLightGreen Success. /fGray
