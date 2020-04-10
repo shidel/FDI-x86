@@ -493,19 +493,19 @@ set CFGFILES=no
 :CFGFILESDone
 
 :PlatformCPU
+set TCPU=8086
 vinfo /M
-if errorlevel 105 set TCPU=GVM
-if errorlevel 104 set TCPU=VMX
-if errorlevel 103 set TCPU=VBX
-if errorlevel 102 set TCPU=QEM
-if errorlevel 101 set TCPU=DBX
-if errorlevel 6 set TCPU=686
-if errorlevel 5 set TCPU=586
-if errorlevel 4 set TCPU=486
-if errorlevel 3 set TCPU=386
-if errorlevel 2 set TCPU=286
 if errorlevel 1 set TCPU=186
-if errorlevel 0 set TCPU=8086
+if errorlevel 2 set TCPU=286
+if errorlevel 3 set TCPU=386
+if errorlevel 4 set TCPU=486
+if errorlevel 5 set TCPU=586
+if errorlevel 6 set TCPU=686
+if errorlevel 101 set TCPU=DBX
+if errorlevel 102 set TCPU=QEM
+if errorlevel 103 set TCPU=VBX
+if errorlevel 104 set TCPU=VMX
+if errorlevel 105 set TCPU=GVM
 
 
 REM ***************************************************************************
