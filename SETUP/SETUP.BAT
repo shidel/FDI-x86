@@ -501,11 +501,11 @@ if errorlevel 3 set TCPU=386
 if errorlevel 4 set TCPU=486
 if errorlevel 5 set TCPU=586
 if errorlevel 6 set TCPU=686
-if errorlevel 101 set TCPU=DBX
-if errorlevel 102 set TCPU=QEM
-if errorlevel 103 set TCPU=VBX
-if errorlevel 104 set TCPU=VMX
-if errorlevel 105 set TCPU=GVM
+if errorlevel 101 set TCPU=DosBox
+if errorlevel 102 set TCPU=QEMU
+if errorlevel 103 set TCPU=VirtualBox
+if errorlevel 104 set TCPU=VMware
+if errorlevel 105 set TCPU=VM
 
 
 REM ***************************************************************************
