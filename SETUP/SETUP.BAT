@@ -193,6 +193,22 @@ goto Done
 
 REM ***************************************************************************
 :Install
+
+set TCPU=8086
+vinfo /M
+if errorlevel 1 set TCPU=186
+if errorlevel 2 set TCPU=286
+if errorlevel 3 set TCPU=386
+if errorlevel 4 set TCPU=486
+if errorlevel 5 set TCPU=586
+if errorlevel 6 set TCPU=686
+if errorlevel 101 set TCPU=DOSBox
+if errorlevel 102 set TCPU=QEMU
+if errorlevel 103 set TCPU=VirtualBox
+if errorlevel 104 set TCPU=VMware
+if errorlevel 105 set TCPU=VM
+
+
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
 vecho /g /T %LANGFILE% HRULE
@@ -462,8 +478,8 @@ goto BackupSelect
 if "%PREVOS%" == "no" goto PrevOSDone
 set PREVOS=overwrite
 
-if "%AUTOMATIC%" == "yes" goto PlatformCPU
-if "%ADVANCED%" == "no" goto PlatformCPU
+if "%AUTOMATIC%" == "yes" goto NoAdvOptions
+if "%ADVANCED%" == "no" goto NoAdvOptions
 
 vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
 choice
@@ -471,10 +487,12 @@ if errorlevel 2 goto PrevOSDone
 set PREVOS=delete
 :PrevOSDone
 
+if "%TCPU%" == "DOSBox" goto NoForceMBR
 rem Force an update to the MBR?
 vecho /g /p /n /T %LANGFILE% FORCE_MBR %TDRIVE%
 choice
 if not errorlevel 2 goto ForceMBRDone
+:NoForceMBR
 set FORCEMBR=no
 :ForceMBRDone
 
@@ -492,21 +510,7 @@ if not errorlevel 2 goto CFGFILESDone
 set CFGFILES=no
 :CFGFILESDone
 
-:PlatformCPU
-set TCPU=8086
-vinfo /M
-if errorlevel 1 set TCPU=186
-if errorlevel 2 set TCPU=286
-if errorlevel 3 set TCPU=386
-if errorlevel 4 set TCPU=486
-if errorlevel 5 set TCPU=586
-if errorlevel 6 set TCPU=686
-if errorlevel 101 set TCPU=DosBox
-if errorlevel 102 set TCPU=QEMU
-if errorlevel 103 set TCPU=VirtualBox
-if errorlevel 104 set TCPU=VMware
-if errorlevel 105 set TCPU=VM
-
+:NoAdvOptions
 
 REM ***************************************************************************
 
