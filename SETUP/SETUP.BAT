@@ -564,7 +564,7 @@ vecho /g /p /T %LANGFILE% DO_CFGFILES %TDRIVE%
 :NoDoCfgFiles
 
 rem Extract Files
-vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %OS_VERSION%
+vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TCPU%
 
 rem Adjust LST Files
 vecho /g /p /T %LANGFILE% DO_ADJUST
