@@ -516,7 +516,7 @@ REM ***************************************************************************
 
 rem Display Setings
 :DisplaySettings
-if "%ADVANCED%" == "no" goto ConfirmInstall
+if "%ADVANCED%" == "no" goto InstallNow
 
 vecho /p /g /T %LANGFILE% STATUS_MSG
 vecho /g /T %LANGFILE% STATUS_CPU %TCPU%
@@ -528,8 +528,16 @@ vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
 vecho /g /T %LANGFILE% STATUS_SYS %SYSFILES%
 vecho /g /T %LANGFILE% STATUS_CFG %CFGFILES%
 
-rem Confirm and continue...
-:ConfirmInstall
+rem Reaty to Install, procede...
+:InstallNow
+
+vecho /g /p /T %LANGFILE% INSTALL_NOW %OS_NAME% %OS_VERSION%
+vecho /g /n /T %LANGFILE% CONTINUE
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto AbortExit
+
+vecho /g
 
 rem Do Backup
 
