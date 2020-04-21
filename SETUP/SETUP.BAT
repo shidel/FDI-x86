@@ -537,24 +537,50 @@ if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto AbortExit
 
-vecho /g
-
+vecho /g /p /T %LANGFILE% HRULE
 rem Do Backup
+if "%BACKUP%" == "no" goto NoDoBackup
+vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
+:NoDoBackup
 
 rem Do Deletes
+if "%PREVOS%" == "overwrite" goto NoDoErase
+vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
+:NoDoErase
 
 rem Do System Transfer
+if "%SYSFILES%" == "no" goto NoDoSysFiles
+vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE%
+:NoDoSysFiles
 
 rem Do MBR Update
+if "%FORCEMBR%" == "no" goto NoDoForceMBR
+vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
+:NoDoForceMBR
 
 rem Do Config File Transfer
+if "%CFGFILES%" == "no" goto NoDoCfgFiles
+vecho /g /p /T %LANGFILE% DO_CFGFILES %TDRIVE%
+:NoDoCfgFiles
 
 rem Extract Files
+vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %OS_VERSION%
 
 rem Adjust LST Files
+vecho /g /p /T %LANGFILE% DO_ADJUST
 
 rem Done Reboot
 
+vecho /g /p /T %LANGFILE% HRULE
+vecho /g /p /T %LANGFILE% DONE_NOW %OS_NAME% %OS_VERSION%
+vecho /g /p /n /T %LANGFILE% REBOOT_NOW
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto NoDoReboot
+
+vecho /g /p /T %LANGFILE% REMOVE_MEDIA
+
+:NoDoReboot
 vecho /g
 goto Done
 

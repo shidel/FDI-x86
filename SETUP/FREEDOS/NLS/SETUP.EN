@@ -51,7 +51,7 @@ SYS_FILES=Install new system boot files on drive /fWhite %1 /fGray /c32
 CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
 
 STATUS_MSG=Installation settings: /p
-STATUS_CPU=/r4/c32 Platform CPU /fWhite %1 /fGray
+STATUS_CPU=/r4/c32 Platform (CPU) /fWhite %1 /fGray
 STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray
 STATUS_DOS=/r4/c32 Install path /fWhite %1 /fGray
 STATUS_BAK=/r4/c32 Backup previous OS /fWhite %1 /fGray
@@ -62,7 +62,18 @@ STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 
 INSTALL_NOW=We are now ready to install /fLightGreen %1 /fCyan %2 /fGray /s- .
 
-CONFIRM=
+DO_BACKUP=Creating backup of previous OS to /fWhite %1 /fGray /s- .
+DO_ERASE=Delete old  /fWhite %1 /fGray directory and files.
+DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
+DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
+DO_CFGFILES=Transfer new configuration files /fWhite %1 /fGray /s- .
+DO_INSTALL=Install /fLightGreen %1 /fGray files for /fWhite %1 /fGray /s- .
+DO_ADJUST=Adjust package file lists.
+
+DONE_NOW=Installation of /fLightGreen %1 /fCyan %2 /fGray has completed.
+REBOOT_NOW=Do you want to reboot now /c32
+
+REMOVE_MEDIA=You should remove any floppy diskettes and CD media.
 
 SUCCESS=/fLightGreen Success. /fGray
 FAILED=/fLightRed Failed. /fGray
