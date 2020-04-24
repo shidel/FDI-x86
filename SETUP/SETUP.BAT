@@ -30,6 +30,7 @@ if "%1" == "BOOT" goto Configure
 if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
 if "%1" == "HELP" goto ShowHelp
+if "%1" == "MKDIR" goto MakeDirectory
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
@@ -144,6 +145,13 @@ for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /g /T %LANGFILE% HELP_%%i
 vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
+:MakeDirectory
+set /e PARENT=vfdutil /p %2
+vfdutil /u %PARENT%\????????.$$$ >NUL
+if errorlevel 1 call %0 MKDIR %PARENT%
+mkdir %2 >NUL
+goto End
+
 :Reload
 if "%_CWD%" == "" goto ERROR_NotFreeCOM
 
@@ -207,7 +215,6 @@ if errorlevel 102 set TCPU=QEMU
 if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
 if errorlevel 105 set TCPU=VM
-
 
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
@@ -541,6 +548,9 @@ vecho /g /p /T %LANGFILE% HRULE
 rem Do Backup
 if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
+call %0 MKDIR %BACKUP%
+if errorlevel 1 goto ErrorExit
+
 :NoDoBackup
 
 rem Do Deletes
