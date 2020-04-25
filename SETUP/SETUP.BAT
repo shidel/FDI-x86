@@ -560,36 +560,46 @@ if errorlevel 2 goto UserAbortExit
 vecho /g /p /T %LANGFILE% HRULE
 
 rem Do Backup
-rem if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
-if "%FORCEMBR%" == "no" goto NoDoForceMBR
-set SEARCH=
-set TDRVID=
-set TPRTID=
-%FDISK% 1 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
-if not "%SEARCH%" == "" goto FoundPart
-%FDISK% 2 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
-if not "%SEARCH%" == "" goto FoundPart
-%FDISK% 3 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
-if not "%SEARCH%" == "" goto FoundPart
-%FDISK% 4 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
-if not "%SEARCH%" == "" goto FoundPart
+
+set TPRTID=0
+set TDRVID=1
+if "%TCPU%" == "DOSBox" goto NoFindPartID
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=2
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=3
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=4
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
 goto ERROR_NoPartition
+:NoFindPartID
 
-:FoundPart
-call %0 SETIDS %SEARCH%
-pushd
-vfdutil /c /p %BACKUP%\
-popd
-
-:NoDoMBRBackup
-
+rem Make Backup directory
 if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
 call %0 MKDIR %BACKUP%
 if errorlevel 1 goto AbortExit
 
-REM yes, it would be a litle faster to just test and do each file without
-REM a callback. But, this is easir to read and maintain...
+rem Backup Master Boot Record
+if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
+pushd
+vfdutil /c /p %BACKUP%\
+%FDISK% %TDRVID% /SMBR >NUL
+if errorlevel 1 goto FailedDoMBRBackup
+popd
+goto NoDoMBRBackup
+:FailedDoMBRBackup
+popd
+goto ERROR_MBRBackup
+:NoDoMBRBackup
+
+rem Backup System and Configuration files.
+rem yes, it would be a litle faster to just test and do each file without
+rem a callback. But, this is easir to read and maintain...
 call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
 if errorlevel 1 goto AbortExit
 call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
@@ -700,6 +710,11 @@ goto AbortExit
 :ERROR_MakeDir
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MakeDir %2
+goto AbortExit
+
+:ERROR_MBRBackup
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_MBRBackup %TDRVID%
 goto AbortExit
 
 :UserAbortExit

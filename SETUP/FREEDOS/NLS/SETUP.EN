@@ -58,7 +58,7 @@ STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 
 INSTALL_NOW=We are now ready to install /fLightGreen %1 /fCyan %2 /fGray /s- .
 
-DO_BACKUP=Creating backup of previous OS to /fWhite %1 /fGray /s- .
+DO_BACKUP=Creating backup of previous OS files to /fWhite %1 /fGray /s- .
 DO_ERASE=Delete old  /fWhite %1 /fGray directory and files.
 DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
 DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
@@ -107,3 +107,4 @@ ERROR_NoPartition=Unable to locate the BIOS partition for /fWhite %1 /fGray /s- 
 ERROR_Format=An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it.
 ERROR_FileSystem=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 ERROR_CfgBackup=Unable to configure backup directory.
+ERROR_MBRBackup=Unable to create backup of Master Boot Record for drive %1.
