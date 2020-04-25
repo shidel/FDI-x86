@@ -22,15 +22,12 @@ PARTITION_AUTO=Automatically partition drive /fWhite %1 /s- /fGray .
 PARTITION_MBR=Update Master Boot Record on drive /fWhite %1 /s- /fGray .
 PARTITION_ACTIVE=Set drive /fWhite %1 /fGray partition as active.
 PARTITION_DONE=You must reboot your computer for the new partitioning scheme to take effect.
-PARTITION_ERROR=/fLightRed A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required. /fGray
 
 FORMAT=Drive /fWhite %1 /fGray does not appear to be formatted.
 FORMAT_DEF=Do you want to format your drive /c32
 FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull, /c32 /fWhite Q /fGray uick, /c32 /fWhite N /fGray o) /c32
-FORMAT_ERROR=/fLightRed An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it. /fGray
 
 FILESYSTEM_TEST=Testing filesystem on drive /fWhite %1 /s- /fGray .
-FILESYSTEM_ERROR=/fLightRed Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 
 TARGET_ASK=Where do you wish to install /fLightGreen %1 /s- /fGray ? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
@@ -42,7 +39,6 @@ BACKUP_OLD=A previous operating system was detected on drive /fWhite %1 /fGray /
 BACKUP_ASK=Where do you wish to place the backup files? /c32
 BACKUP_PROMPT=/fWhite /bBlue %1
 BACKUP_BAD=/fLightRed Invalid destination requested. Cannot make backup to that location. /fGray
-BACKUP_ERROR=/fLightRed Unable to configure backup directory. /fGray
 
 DELETE_OLD=Existing files in /fWhite %1 /fGray can just be written over. /p Do you want to erase the old directory before installing /c32
 
@@ -97,8 +93,16 @@ HELP_9=
 HELP_10=/n
 
 # Error Messages
-ERROR_Option=/fLightRed error: /fGray Unknown or invalid command line option "`%1'."
-ERROR_NoCfgEnv=/fLightRed CRITICAL error: /fGray Unable to determine basic system configuration and path settings.
-ERROR_NotFreeCOM=/fLightRed CRITICAL error: /fGray This batch file requires the FreeCOM or compatible shell for FreeDOS.
-ERROR_MissingFreeCOM=/fLightRed CRITICAL error: /fGray Unable to locate FreeDOS's command shell FreeCOM.
-ERROR_MissingAUTOEXEC=/fLightRed CRITICAL error: /fGray Unable to locate FreeDOS's startup batch file FDAUTO.BAT.
+ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray
+ERROR_MINOR=/fLightRed error: /fGray
+ERROR_Option=Unknown or invalid command line option "`%1'."
+ERROR_NoCfgEnv=Unable to determine basic system configuration and path settings.
+ERROR_NotFreeCOM=This batch file requires the FreeCOM or compatible shell for FreeDOS.
+ERROR_MissingFreeCOM=Unable to locate FreeDOS's command shell FreeCOM.
+ERROR_MissingAUTOEXEC=Unable to locate FreeDOS's startup batch file FDAUTO.BAT.
+ERROR_MakeDir=Unable to create directory %1.
+ERROR_Backup=Unable to backup files.
+ERROR_Partition=A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required.
+ERROR_Format=An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it.
+ERROR_FileSystem=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
+ERROR_CfgBackup=Unable to configure backup directory.

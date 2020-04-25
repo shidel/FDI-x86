@@ -146,10 +146,14 @@ vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
 :MakeDirectory
+set /e PARENT=vfdutil /d %2
+vfdutil /u %PARENT%\????????.$$$ >NUL
+if errorlevel 1 goto ERROR_MakeDir
 set /e PARENT=vfdutil /p %2
 vfdutil /u %PARENT%\????????.$$$ >NUL
 if errorlevel 1 call %0 MKDIR %PARENT%
 mkdir %2 >NUL
+if errorlevel 1 goto ERROR_MakeDir
 goto End
 
 :Reload
@@ -292,18 +296,14 @@ goto AbortExit
 
 :NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
-if "%AUTOMATIC%" == "yes" goto NoPartitionManual
+if "%AUTOMATIC%" == "yes" goto ERROR_Partition
 vecho /g
 vdelay 1000
 
 :PartitionManual
 %FDISK% %TDRVID%
-if errorlevel 1 goto NoPartitionManual
+if errorlevel 1 goto ERROR_Partition
 goto NeedReboot
-
-:NoPartitionManual
-vecho /g /T %LANGFILE% PARTITION_ERROR
-goto ErrorExit
 
 :Format
 vecho /g /T %LANGFILE% FORMAT %TDRIVE%
@@ -334,14 +334,14 @@ format %TDRIVE% /V:%LABEL% /Q /U /Z:seriously
 goto FormatDone
 
 :FormatDone
-if errorlevel 1 goto FormatError
+if errorlevel 1 goto ERROR_Format
 
 REM ***************************************************************************
 
 :FileSystemTest
 vecho /g /n /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
-if errorlevel 1 goto DriveError
+if errorlevel 1 goto ERROR_FileSystem
 
 if not "%TTMP%" == "" goto DriveDone
 
@@ -350,18 +350,18 @@ if errorlevel 1 goto NoTempDir
 set TEMP=%TDRIVE%\TEMP
 :SubTempDir
 set /e TTMP=vfdutil /u %TDRIVE%\TEMP\SETUP???.$$$
-if "%TTMP%" == "" goto DriveError
+if "%TTMP%" == "" goto ERROR_FileSystem
 
 mkdir %TTMP% >NUL
 vfdutil /u %TTMP%\TEST????.$$$ >NUL
-if errorlevel 1 goto DriveError
+if errorlevel 1 goto ERROR_FileSystem
 set TEMP=%TTMP%
 goto DriveDone
 
 :NoTempDir
 mkdir %TDRIVE%\TEMP >NUL
 vfdutil /u %TDRIVE%\TEMP\TEST????.$$$ >NUL
-if errorlevel 1 goto DriveError
+if errorlevel 1 goto ERROR_FileSystem
 set TEMP=%TDRIVE%\TEMP
 set TTMP=%TEMP%
 goto DriveDone
@@ -467,7 +467,7 @@ if "%ADVANCED%" == "yes" goto BackupSelect
 goto BackupDone
 
 :BackupSelect
-if "%AUTOMATIC%" == "yes" goto BackupError
+if "%AUTOMATIC%" == "yes" goto ERROR_CfgBackup
 
 vecho /g /p /n /T %LANGFILE% BACKUP_ASK
 set /e REPLY=vask /T %LANGFILE% TARGET_PROMPT %BACKUP%
@@ -549,7 +549,13 @@ rem Do Backup
 if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
 call %0 MKDIR %BACKUP%
-if errorlevel 1 goto ErrorExit
+if errorlevel 1 goto AbortExit
+
+if exist %TDRIVE%\autoexec.bat xcopy %TDRIVE%\autoexec.bat %BACKUP% /H /Y >NUL
+if errorlevel 1 goto ERROR_Backup
+if exist %TDRIVE%\config.sys xcopy %TDRIVE%\config.sys %BACKUP% /H /Y  >NUL
+if exist %TDRIVE%\fdauto.bat xcopy %TDRIVE%\fdauto.bat %BACKUP% /H /Y  >NUL
+if exist %TDRIVE%\fdconfig.sys xcopy %TDRIVE%\fdconfig.sys %BACKUP% /H /Y >NUL
 
 :NoDoBackup
 
@@ -596,49 +602,72 @@ goto Done
 
 REM ***************************************************************************
 
-:BackupError
-vecho /g /p /T %LANGFILE% BACKUP_ERROR
+:ERROR_CfgBackup
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /p /T %LANGFILE% ERROR_CfgBackup
 goto ErrorExit
 
-:DriveError
+:ERROR_FileSystem
 rem set TTMP=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
-vecho /p /g /T %LANGFILE% FILESYSTEM_ERROR %TDRIVE%
+vecho /p /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
 goto ErrorExit
 
-:FormatError
+:ERROR_Partition
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_Partition
+goto ErrorExit
+
+:ERROR_Format
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
 goto ErrorExit
 
 :ERROR_Option
+vecho /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /T %LANGFILE% ERROR_Option %2
 goto ErrorExit
 
 :ERROR_NoCfgEnv
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NoCfgEnv
 goto ErrorExit
 
 :ERROR_NotFreeCOM
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NotFreeCOM
 goto ErrorExit
 
 :ERROR_MissingFreeCOM
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingFreeCOM
 goto ErrorExit
 
 :ERROR_MissingAUTOEXEC
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
+goto ErrorExit
+
+:ERROR_Backup
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
+goto ErrorExit
+
+:ERROR_MakeDir
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_MakeDir %2
 goto ErrorExit
 
 :AbortExit
 vecho /g /T %LANGFILE% ABORTED %OS_NAME%
 
 :ErrorExit
-verrlvl 1
+set EXITCODE=1
 goto Cleanup
 
 rem Batch completed, shutdown
 :Done
+set EXITCODE=0
 
 :Cleanup
 if "%TTMP%" == "" goto NoTempSpace
@@ -675,6 +704,9 @@ set PREVOS=
 set FORCEMBR=
 set SYSFILES=
 set CFGFILES=
+
+verrlvl %EXITCODE%
+set EXITCODE=
 
 rem Exit point
 :End
