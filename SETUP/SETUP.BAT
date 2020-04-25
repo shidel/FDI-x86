@@ -251,6 +251,9 @@ vecho /g
 
 rem Test Drive State
 :TestDrive
+rem Possible no pipe support yet, so uberdumb partition testing mode.
+vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
+if not errorlevel 1 goto FileSystemTest
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
@@ -274,6 +277,7 @@ if "%TDRIVE%" == "H:" set TDRVID=6
 if "%TDRIVE%" == "I:" set TDRVID=7
 if "%TDRIVE%" == "J:" set TDRVID=8
 if "%TDRVID%" == "" goto NoPartitionAuto
+
 %FDISK% /info %TDRVID% >NUL
 if errorlevel 1 goto NoPartitionAuto
 
@@ -567,6 +571,12 @@ if errorlevel 1 goto AbortExit
 call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto AbortExit
 
+if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
+pushd
+
+popd
+:NoDoMBRBackup
+
 :NoDoBackup
 
 rem Do Deletes
@@ -687,6 +697,7 @@ deltree /y %TTMP%\*.* >NUL
 rmdir %TTMP% >NUL
 
 :NoTempSpace
+rem set >ENV.TXT
 rem Internal and processing variables
 set LANGFILE=
 set SOURCE=
@@ -701,6 +712,7 @@ set MSG=
 set TTMP=
 set LOADED=
 set REPLY=
+set PAERNT=
 
 rem Install variables
 set TDRIVE=
