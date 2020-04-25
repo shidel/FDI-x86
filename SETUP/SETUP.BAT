@@ -6,6 +6,8 @@ rem Copyright 2020 Jerome Shidel.
 
 rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 
+if "%1" == "DBACK" goto DOSBackup
+
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
 if "%0" == "SETUP.BAT" goto GoodCWD
@@ -163,6 +165,12 @@ if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% /H /Y >NUL
 if errorlevel 1 goto ERROR_Backup
 shift
 goto BootBackup
+
+:DOSBackup
+if "%2" == "" goto End
+vprogres /fGreen %2 OF %3
+rem %4
+goto End
 
 REM ***************************************************************************
 :Reload
@@ -607,7 +615,13 @@ if errorlevel 1 goto AbortExit
 
 rem Backup Old OS Directory
 if not exist %TDOSDIR%\NUL goto NoDoBackup
-
+vecho /g
+vprogres /fGreen 0 of 1
+veach /A+ /D %TDOSDIR%\*.* /X %0 DBACK @ # *
+if errorlevel 1 goto ERROR_BackupOS
+vecho /g /n /fGray /e
+vgotoxy /g eot right
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
 :NoDoBackup
 
@@ -706,11 +720,6 @@ vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
 goto AbortExit
 
-:ERROR_Backup
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
-goto AbortExit
-
 :ERROR_MakeDir
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MakeDir %2
@@ -719,6 +728,16 @@ goto AbortExit
 :ERROR_MBRBackup
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MBRBackup %TDRVID%
+goto AbortExit
+
+:ERROR_Backup
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_Backup
+goto AbortExit
+
+:ERROR_BackupOS
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_BackupOS
 goto AbortExit
 
 :UserAbortExit
