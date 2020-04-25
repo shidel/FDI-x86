@@ -94,7 +94,7 @@ HELP_10=/n
 
 # Error Messages
 ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray
-ERROR_MINOR=/fLightRed error: /fGray
+ERROR_MINOR=/fLightRed error: /fGray /c32
 ERROR_Option=Unknown or invalid command line option "`%1'."
 ERROR_NoCfgEnv=Unable to determine basic system configuration and path settings.
 ERROR_NotFreeCOM=This batch file requires the FreeCOM or compatible shell for FreeDOS.

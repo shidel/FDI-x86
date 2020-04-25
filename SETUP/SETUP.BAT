@@ -31,6 +31,7 @@ if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
 if "%1" == "HELP" goto ShowHelp
 if "%1" == "MKDIR" goto MakeDirectory
+if "%1" == "BBACK" goto BootBackup
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
@@ -156,6 +157,14 @@ mkdir %2 >NUL
 if errorlevel 1 goto ERROR_MakeDir
 goto End
 
+:BootBackup
+if "%2" == "" goto End
+if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% /H /Y >NUL
+if errorlevel 1 goto ERROR_Backup
+shift
+goto BootBackup
+
+REM ***************************************************************************
 :Reload
 if "%_CWD%" == "" goto ERROR_NotFreeCOM
 
@@ -551,11 +560,12 @@ vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
 call %0 MKDIR %BACKUP%
 if errorlevel 1 goto AbortExit
 
-if exist %TDRIVE%\autoexec.bat xcopy %TDRIVE%\autoexec.bat %BACKUP% /H /Y >NUL
-if errorlevel 1 goto ERROR_Backup
-if exist %TDRIVE%\config.sys xcopy %TDRIVE%\config.sys %BACKUP% /H /Y  >NUL
-if exist %TDRIVE%\fdauto.bat xcopy %TDRIVE%\fdauto.bat %BACKUP% /H /Y  >NUL
-if exist %TDRIVE%\fdconfig.sys xcopy %TDRIVE%\fdconfig.sys %BACKUP% /H /Y >NUL
+REM yes, it would be a litle faster to just test and do each file without
+REM a callback. But, this is easir to read and maintain...
+call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+if errorlevel 1 goto AbortExit
+call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
+if errorlevel 1 goto AbortExit
 
 :NoDoBackup
 
