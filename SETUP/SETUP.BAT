@@ -598,12 +598,16 @@ goto ERROR_MBRBackup
 :NoDoMBRBackup
 
 rem Backup System and Configuration files.
-rem yes, it would be a litle faster to just test and do each file without
-rem a callback. But, this is easir to read and maintain...
+rem yes, it would be a little faster to just test and do each file without
+rem a callback. But, this is easier to read and maintain...
 call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
 if errorlevel 1 goto AbortExit
 call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto AbortExit
+
+rem Backup Old OS Directory
+if not exist %TDOSDIR%\NUL goto NoDoBackup
+
 
 :NoDoBackup
 
