@@ -16,7 +16,7 @@ REBOOT=/p Do you want to reboot now /c32
 AUTO_YES=/s- [Y,N]? /fWhite Y /fGray
 AUTO_NO=/s- [Y,N]? /fWhite N /fGray
 
-ABORTED=/fLightRed The installation of %1 has been aborted. /e /fGray /bBlack
+ABORTED=/fLightRed The installation of %1 %2 has been aborted. /e /fGray /bBlack
 
 PARTITION_AUTO=Automatically partition drive /fWhite %1 /s- /fGray .
 PARTITION_MBR=Update Master Boot Record on drive /fWhite %1 /s- /fGray .
@@ -93,7 +93,7 @@ HELP_9=
 HELP_10=/n
 
 # Error Messages
-ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray
+ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray /c32
 ERROR_MINOR=/fLightRed error: /fGray /c32
 ERROR_Option=Unknown or invalid command line option "`%1'."
 ERROR_NoCfgEnv=Unable to determine basic system configuration and path settings.
@@ -103,6 +103,7 @@ ERROR_MissingAUTOEXEC=Unable to locate FreeDOS's startup batch file FDAUTO.BAT.
 ERROR_MakeDir=Unable to create directory %1.
 ERROR_Backup=Unable to backup files.
 ERROR_Partition=A partitioning error has occurred. A hard disk may not be present or /p may be invisible to the current operating system. /p /p A different method for partitioning is required.
+ERROR_NoPartition=Unable to locate the BIOS partition for /fWhite %1 /fGray /s- . /s+ /p Manual installation (or maybe advanced mode without forced MBR) is recommended.
 ERROR_Format=An error has occurred while attempting to format drive %1. /p /p A different process will be required to format it.
 ERROR_FileSystem=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 ERROR_CfgBackup=Unable to configure backup directory.

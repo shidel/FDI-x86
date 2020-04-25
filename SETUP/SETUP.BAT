@@ -245,7 +245,7 @@ for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_
 vecho /g /n /T %LANGFILE% CONTINUE
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
-if errorlevel 2 goto AbortExit
+if errorlevel 2 goto UserAbortExit
 
 vecho /g
 
@@ -300,12 +300,12 @@ vecho /g /T %LANGFILE% PARTITION_DONE
 vecho /g /n /T %LANGFILE% REBOOT
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
-if errorlevel 2 goto AbortExit
+if errorlevel 2 goto UserAbortExit
 
 vecho /g /n /fBlack /e
 vpause /d1/t1 postal
 
-goto AbortExit
+goto ErrorExit
 
 :NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
@@ -327,13 +327,13 @@ if "%ADVANCED%" == "yes" goto FormatAdvanced
 vecho /g /n /p /T %LANGFILE% FORMAT_DEF %TDRIVE%
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
-if errorlevel 2 goto AbortExit
+if errorlevel 2 goto UserAbortExit
 goto FormatQuick
 
 :FormatAdvanced
 vecho /g /n /p /T %LANGFILE% FORMAT_ADV %TDRIVE%
 choice /c:FQN
-if errorlevel 3 goto AbortExit
+if errorlevel 3 goto UserAbortExit
 if errorlevel 2 goto FormatQuick
 
 :FormatLong
@@ -555,10 +555,34 @@ vecho /g /p /T %LANGFILE% INSTALL_NOW %OS_NAME% %OS_VERSION%
 vecho /g /n /T %LANGFILE% CONTINUE
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
-if errorlevel 2 goto AbortExit
+if errorlevel 2 goto UserAbortExit
 
 vecho /g /p /T %LANGFILE% HRULE
+
 rem Do Backup
+rem if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
+if "%FORCEMBR%" == "no" goto NoDoForceMBR
+set SEARCH=
+set TDRVID=
+set TPRTID=
+%FDISK% 1 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
+if not "%SEARCH%" == "" goto FoundPart
+%FDISK% 2 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
+if not "%SEARCH%" == "" goto FoundPart
+%FDISK% 3 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
+if not "%SEARCH%" == "" goto FoundPart
+%FDISK% 4 | vstr /f %TDRIVE% 2- | vstr /i /b | set /p SEARCH=
+if not "%SEARCH%" == "" goto FoundPart
+goto ERROR_NoPartition
+
+:FoundPart
+call %0 SETIDS %SEARCH%
+pushd
+vfdutil /c /p %BACKUP%\
+popd
+
+:NoDoMBRBackup
+
 if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
 call %0 MKDIR %BACKUP%
@@ -570,12 +594,6 @@ call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND
 if errorlevel 1 goto AbortExit
 call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto AbortExit
-
-if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
-pushd
-
-popd
-:NoDoMBRBackup
 
 :NoDoBackup
 
@@ -622,64 +640,72 @@ goto Done
 
 REM ***************************************************************************
 
-:ERROR_CfgBackup
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /p /T %LANGFILE% ERROR_CfgBackup
-goto ErrorExit
-
-:ERROR_FileSystem
-rem set TTMP=
-vecho /g /r2 /c32 /T %LANGFILE% FAILED
-vecho /p /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
-goto ErrorExit
-
-:ERROR_Partition
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /T %LANGFILE% ERROR_Partition
-goto ErrorExit
-
-:ERROR_Format
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
-goto ErrorExit
-
 :ERROR_Option
 vecho /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /T %LANGFILE% ERROR_Option %2
 goto ErrorExit
 
+:ERROR_CfgBackup
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /p /T %LANGFILE% ERROR_CfgBackup
+goto AbortExit
+
+:ERROR_FileSystem
+rem set TTMP=
+vecho /g /r2 /c32 /T %LANGFILE% FAILED
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
+goto AbortExit
+
+:ERROR_Partition
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_Partition
+goto AbortExit
+
+:ERROR_NoPartition
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_NoPartition %TDRIVE%
+goto AbortExit
+
+:ERROR_Format
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
+goto AbortExit
+
 :ERROR_NoCfgEnv
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NoCfgEnv
-goto ErrorExit
+goto AbortExit
 
 :ERROR_NotFreeCOM
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NotFreeCOM
-goto ErrorExit
+goto AbortExit
 
 :ERROR_MissingFreeCOM
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingFreeCOM
-goto ErrorExit
+goto AbortExit
 
 :ERROR_MissingAUTOEXEC
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
-goto ErrorExit
+goto AbortExit
 
 :ERROR_Backup
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingAUTOEXEC
-goto ErrorExit
+goto AbortExit
 
 :ERROR_MakeDir
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MakeDir %2
-goto ErrorExit
+goto AbortExit
+
+:UserAbortExit
 
 :AbortExit
-vecho /g /T %LANGFILE% ABORTED %OS_NAME%
+vecho /g /p /T %LANGFILE% ABORTED %OS_NAME% %OS_VERSION%
 
 :ErrorExit
 set EXITCODE=1
@@ -705,6 +731,7 @@ set AUTOMATIC=
 set ADVANCED=
 set FORCE=
 set TDRVID=
+set TPRTID=
 set VAL=
 set VALD=
 set VALP=
@@ -713,6 +740,7 @@ set TTMP=
 set LOADED=
 set REPLY=
 set PAERNT=
+set SEARCH=
 
 rem Install variables
 set TDRIVE=
