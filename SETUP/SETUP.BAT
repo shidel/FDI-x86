@@ -6,7 +6,13 @@ rem Copyright 2020 Jerome Shidel.
 
 rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 
+if "%1" == "YES" goto AnswerYes
+if "%1" == "NO" goto AnswerNo
 if "%1" == "DBACK" goto DOSBackup
+if "%1" == "MKDIR" goto MakeDirectory
+if "%1" == "BBACK" goto BootBackup
+if "%1" == "SUCCESS" goto SuccessExit
+if "%1" == "FAIL" goto FailedExit
 
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
@@ -23,8 +29,6 @@ if "%LANGFILE%" == "" goto SetLangFile
 
 :Startup
 
-if "%1" == "YES" goto AnswerYes
-if "%1" == "NO" goto AnswerNo
 if "%1" == "LANG" goto End
 if "%1" == "OPTION" goto Option
 if "%1" == "PRELOAD" goto Option
@@ -32,8 +36,6 @@ if "%1" == "BOOT" goto Configure
 if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
 if "%1" == "HELP" goto ShowHelp
-if "%1" == "MKDIR" goto MakeDirectory
-if "%1" == "BBACK" goto BootBackup
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
@@ -162,14 +164,22 @@ goto End
 :BootBackup
 if "%2" == "" goto End
 if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% /H /Y >NUL
-if errorlevel 1 goto ERROR_Backup
+if errorlevel 1 goto ErrorExit
 shift
 goto BootBackup
 
 :DOSBackup
 if "%2" == "" goto End
+if exist %TDOSDIR%\%4\nul goto DOSBackupDir
+xcopy %TDOSDIR%\%4 %BACKUP%\ /E /H /Y >NUL
+goto DOSBackupCheck
+:DOSBackupDir
+call %0 MKDIR %BACKUP%\%4
+if errorlevel 1 goto AbortExit
+xcopy %TDOSDIR%\%4 %BACKUP%\%4\ /E /H /Y >NUL
+:DOSBackupCheck
+if errorlevel 1 goto ErrorExit
 vprogres /fGreen %2 OF %3
-rem %4
 goto End
 
 REM ***************************************************************************
@@ -589,8 +599,10 @@ goto ERROR_NoPartition
 rem Make Backup directory
 if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
+vecho /g
+vprogres /fGreen 0 of 1
 call %0 MKDIR %BACKUP%
-if errorlevel 1 goto AbortExit
+if errorlevel 1 goto ERROR_MakeDir
 
 rem Backup Master Boot Record
 if "%TCPU%" == "DOSBox" goto NoDoMBRBackup
@@ -609,47 +621,49 @@ rem Backup System and Configuration files.
 rem yes, it would be a little faster to just test and do each file without
 rem a callback. But, this is easier to read and maintain...
 call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
-if errorlevel 1 goto AbortExit
+if errorlevel 1 goto ERROR_BackupCfg
 call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
-if errorlevel 1 goto AbortExit
+if errorlevel 1 goto ERROR_BackupCfg
 
 rem Backup Old OS Directory
 if not exist %TDOSDIR%\NUL goto NoDoBackup
-vecho /g
-vprogres /fGreen 0 of 1
 veach /A+ /D %TDOSDIR%\*.* /X %0 DBACK @ # *
 if errorlevel 1 goto ERROR_BackupOS
-vecho /g /n /fGray /e
-vgotoxy /g eot right
-vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+call %0 SUCCESS
 
 :NoDoBackup
 
 rem Do Deletes
 if "%PREVOS%" == "overwrite" goto NoDoErase
 vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
+call %0 SUCCESS
 :NoDoErase
 
 rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
 vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE%
+call %0 SUCCESS
 :NoDoSysFiles
 
 rem Do MBR Update
 if "%FORCEMBR%" == "no" goto NoDoForceMBR
 vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
+call %0 SUCCESS
 :NoDoForceMBR
 
 rem Do Config File Transfer
 if "%CFGFILES%" == "no" goto NoDoCfgFiles
 vecho /g /p /T %LANGFILE% DO_CFGFILES %TDRIVE%
+call %0 SUCCESS
 :NoDoCfgFiles
 
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TCPU%
+call %0 SUCCESS
 
 rem Adjust LST Files
 vecho /g /p /T %LANGFILE% DO_ADJUST
+call %0 SUCCESS
 
 rem Done Reboot
 
@@ -726,19 +740,36 @@ vecho /g /T %LANGFILE% ERROR_MakeDir %2
 goto AbortExit
 
 :ERROR_MBRBackup
+call %0 FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MBRBackup %TDRVID%
 goto AbortExit
 
-:ERROR_Backup
+:ERROR_BackupCfg
+call %0 FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /T %LANGFILE% ERROR_Backup
+vecho /g /T %LANGFILE% ERROR_BackupCfg
 goto AbortExit
 
 :ERROR_BackupOS
+call %0 FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_BackupOS
 goto AbortExit
+
+:SuccessExit
+vecho /g /n /fGray /e
+vgotoxy /g eot right
+vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+goto End
+
+:FailedExit
+vecho /g /n /fGray /e
+vgotoxy /g eot right
+vecho /g /r2 /c32 /T %LANGFILE% FAILED
+vecho /g
+verrlvl 1
+goto End
 
 :UserAbortExit
 
