@@ -48,7 +48,7 @@ CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
 
 STATUS_MSG=Installation settings: /p
 STATUS_CPU=/r4/c32 Platform (CPU) /fWhite %1 /fGray
-STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray
+STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray (%2:%3)
 STATUS_DOS=/r4/c32 Install path /fWhite %1 /fGray
 STATUS_BAK=/r4/c32 Backup previous OS /fWhite %1 /fGray
 STATUS_POS=/r4/c32 Previous OS directory /fWhite %1 /fGray
@@ -59,7 +59,7 @@ STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 INSTALL_NOW=We are now ready to install /fLightGreen %1 /fCyan %2 /fGray /s- .
 
 DO_BACKUP=Creating backup of previous OS files to /fWhite %1 /fGray /s- .
-DO_ERASE=Delete old  /fWhite %1 /fGray directory and files.
+DO_ERASE=Delete old /fWhite %1 /fGray directory and files.
 DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
 DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
 DO_CFGFILES=Transfer new configuration files /fWhite %1 /fGray /s- .

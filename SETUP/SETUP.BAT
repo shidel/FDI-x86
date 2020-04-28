@@ -513,7 +513,6 @@ goto BackupSelect
 
 :BackupDone
 
-
 if not "%TCPU%" == "DOSBox" goto AdvOptions
 set FORCEMBR=no
 :AdvOptions
@@ -522,6 +521,7 @@ if "%AUTOMATIC%" == "yes" goto NoAdvOptions
 if "%ADVANCED%" == "no" goto NoAdvOptions
 
 if "%PREVOS%" == "no" goto PrevOSDone
+if not exist %TDOSDIR%\nul goto PrevOSDone
 vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
 choice
 if errorlevel 2 goto PrevOSDone
@@ -556,6 +556,25 @@ set CFGFILES=no
 :NoAdvOptions
 if "%PREVOS%" == "yes" set PREVOS=overwrite
 
+rem Detect BIOS Drive and Partition
+set TPRTID=0
+set TDRVID=0
+if "%TCPU%" == "DOSBox" goto NoFindPartID
+set TDRVID=1
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=2
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=3
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+set TDRVID=4
+%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+if not "%TPRTID%" == "" goto NoFindPartID
+goto ERROR_NoPartition
+:NoFindPartID
+
 REM ***************************************************************************
 
 rem Display Setings
@@ -564,7 +583,7 @@ if "%ADVANCED%" == "no" goto InstallNow
 
 vecho /p /g /T %LANGFILE% STATUS_MSG
 vecho /g /T %LANGFILE% STATUS_CPU %TCPU%
-vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE%
+vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE% %TDRVID% %TPRTID%
 vecho /g /T %LANGFILE% STATUS_DOS %TDOSDIR%
 vecho /g /T %LANGFILE% STATUS_BAK %BACKUP%
 vecho /g /T %LANGFILE% STATUS_POS %PREVOS%
@@ -582,25 +601,6 @@ if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 
 vecho /g /p /T %LANGFILE% HRULE
-
-rem Do Backup
-
-set TPRTID=0
-set TDRVID=1
-if "%TCPU%" == "DOSBox" goto NoFindPartID
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
-set TDRVID=2
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
-set TDRVID=3
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
-set TDRVID=4
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
-goto ERROR_NoPartition
-:NoFindPartID
 
 rem Make Backup directory
 if "%BACKUP%" == "no" goto NoDoBackup
@@ -632,9 +632,10 @@ call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto ERROR_BackupCfg
 
 rem Backup Old OS Directory
-if not exist %TDOSDIR%\NUL goto NoDoBackup
+if not exist %TDOSDIR%\NUL goto NoDoBackupOS
 veach /A+ /D %TDOSDIR%\*.* /X %0 DBACK @ # *
 if errorlevel 1 goto ERROR_BackupOS
+:NoDoBackupOS
 call %0 SUCCESS
 
 :NoDoBackup
@@ -642,13 +643,21 @@ call %0 SUCCESS
 rem Do Deletes
 if "%PREVOS%" == "overwrite" goto NoDoErase
 vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
+deltree /y %TDOSDIR%\*.* >NUL
+if errorlevel 1 goto NotErased
 call %0 SUCCESS
+goto NoDoErase
+:NotErased
+call %0 FAIL
+rem Going to continue install anyway...
 :NoDoErase
 
 rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
 vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE%
+
 call %0 SUCCESS
+echo %_CWD%
 :NoDoSysFiles
 
 rem Do MBR Update
