@@ -513,12 +513,15 @@ goto BackupSelect
 
 :BackupDone
 
-if "%PREVOS%" == "no" goto PrevOSDone
-set PREVOS=overwrite
+
+if not "%TCPU%" == "DOSBox" goto AdvOptions
+set FORCEMBR=no
+:AdvOptions
 
 if "%AUTOMATIC%" == "yes" goto NoAdvOptions
 if "%ADVANCED%" == "no" goto NoAdvOptions
 
+if "%PREVOS%" == "no" goto PrevOSDone
 vecho /g /p /n /T %LANGFILE% DELETE_OLD %TDOSDIR%
 choice
 if errorlevel 2 goto PrevOSDone
@@ -529,7 +532,9 @@ if "%TCPU%" == "DOSBox" goto NoForceMBR
 rem Force an update to the MBR?
 vecho /g /p /n /T %LANGFILE% FORCE_MBR %TDRIVE%
 choice
-if not errorlevel 2 goto ForceMBRDone
+if errorlevel 2 goto NoForceMBR
+set FORCEMBR=yes
+goto ForceMBRDone
 :NoForceMBR
 set FORCEMBR=no
 :ForceMBRDone
@@ -549,6 +554,7 @@ set CFGFILES=no
 :CFGFILESDone
 
 :NoAdvOptions
+if "%PREVOS%" == "yes" set PREVOS=overwrite
 
 REM ***************************************************************************
 
