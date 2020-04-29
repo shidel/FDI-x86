@@ -215,6 +215,7 @@ set SYSFILES=yes
 set CFGFILES=yes
 set XOPTS=/Y /R /H /Q
 set COPTS=/Y /B
+set KERNL=KERNL86.SYS
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -653,28 +654,22 @@ goto NoDoErase
 :ErasedFailed
 call %0 FAIL
 rem Going to continue install anyway...
+goto DoSysFiles
 :NoDoErase
 
+:DoSysFiles
 rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
 pushd
 vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
-if errorlevel 3 goto SysFiles386
-REM Unknown, 8086, 80186 and 80286 machines
-xcopy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %XOPTS% >NUL
-if errorlevel 1 goto ERROR_SysFiles
-xcopy FREEDOS\BIN\KERNL86.SYS %TDRIVE%\KERNEL.SYS %XOPTS% >NUL
-if errorlevel 1 goto ERROR_SysFiles
-goto DoBootSector
-:SysFiles386
-REM Virtual machines, 386 and newer.
+if errorlevel 3 set KERNL=KERNL386.SYS
 verrlvl 0
-echo copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS%
-copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS%
+if exist %TDRIVE%\COMMAND.COM attrib -r -s -h %TDRIVE%\COMMAND.COM >NUL
+copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
-echo copy FREEDOS\BIN\KERNL386.SYS %TDRIVE%\KERNEL.SYS %COPTS%
-copy FREEDOS\BIN\KERNL386.SYS %TDRIVE%\KERNEL.SYS %COPTS%
+if exist %TDRIVE%\KERNEL.SYS attrib -r -s -h %TDRIVE%\KERNEL.SYS >NUL
+copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
@@ -851,7 +846,6 @@ deltree /y %TTMP%\*.* >NUL
 rmdir %TTMP% >NUL
 
 :NoTempSpace
-rem set >ENV.TXT
 rem Internal and processing variables
 set LANGFILE=
 set SOURCE=
@@ -871,6 +865,7 @@ set PAERNT=
 set SEARCH=
 set XOPTS=
 set COPTS=
+set KERNL=
 
 rem Install variables
 set TDRIVE=
