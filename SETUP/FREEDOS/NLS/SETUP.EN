@@ -109,3 +109,5 @@ ERROR_Format=An error has occurred while attempting to format drive %1. /p /p A 
 ERROR_FileSystem=Unable to initialize temporary space on drive /fWhite %1 /s- /fGray .
 ERROR_CfgBackup=Unable to configure backup directory.
 ERROR_MBRBackup=Unable to create backup of Master Boot Record for drive %1.
+ERROR_SysFiles=Unable to copy system files to drive %1.
+ERROR_BootSector=Unable to update boot sector for drive %1.

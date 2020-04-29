@@ -163,22 +163,22 @@ goto End
 
 :BootBackup
 if "%2" == "" goto End
-if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% /H /Y >NUL
-if errorlevel 1 goto ErrorExit
+if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% %XOPTS% >NUL
+if errorlevel 1 goto ErrorEnd
 shift
 goto BootBackup
 
 :DOSBackup
 if "%2" == "" goto End
 if exist %TDOSDIR%\%4\nul goto DOSBackupDir
-xcopy %TDOSDIR%\%4 %BACKUP%\ /E /H /Y >NUL
+xcopy %TDOSDIR%\%4 %BACKUP%\ /E %XOPTS% >NUL
 goto DOSBackupCheck
 :DOSBackupDir
 call %0 MKDIR %BACKUP%\%4
 if errorlevel 1 goto AbortExit
-xcopy %TDOSDIR%\%4 %BACKUP%\%4\ /E /H /Y >NUL
+xcopy %TDOSDIR%\%4 %BACKUP%\%4\ /E %XOPTS% >NUL
 :DOSBackupCheck
-if errorlevel 1 goto ErrorExit
+if errorlevel 1 goto ErrorEnd
 vprogres /fGreen %2 OF %3
 goto End
 
@@ -213,6 +213,8 @@ set LAYOUT=
 set FORCEMBR=yes
 set SYSFILES=yes
 set CFGFILES=yes
+set XOPTS=/Y /R /H /Q
+set COPTS=/Y /B
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -642,22 +644,48 @@ call %0 SUCCESS
 
 rem Do Deletes
 if "%PREVOS%" == "overwrite" goto NoDoErase
+if "%PREVOS%" == "no" goto NoDoErase
 vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
 deltree /y %TDOSDIR%\*.* >NUL
-if errorlevel 1 goto NotErased
+if errorlevel 1 goto ErasedFailed
 call %0 SUCCESS
 goto NoDoErase
-:NotErased
+:ErasedFailed
 call %0 FAIL
 rem Going to continue install anyway...
 :NoDoErase
 
 rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
-vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE%
-
+pushd
+vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
+vinfo /m
+if errorlevel 3 goto SysFiles386
+REM Unknown, 8086, 80186 and 80286 machines
+xcopy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %XOPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+xcopy FREEDOS\BIN\KERNL86.SYS %TDRIVE%\KERNEL.SYS %XOPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+goto DoBootSector
+:SysFiles386
+REM Virtual machines, 386 and newer.
+verrlvl 0
+echo copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS%
+copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS%
+if errorlevel 1 goto ERROR_SysFiles
+echo copy FREEDOS\BIN\KERNL386.SYS %TDRIVE%\KERNEL.SYS %COPTS%
+copy FREEDOS\BIN\KERNL386.SYS %TDRIVE%\KERNEL.SYS %COPTS%
+if errorlevel 1 goto ERROR_SysFiles
+if "%TCPU%" == "DOSBox" goto DoSysFilesDone
+if "%FORCEMBR%" == "yes" goto DoSysFilesDone
+vfdutil /c /p %TEMP%\
+sys /BOOTONLY /OEM:FD >NUL
+if not errorlevel 1 goto DoSysFilesDone
+popd
+goto ERROR_BootSector
+:DoSysFilesDone
+popd
 call %0 SUCCESS
-echo %_CWD%
 :NoDoSysFiles
 
 rem Do MBR Update
@@ -700,7 +728,7 @@ REM ***************************************************************************
 :ERROR_Option
 vecho /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /T %LANGFILE% ERROR_Option %2
-goto ErrorExit
+goto ErrorEnd
 
 :ERROR_CfgBackup
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
@@ -772,6 +800,18 @@ vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_BackupOS
 goto AbortExit
 
+:ERROR_SysFiles
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_SysFiles %TDRVID%
+goto AbortExit
+
+:ERROR_BootSector
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_BootSector %TDRVID%
+goto AbortExit
+
 :SuccessExit
 vecho /g /n /fGray /e
 vgotoxy /g eot right
@@ -783,8 +823,7 @@ vecho /g /n /fGray /e
 vgotoxy /g eot right
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /g
-verrlvl 1
-goto End
+goto ErrorEnd
 
 :UserAbortExit
 
@@ -794,6 +833,11 @@ vecho /g /p /T %LANGFILE% ABORTED %OS_NAME% %OS_VERSION%
 :ErrorExit
 set EXITCODE=1
 goto Cleanup
+
+:ErrorEnd
+set EXITCODE=1
+verrlvl 1
+goto End
 
 rem Batch completed, shutdown
 :Done
@@ -825,6 +869,8 @@ set LOADED=
 set REPLY=
 set PAERNT=
 set SEARCH=
+set XOPTS=
+set COPTS=
 
 rem Install variables
 set TDRIVE=
@@ -839,7 +885,7 @@ set FORCEMBR=
 set SYSFILES=
 set CFGFILES=
 
-verrlvl %EXITCODE%
+if not "%EXITCODE%" == "" verrlvl %EXITCODE%
 set EXITCODE=
 
 rem Exit point
