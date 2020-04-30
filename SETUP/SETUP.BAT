@@ -12,6 +12,7 @@ if "%1" == "DBACK" goto DOSBackup
 if "%1" == "MKDIR" goto MakeDirectory
 if "%1" == "BBACK" goto BootBackup
 if "%1" == "CATTR" goto ClearAttributes
+if "%1" == "DEL" goto DeleteFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 
@@ -190,6 +191,12 @@ if errorlevel 1 goto ErrorEnd
 shift
 goto ClearAttributes
 
+:DeleteFiles
+if "%2" == "" goto End
+if exist %TDRIVE%\%2 del %TDRIVE%\%2 >NUL
+if errorlevel 1 goto ErrorEnd
+shift
+goto DeleteFiles
 
 REM ***************************************************************************
 :Reload
@@ -659,6 +666,10 @@ if "%PREVOS%" == "overwrite" goto NoDoErase
 if "%PREVOS%" == "no" goto NoDoErase
 vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
 deltree /y %TDOSDIR%\*.* >NUL
+if errorlevel 1 goto ErasedFailed
+call %0 DEL FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+if errorlevel 1 goto ErasedFailed
+call %0 DEL IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto ErasedFailed
 call %0 SUCCESS
 goto NoDoErase
