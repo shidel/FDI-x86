@@ -682,7 +682,6 @@ goto DoSysFiles
 :DoSysFiles
 rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
-pushd
 vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
 if errorlevel 3 set KERNL=KERNL386.SYS
@@ -693,21 +692,29 @@ copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
-vfdutil /c /p %TEMP%\
-sys /BOOTONLY /OEM:FD >NUL
+sys /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
 if not errorlevel 1 goto DoSysFilesDone
-popd
 goto ERROR_BootSector
 :DoSysFilesDone
-popd
 call %0 SUCCESS
 :NoDoSysFiles
 
 rem Do MBR Update
 if "%FORCEMBR%" == "no" goto NoDoForceMBR
 vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
+sys /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
+if errorlevel 1 goto ERROR_BootSector
+%FDISK% /MBR %TDRVID% >NUL
+if errorlevel 1 goto ERROR_MBRUpdate
 call %0 SUCCESS
 :NoDoForceMBR
+
+if "%TCPU%" == "DOSBox" goto NoDoActivate
+rem Activate DOS Partition
+vecho /g /p /T %LANGFILE% DO_ACTIVATE %TDRVID% %TPRTID%
+%FDISK% /ACTIVATE:%TDRVID% %TPRTID% >NUL
+if errorlevel 1 goto ERROR_Activate
+:NoDoActivate
 
 rem Do Config File Transfer
 if "%CFGFILES%" == "no" goto NoDoCfgFiles
@@ -823,6 +830,18 @@ goto AbortExit
 call %0 FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_BootSector %TDRVID%
+goto AbortExit
+
+:ERROR_MBRUpdate
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_MBRUpdate %TDRVID%
+goto AbortExit
+
+:ERROR_Activate
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_Activate %TDRVID% %TPRTID%
 goto AbortExit
 
 :SuccessExit

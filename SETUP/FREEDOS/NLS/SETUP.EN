@@ -62,6 +62,7 @@ DO_BACKUP=Creating backup of previous OS files to /fWhite %1 /fGray /s- .
 DO_ERASE=Delete old /fWhite %1 /fGray directory and files.
 DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
 DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
+DO_ACTIVATE=Set active boot partition to /fWhite %1 /fGray /s- : /fWhite %2 /fGray .
 DO_CFGFILES=Transfer new configuration files /fWhite %1 /fGray /s- .
 DO_INSTALL=Install /fLightGreen %1 /fGray files for /fWhite %2 /fGray /s- .
 
@@ -110,3 +111,5 @@ ERROR_CfgBackup=Unable to configure backup directory.
 ERROR_MBRBackup=Unable to create backup of Master Boot Record for drive %1.
 ERROR_SysFiles=Unable to copy system files to drive %1.
 ERROR_BootSector=Unable to update boot sector for drive %1.
+ERROR_MBRUpdate=Unable to update boot sector for drive %1.
+ERROR_Activate=Unable to set drive %1 to boot partition %2.
