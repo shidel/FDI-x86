@@ -11,6 +11,7 @@ if "%1" == "NO" goto AnswerNo
 if "%1" == "DBACK" goto DOSBackup
 if "%1" == "MKDIR" goto MakeDirectory
 if "%1" == "BBACK" goto BootBackup
+if "%1" == "CATTR" goto ClearAttributes
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 
@@ -181,6 +182,14 @@ xcopy %TDOSDIR%\%4 %BACKUP%\%4\ /E %XOPTS% >NUL
 if errorlevel 1 goto ErrorEnd
 vprogres /fGreen %2 OF %3
 goto End
+
+:ClearAttributes
+if "%2" == "" goto End
+if exist %TDRIVE%\%2 attrib -r -s -h %TDRIVE%\%2 >NUL
+if errorlevel 1 goto ErrorEnd
+shift
+goto ClearAttributes
+
 
 REM ***************************************************************************
 :Reload
@@ -642,6 +651,8 @@ if errorlevel 1 goto ERROR_BackupOS
 call %0 SUCCESS
 
 :NoDoBackup
+call %0 CATTR FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+call %0 CATTR IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 
 rem Do Deletes
 if "%PREVOS%" == "overwrite" goto NoDoErase
@@ -665,10 +676,8 @@ vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
 if errorlevel 3 set KERNL=KERNL386.SYS
 verrlvl 0
-if exist %TDRIVE%\COMMAND.COM attrib -r -s -h %TDRIVE%\COMMAND.COM >NUL
 copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
-if exist %TDRIVE%\KERNEL.SYS attrib -r -s -h %TDRIVE%\KERNEL.SYS >NUL
 copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
@@ -699,9 +708,7 @@ rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TCPU%
 call %0 SUCCESS
 
-rem Adjust LST Files
-vecho /g /p /T %LANGFILE% DO_ADJUST
-call %0 SUCCESS
+rem Add OS ID Tag File
 
 rem Done Reboot
 

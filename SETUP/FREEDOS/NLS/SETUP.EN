@@ -64,7 +64,6 @@ DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
 DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
 DO_CFGFILES=Transfer new configuration files /fWhite %1 /fGray /s- .
 DO_INSTALL=Install /fLightGreen %1 /fGray files for /fWhite %2 /fGray /s- .
-DO_ADJUST=Adjust package file lists.
 
 DONE_NOW=Installation of /fLightGreen %1 /fCyan %2 /fGray has completed.
 REBOOT_NOW=Do you want to reboot now /c32
