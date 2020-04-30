@@ -113,3 +113,4 @@ ERROR_SysFiles=Unable to copy system files to drive %1.
 ERROR_BootSector=Unable to update boot sector for drive %1.
 ERROR_MBRUpdate=Unable to update boot sector for drive %1.
 ERROR_Activate=Unable to set drive %1 to boot partition %2.
+ERROR_CfgFiles=Unable to install new configuration files on drive /fWhite %1 /fGray /s- .

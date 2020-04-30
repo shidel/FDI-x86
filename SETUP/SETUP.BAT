@@ -13,6 +13,7 @@ if "%1" == "MKDIR" goto MakeDirectory
 if "%1" == "BBACK" goto BootBackup
 if "%1" == "CATTR" goto ClearAttributes
 if "%1" == "DEL" goto DeleteFiles
+if "%1" == "XFR" goto CopyConfigFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 
@@ -197,6 +198,29 @@ if exist %TDRIVE%\%2 del %TDRIVE%\%2 >NUL
 if errorlevel 1 goto ErrorEnd
 shift
 goto DeleteFiles
+
+:CopyConfigFiles
+if "%2" == "" goto End
+set FIN=
+if "%2" == "FDAUTO" set FFILE=AUTOEXEC
+if "%2" == "FDCONFIG" set FFILE=CONFIG
+if "%2" == "FDAUTO" set FOUT=%2.BAT
+if "%2" == "FDCONFIG" set FOUT=%2.SYS
+if exist FREEDOS\CONFIGS\%FFILE%.%FEXT% set FIN=%FFILE%.%FEXT%
+if not "%FIN%" == "" goto DoCopyConfigFiles
+if exist FREEDOS\CONFIGS\%FFILE%.%FEXT% set FIN=%FFILE%.DEF
+if not "%FIN%" == "" goto DoCopyConfigFiles
+verrlvl 1
+goto CopyConfigFilesNext
+:DoCopyConfigFiles
+rem vecho /g "%_CWD%\%FIN% --> %TDRIVE%\%FOUT%"
+:CopyConfigFilesNext
+set FFILE=
+set FOUT=
+set FIN=
+if errorlevel 1 goto ErrorEnd
+shift
+goto CopyConfigFiles
 
 REM ***************************************************************************
 :Reload
@@ -719,6 +743,22 @@ if errorlevel 1 goto ERROR_Activate
 rem Do Config File Transfer
 if "%CFGFILES%" == "no" goto NoDoCfgFiles
 vecho /g /p /T %LANGFILE% DO_CFGFILES %TDRIVE%
+set FEXT=086
+vinfo /m
+if errorlevel 1 set FEXT=186
+if errorlevel 2 set FEXT=286
+if errorlevel 3 set FEXT=386
+if errorlevel 4 set FEXT=486
+if errorlevel 5 set FEXT=586
+if errorlevel 6 set FEXT=686
+if errorlevel 101 set FEXT=DBX
+if errorlevel 102 set FEXT=QEM
+if errorlevel 103 set FEXT=VBX
+if errorlevel 104 set FEXT=VMW
+if errorlevel 200 set FEXT=EMU
+verrlvl 0
+call %0 XFR FDAUTO FDCONFIG
+if errorlevel 1 goto ERROR_CfgFiles
 call %0 SUCCESS
 :NoDoCfgFiles
 
@@ -844,6 +884,12 @@ vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_Activate %TDRVID% %TPRTID%
 goto AbortExit
 
+:ERROR_CfgFiles
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_CfgFiles %TDRIVE%
+goto AbortExit
+
 :SuccessExit
 vecho /g /n /fGray /e
 vgotoxy /g eot right
@@ -903,6 +949,7 @@ set SEARCH=
 set XOPTS=
 set COPTS=
 set KERNL=
+set FEXT=
 
 rem Install variables
 set TDRIVE=
