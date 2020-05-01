@@ -202,22 +202,83 @@ goto DeleteFiles
 :CopyConfigFiles
 if "%2" == "" goto End
 set FIN=
+echo %TDOSDIR%|vstr /n/s %TDRIVE% C:|set /p FDOS=
 if "%2" == "FDAUTO" set FFILE=AUTOEXEC
 if "%2" == "FDCONFIG" set FFILE=CONFIG
 if "%2" == "FDAUTO" set FOUT=%2.BAT
 if "%2" == "FDCONFIG" set FOUT=%2.SYS
 if exist FREEDOS\CONFIGS\%FFILE%.%FEXT% set FIN=%FFILE%.%FEXT%
 if not "%FIN%" == "" goto DoCopyConfigFiles
-if exist FREEDOS\CONFIGS\%FFILE%.%FEXT% set FIN=%FFILE%.DEF
+if exist FREEDOS\CONFIGS\%FFILE%.DEF set FIN=%FFILE%.DEF
 if not "%FIN%" == "" goto DoCopyConfigFiles
+:CopyConfigFilesFail
 verrlvl 1
 goto CopyConfigFilesNext
+
 :DoCopyConfigFiles
-rem vecho /g "%_CWD%\%FIN% --> %TDRIVE%\%FOUT%"
+rem echo translate and copy %FIN% to %FOUT%
+rem set language variable
+type FREEDOS\CONFIGS\%FIN%|vstr /n/s $FLANG$ "%LANG%">%TEMP%\%2.TMP
+if errorlevel 1 goto CopyConfigFilesNext
+if not exist %TEMP%\%2.TMP goto CopyConfigFilesFail
+
+rem set lang_set insert (null)
+type %TEMP%\%2.TMP|vstr /n/s $LANG_SET$ "rem add language settings">%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set OS name and version
+type %TEMP%\%2.TMP|vstr /n/s $OSNAME$ %OS_NAME%>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+type %TEMP%\%2.TMP|vstr /n/s $OSVER$ %OS_VERSION%>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set dos drive
+type %TEMP%\%2.TMP|vstr /n/s $FDRIVE$ C:>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set dos directory
+type %TEMP%\%2.TMP|vstr /n/s $FTARGET$ "%FDOS%">%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set default menu
+type %TEMP%\%2.TMP|vstr /n/s $FDEFMENU$ 1>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set time zone
+type %TEMP%\%2.TMP|vstr /n/s $TZ$ EST>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem move into place
+copy /y %TEMP%\%2.TMP %TDRIVE%\%FOUT% >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.TMP >NUL
+
 :CopyConfigFilesNext
 set FFILE=
 set FOUT=
 set FIN=
+set FDOS=
 if errorlevel 1 goto ErrorEnd
 shift
 goto CopyConfigFiles
