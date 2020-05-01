@@ -47,12 +47,12 @@ SYS_FILES=Install new system boot files on drive /fWhite %1 /fGray /c32
 CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
 
 STATUS_MSG=Installation settings: /p
-STATUS_CPU=/r4/c32 Platform (CPU) /fWhite %1 /fGray
+STATUS_CPU=/r4/c32 Platform (CPU) /fWhite %1 /fGray (%2)
 STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray (%2:%3)
 STATUS_DOS=/r4/c32 Install path /fWhite %1 /fGray
 STATUS_BAK=/r4/c32 Backup previous OS /fWhite %1 /fGray
 STATUS_POS=/r4/c32 Previous OS directory /fWhite %1 /fGray
-STATUS_MBR=/r4/c32 Force new MBR /fWhite %1 /fGray
+STATUS_MBR=/r4/c32 Install new MBR /fWhite %1 /fGray
 STATUS_SYS=/r4/c32 Copy system files /fWhite %1 /fGray
 STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 
@@ -83,18 +83,24 @@ TRADEMARK=FreeDOS is a trademark of Jim Hall, 2001-$YEAR$
 # Help screen
 HELP_0="usage: SETUP.BAT [options] [target]"
 HELP_1=""
-HELP_2="[no options]    perform setup using defaults"
+HELP_2="  [no options]    perform setup using defaults"
 HELP_3=
-HELP_4="adv             start setup in advanced mode. (more prompting)"
+HELP_4="  adv             start setup in advanced mode. (more prompting)"
 HELP_5=
-HELP_6="auto            perform fully automated installation without any prompting." /p/r16/c32 "this is not recommended and should only be used on hardware" /p/r16/c32 "without a pre-existing operating system."
+HELP_6="  auto            perform fully automated installation without any prompting." /p/r18/c32 "this is not recommended and should only be used on hardware" /p/r18/c32 "without a pre-existing operating system."
 HELP_7=
-HELP_8="[target]        pre-set a drive and/or path for the target installation"
+HELP_8="  [target]        pre-set a drive and/or path for the target installation"
 HELP_9=
-HELP_10=/n
+HELP_10="  info            display installer config settings and exit"
+HELP_11=
+HELP_12="  mbr             force an update to the MBR and exit"
+HELP_13=
+HELP_14=/n
+HELP_15=/n
 
 # Error Messages
 ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray /c32
+ERROR_NoHDD=Unable to locate a partitioned and formatted hard disk drive.
 ERROR_MINOR=/fLightRed error: /fGray /c32
 ERROR_Option=Unknown or invalid command line option "`%1'."
 ERROR_NoCfgEnv=Unable to determine basic system configuration and path settings.

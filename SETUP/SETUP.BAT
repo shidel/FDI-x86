@@ -17,7 +17,6 @@ if "%1" == "XFR" goto CopyConfigFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
-
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
 if "%0" == "SETUP.BAT" goto GoodCWD
@@ -88,6 +87,11 @@ if "%2" == "adv" goto SetAdvanced
 if "%2" == "ADV" goto SetAdvanced
 if "%2" == "force" goto SetForced
 if "%2" == "FORCE" goto SetForced
+if "%2" == "info" goto SetInfoMode
+if "%2" == "INFO" goto SetInfoMode
+if "%2" == "mbr" goto SetMBRMode
+if "%2" == "MBR" goto SetMBRMode
+
 if exist FREEDOS\NLS\SETUP.%2 goto ChangeLangFile
 if "%1" == "PRELOAD" goto OptionPreLoad
 if "%TEMP%" == "" goto OptionPreLoad
@@ -147,10 +151,19 @@ goto OptionNext
 set FORCE=yes
 goto OptionNext
 
+:SetInfoMode
+set TMODE=INFO
+goto OptionNext
+
+:SetMBRMode
+if "%TMODE%" == "" set TMODE=MBR
+set FORCEMBR=yes
+goto OptionNext
+
 :ShowHelp
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% COPYRIGHT
-for %%i in (0 1 2 3 4 5 6 7 8 9 10) do vecho /g /T %LANGFILE% HELP_%%i
+for %%i in (0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) do vecho /g /T %LANGFILE% HELP_%%i
 vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
@@ -322,6 +335,7 @@ set CFGFILES=yes
 set XOPTS=/Y /R /H /Q
 set COPTS=/Y /B
 set KERNL=KERNL86.SYS
+set TMODE=
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -354,10 +368,20 @@ if errorlevel 101 set TCPU=DOSBox
 if errorlevel 102 set TCPU=QEMU
 if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
-if errorlevel 105 set TCPU=VM
+if errorlevel 105 set TCPU=Emulated
 
+set TTAGS=%TCPU%
+if not errorlevel 101 TTAGS=i%TTAGS%
+if errorlevel 101 set TTAGS=i686,%TTAGS%
+if errorlevel 105 goto TagsDone
+if not errorlevel 103 goto TagsDone
+set TTAGS=%TTAGS%,Network
+:TagsDone
+
+if not "%TMODE%" == "" goto PrintHeader
 rem Display Welcome Message and prompt to continue
 if "%ADVANCED%" == "no" goto Welcome
+:PrintHeader
 vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% COPYRIGHT %OS_NAME% %OS_VERSION%
@@ -366,6 +390,7 @@ vecho /g /T %LANGFILE% HRULE
 vecho /g
 
 :Welcome
+if not "%TMODE%" == "" goto TestDrive
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
@@ -387,6 +412,7 @@ if errorlevel 5 goto Format
 goto FileSystemTest
 
 :Partition
+if not "%TMODE%" == "" goto ERROR_NoHDD
 if "%AUTOMATIC%" == "yes" goto PartitionAuto
 if "%ADVANCED%" == "yes" goto PartitionManual
 
@@ -446,6 +472,7 @@ if errorlevel 1 goto ERROR_Partition
 goto NeedReboot
 
 :Format
+if not "%TMODE%" == "" goto ERROR_NoHDD
 vecho /g /T %LANGFILE% FORMAT %TDRIVE%
 if "%AUTOMATIC%" == "yes" goto FormatNormal
 if "%ADVANCED%" == "yes" goto FormatAdvanced
@@ -528,9 +555,8 @@ rem Reset installer language translation file
 set LANGFILE=
 call %0 LANG %LANG%
 
-rem Configure Target drive and directory (unused at present, can set from
-rem the command line)
 :SetTarget
+if not "%TMODE%" == "" goto TargetDone
 if "%AUTOMATIC%" == "yes" goto TargetCheck
 if "%ADVANCED%" == "no" goto TargetCheck
 vecho /g /p /n /T %LANGFILE% TARGET_ASK %OS_NAME% %OS_VERSION%
@@ -593,13 +619,16 @@ set BACKUP=no
 goto BackupDone
 
 :BackupQuery
+if not "%TMODE%" == "" goto BackupSet
 vecho /g /p /n /T %LANGFILE% BACKUP_OLD %TDRIVE%
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto BackupDisable
 
+:BackupSet
 set /e BACKUP=vfdutil /u %TDRIVE%\BACKUP.???
 if errorlevel 1 set /e BACKUP=vfdutil /u %TDRIVE%\FDBACKUP.???
+if not "%TMODE%" == "" goto BackupDone
 if errorlevel 1 goto BackupSelect
 
 if "%AUTOMATIC%" == "yes" goto BackupDone
@@ -625,7 +654,7 @@ goto BackupSelect
 if not "%TCPU%" == "DOSBox" goto AdvOptions
 set FORCEMBR=no
 :AdvOptions
-
+if not "%TMODE%" == "" goto NoAdvOptions
 if "%AUTOMATIC%" == "yes" goto NoAdvOptions
 if "%ADVANCED%" == "no" goto NoAdvOptions
 
@@ -685,25 +714,31 @@ goto ERROR_NoPartition
 :NoFindPartID
 
 REM ***************************************************************************
+if "%TMODE%" == "MBR" set FORCEMBR=yes
 
-rem Display Setings
+rem Display Settings
 :DisplaySettings
+if not "%TMODE%" == "" goto PrintSettings
 if "%ADVANCED%" == "no" goto InstallNow
-
+:PrintSettings
 vecho /p /g /T %LANGFILE% STATUS_MSG
-vecho /g /T %LANGFILE% STATUS_CPU %TCPU%
+vecho /g /T %LANGFILE% STATUS_CPU %TCPU% %TTAGS%
 vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE% %TDRVID% %TPRTID%
+vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
+if "%TMODE%" == "MBR" goto InstallNow
 vecho /g /T %LANGFILE% STATUS_DOS %TDOSDIR%
 vecho /g /T %LANGFILE% STATUS_BAK %BACKUP%
 vecho /g /T %LANGFILE% STATUS_POS %PREVOS%
-vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
 vecho /g /T %LANGFILE% STATUS_SYS %SYSFILES%
 vecho /g /T %LANGFILE% STATUS_CFG %CFGFILES%
 
 rem Reaty to Install, procede...
 :InstallNow
+vecho /g
+if "%TMODE%" == "INFO" goto Done
+if "%TMODE%" == "MBR" goto DoMBROnly
 
-vecho /g /p /T %LANGFILE% INSTALL_NOW %OS_NAME% %OS_VERSION%
+vecho /g /T %LANGFILE% INSTALL_NOW %OS_NAME% %OS_VERSION%
 vecho /g /n /T %LANGFILE% CONTINUE
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
@@ -788,7 +823,15 @@ goto ERROR_BootSector
 :DoSysFilesDone
 call %0 SUCCESS
 :NoDoSysFiles
+goto DoMBRUpdate
 
+:DoMBROnly
+vecho /g /n /T %LANGFILE% FORCE_MBR %TDRIVE%
+if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "no"  choice
+if errorlevel 2 goto UserAbortExit
+
+:DoMBRUpdate
 rem Do MBR Update
 if "%FORCEMBR%" == "no" goto NoDoForceMBR
 vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
@@ -804,7 +847,10 @@ rem Activate DOS Partition
 vecho /g /p /T %LANGFILE% DO_ACTIVATE %TDRVID% %TPRTID%
 %FDISK% /ACTIVATE:%TDRVID% %TPRTID% >NUL
 if errorlevel 1 goto ERROR_Activate
+call %0 SUCCESS
 :NoDoActivate
+
+if "%TMODE%" == "MBR" goto Done
 
 rem Do Config File Transfer
 if "%CFGFILES%" == "no" goto NoDoCfgFiles
@@ -855,7 +901,7 @@ goto AbortExit
 call %0 SUCCESS
 
 rem Extract Files
-vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TCPU%
+vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
 call %0 SUCCESS
 
 rem Add OS ID Tag File
@@ -878,49 +924,54 @@ goto Done
 REM ***************************************************************************
 
 :ERROR_Option
-vecho /g /N /T %LANGFILE% ERROR_MINOR
+vecho /p /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /T %LANGFILE% ERROR_Option %2
 goto ErrorEnd
 
 :ERROR_CfgBackup
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_CfgBackup
+goto AbortExit
+
+:ERROR_NoHDD
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /p /T %LANGFILE% ERROR_CfgBackup
+vecho /g /T %LANGFILE% ERROR_NoHDD
 goto AbortExit
 
 :ERROR_FileSystem
 rem set TTMP=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /p /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
 goto AbortExit
 
 :ERROR_Partition
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_Partition
 goto AbortExit
 
 :ERROR_NoPartition
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NoPartition %TDRIVE%
 goto AbortExit
 
 :ERROR_Format
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /p /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% FORMAT_ERROR %TDRIVE%
 goto AbortExit
 
 :ERROR_NoCfgEnv
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NoCfgEnv
 goto AbortExit
 
 :ERROR_NotFreeCOM
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_NotFreeCOM
 goto AbortExit
 
 :ERROR_MissingFreeCOM
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MissingFreeCOM
 goto AbortExit
 
@@ -1052,6 +1103,7 @@ rem Install variables
 set TDRIVE=
 set TDOSDIR=
 set TCPU=
+set TTAGS=
 set TSRC=
 set LAYOUT=
 set BACKUP=
@@ -1061,6 +1113,7 @@ set PREVOS=
 set FORCEMBR=
 set SYSFILES=
 set CFGFILES=
+set TMODE=
 
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
 set EXITCODE=
