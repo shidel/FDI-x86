@@ -64,6 +64,7 @@ DO_SYSFILES=Transfer new system files /fWhite %1 /fGray /s- .
 DO_FORCEMBR=Force update to MBR on drive /fWhite %1 /fGray /s- .
 DO_ACTIVATE=Set active boot partition to /fWhite %1 /fGray /s- : /fWhite %2 /fGray .
 DO_CFGFILES=Transfer new configuration files /fWhite %1 /fGray /s- .
+DO_PREPARE=Preparing to install executable files and utilities.
 DO_INSTALL=Install /fLightGreen %1 /fGray files for /fWhite %2 /fGray /s- .
 
 DONE_NOW=Installation of /fLightGreen %1 /fCyan %2 /fGray has completed.
@@ -114,3 +115,4 @@ ERROR_BootSector=Unable to update boot sector for drive %1.
 ERROR_MBRUpdate=Unable to update boot sector for drive %1.
 ERROR_Activate=Unable to set drive %1 to boot partition %2.
 ERROR_CfgFiles=Unable to install new configuration files on drive /fWhite %1 /fGray /s- .
+ERROR_XfrFiles=Unable to create duplicate installer files in /fWhite %1 /fGray /s- .

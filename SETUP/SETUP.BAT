@@ -16,6 +16,7 @@ if "%1" == "DEL" goto DeleteFiles
 if "%1" == "XFR" goto CopyConfigFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
+if "%1" == "EXTRACT" goto ExtractFiles
 
 if "%0" == "SETUP" goto GoodCWD
 if "%0" == "setup" goto GoodCWD
@@ -154,6 +155,10 @@ vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
 :MakeDirectory
+vfdutil /u %2\????????.$$$ >NUL
+if errorlevel 1 goto NeedDirectory
+goto End
+:NeedDirectory
 set /e PARENT=vfdutil /d %2
 vfdutil /u %PARENT%\????????.$$$ >NUL
 if errorlevel 1 goto ERROR_MakeDir
@@ -298,13 +303,13 @@ if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 :Configure
 set FDISK=%DOSDIR%\bin\fdisk131.exe
 if not exist %FDISK% set FDISK=%DOSDIR%\bin\fdisk.exe
-set SOURCE=%_CWD%
 set AUTOMATIC=no
 set ADVANCED=no
 set MSG=DEF
 set FORCE=no
 set TDRIVE=
 set TDOSDIR=
+set TSRC=%_CWD%
 set TTMP=
 set PREVOS=
 set LOADED=no
@@ -823,6 +828,32 @@ if errorlevel 1 goto ERROR_CfgFiles
 call %0 SUCCESS
 :NoDoCfgFiles
 
+rem Prepare to Extract Files
+vecho /g /p /T %LANGFILE% DO_PREPARE %OS_NAME% %TCPU%
+call %0 MKDIR %TDOSDIR%\BIN
+if errorlevel 1 goto ERROR_MakeDir
+call %0 MKDIR %TDOSDIR%\LINKS
+if errorlevel 1 goto ERROR_MakeDir
+call %0 MKDIR %TDOSDIR%\TEMP
+if errorlevel 1 goto ERROR_MakeDir
+set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
+
+copy /y SETUP.BAT %TEMP%\SETUP.BAT >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+set /e FEXT=vfdutil /e %LANGFILE%
+copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+
+vfdutil /c /p %TEMP%\
+if errorlevel 1 goto ERROR_XfrFiles
+
+set LANGFILE=%TEMP%\SETUP.%FEXT%
+%TEMP%\SETUP.BAT EXTRACT
+goto AbortExit
+
+:ExtractFiles
+call %0 SUCCESS
+
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TCPU%
 call %0 SUCCESS
@@ -951,6 +982,12 @@ vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_CfgFiles %TDRIVE%
 goto AbortExit
 
+:ERROR_XfrFiles
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_XfrFiles %TEMP%
+goto AbortExit
+
 :SuccessExit
 vecho /g /n /fGray /e
 vgotoxy /g eot right
@@ -992,7 +1029,6 @@ rmdir %TTMP% >NUL
 :NoTempSpace
 rem Internal and processing variables
 set LANGFILE=
-set SOURCE=
 set AUTOMATIC=
 set ADVANCED=
 set FORCE=
@@ -1016,6 +1052,7 @@ rem Install variables
 set TDRIVE=
 set TDOSDIR=
 set TCPU=
+set TSRC=
 set LAYOUT=
 set BACKUP=
 set LABEL=
