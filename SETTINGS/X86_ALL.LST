@@ -1,80 +1,113 @@
-; Package list for BASE only installation of FreeDOS.
+; Package list for ALL x86 Floppy Edition of FreeDOS.
 
-; This is the BASE package set. It contains the packages used Plain DOS system.
+; It contains the packages used Plain DOS system.
+
+# tags: +FreeDOS
+# tags: +8088,+8086,+186,+286,+386,+486,+586,+686
 
 base\kernel
-base\command
-base\jemm
-base\himemx
-base\fdisk
-base\format
-base\xcopy
-
-base\attrib
-base\chkdsk
 base\append
-base\assign
-base\choice
 base\comp
-base\cpidos
-base\ctmouse
-base\debug
-base\defrag
-base\deltree
 base\devload
+base\display
+base\mode
+base\nlsfunc
+base\cpidos
+base\debug
+base\fdisk
+
+# tags: -CGA
+util\v8power
+archiver\slicer
+# tags: +CGA
+
+util\callver
+base\welcome
+
+# Unknown, assumed to be fully compatible
+base\command
+base\format
+base\deltree
+base\attrib
+base\choice
+base\fc
+base\xcopy
+base\mem
+base\chkdsk
+base\assign
+base\defrag
 base\diskcomp
 base\diskcopy
-base\display
-base\dosfsck
 base\edit
 base\edlin
 base\exe2bin
 base\fc
-base\fdapm
 base\find
-base\fdxms
-base\fdxms286
 base\help
-base\keyb
-base\keyb_lay
 base\label
-base\lbacache
-base\mem
 base\mirror
 base\mkeyb
-base\mode
 base\more
 base\move
 base\nansi
-base\nlsfunc
 base\print
 base\recover
 base\replace
 base\share
-base\shsucdx
 base\sort
 base\swsubst
 base\tree
 base\undelete
 base\unformat
 base\graphics
-base\welcome
 
-; Not actually part of BASE, but installed with it.
-
-util\fdnpkg
-util\v8power
-util\fdimples
-archiver\unzip
-
-; Probably should always include these as well.
-
-archiver\zip
-util\udvd2
-util\callver
-util\cwsdpmi
-util\shsufdrv
-
-; Include custom release user assistance packages
+# tags: +assist
 
 $PKG_ASSIST$
+
+# tags: -assist
+
+# tags: -8086,-8088,-186
+
+base\fdxms286
+archiver\zip
+base\fdapm
+base\keyb
+base\keyb_lay
+base\ctmouse
+
+# tags: -286
+
+base\himemx
+base\jemm
+base\lbacache
+base\shsucdx
+archiver\unzip
+util\cwsdpmi
+base\fdxms
+util\udvd2
+util\shsufdrv
+base\dosfsck
+
+; Although FDIMPLES is compatible with a 8086, no point installing without
+; CD support. Which requires a 386 at present.
+util\fdimples
+
+; FDNPKG (i386+) contains the offline version of FDINST (8086+), not much
+; point installing without CD or Networking support.
+util\fdnpkg
+
+# tags: -386,-486,-586,-686
+
+# tags: +DOSBox
+# tags: -DOSBox
+
+# tags: +QEMU,+Emulated
+# tags: -QEMU,-Emulated
+
+# tags: +VirtualBox,+VMware
+# tags: -VirtualBox,-VMware
+
+# tags: +Network
+util\fdnet
+# tags: -Network

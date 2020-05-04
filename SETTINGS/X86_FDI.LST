@@ -10,6 +10,7 @@ base\format
 base\deltree
 base\devload
 base\attrib
+base\xcopy
 
 base\fdapm
 base\fc
