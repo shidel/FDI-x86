@@ -3,20 +3,20 @@
 ; These are that are on the FreeDOS x86 floppy only version.
 
 base\command
+base\attrib
 base\kernel
 base\fdisk
 base\format
 
 base\deltree
-base\devload
-base\attrib
 base\xcopy
-
-base\fdapm
 base\fc
 
 util\v8power
 archiver\slicer
 
 base\choice
+
+base\welcome
+base\fdapm
 

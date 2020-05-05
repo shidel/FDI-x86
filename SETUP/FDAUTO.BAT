@@ -24,10 +24,6 @@ alias shutdown=fdapm poweroff
 
 if "%1" == "ENV_ONLY" goto Done
 
-if exist %dosdir%\bin\ctmouse.exe loadhigh %dosdir%\bin\cdmouse.exe
-if exist %dosdir%\bin\lbacache.com loadhigh %dosdir%\bin\lbacache.com buf 20 flop
-
-if exist %dosdir%\bin\fdnet.bat call %dosdir%\bin\fdnet.bat start
 if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 
 if exist %DOSDIR%\BIN\FDBANNER.BAT call FDBANNER.BAT BOOT
