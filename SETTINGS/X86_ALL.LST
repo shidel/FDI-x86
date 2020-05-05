@@ -2,7 +2,7 @@
 
 ; It contains the packages used Plain DOS system.
 
-# tags: +FreeDOS
+# tags: +FreeDOS,+EGA,+VGA
 # tags: +8088,+8086,+186,+286,+386,+486,+586,+686
 
 base\kernel
