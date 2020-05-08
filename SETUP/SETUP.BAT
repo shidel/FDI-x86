@@ -377,6 +377,7 @@ if errorlevel 105 goto TagsDone
 if not errorlevel 103 goto TagsDone
 set TTAGS=%TTAGS%,Network
 :TagsDone
+set TTAGS=default,%TTAGS%,Network
 
 if not "%TMODE%" == "" goto PrintHeader
 rem Display Welcome Message and prompt to continue
