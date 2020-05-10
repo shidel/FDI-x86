@@ -308,8 +308,8 @@ if "%_CWD%" == "" goto ERROR_NotFreeCOM
 rem Reset Environment Variables using FDAUTO.BAT
 set AUTOFILE=
 set CFGFILE=
-if not exist %_CWD%\FDAUTO.BAT goto ERROR_MissingAUTOEXEC
-call %_CWD%\FDAUTO.BAT ENV_ONLY
+if not exist %_CWD%\$AUTOEXEC$ goto ERROR_MissingAUTOEXEC
+call %_CWD%\$AUTOEXEC$ ENV_ONLY
 if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
@@ -377,7 +377,6 @@ if errorlevel 105 goto TagsDone
 if not errorlevel 103 goto TagsDone
 set TTAGS=%TTAGS%,Network
 :TagsDone
-set TTAGS=default,%TTAGS%,Network
 
 if not "%TMODE%" == "" goto PrintHeader
 rem Display Welcome Message and prompt to continue
