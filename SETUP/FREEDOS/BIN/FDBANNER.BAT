@@ -138,5 +138,3 @@ SET BIT=
 SET WHEREY=
 
 :End
-
-:End
