@@ -1161,7 +1161,7 @@ rem Batch completed, shutdown
 :Done
 set EXITCODE=0
 
-if not "%FDONE%" == "" goto KeepSome
+if not "%TDONE%" == "" goto KeepSome
 :Cleanup
 if "%TTMP%" == "" goto NoTempSpace
 if not exist %TTMP%\NUL goto NoTempSpace
@@ -1208,14 +1208,14 @@ set SYSFILES=
 set CFGFILES=
 set TMODE=
 
-if not "%FDONE%" == "" goto WrapUp
+if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
 set EXITCODE=
 goto End
 
 :WrapUp
-if exist %DOSDIR%\BIN\FDWRAPUP.BAT %DOSDIR%\BIN\FDWRAPUP.BAT %FDONE%
-set FDONE=
+if exist %DOSDIR%\BIN\FDWRAPUP.BAT %DOSDIR%\BIN\FDWRAPUP.BAT %TDONE%
+set TDONE=
 goto Done
 
 rem Exit point
