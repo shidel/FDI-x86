@@ -9,6 +9,7 @@ rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 if "%1" == "YES" goto AnswerYes
 if "%1" == "NO" goto AnswerNo
 if "%1" == "DBACK" goto DOSBackup
+if "%1" == "ULST" goto UpdateLST
 if "%1" == "MKDIR" goto MakeDirectory
 if "%1" == "BBACK" goto BootBackup
 if "%1" == "CATTR" goto ClearAttributes
@@ -219,6 +220,16 @@ if errorlevel 1 goto ErrorEnd
 vprogres /fGreen %2 OF %3
 goto End
 
+:UpdateLST
+if "%2" == "" goto End
+if not exist %TDOSDIR%\PACKAGES\%4 goto NextLST
+type %TDOSDIR%\PACKAGES\%4 | vstr /n /s C:\FDOS "%TDOSDIR%">%TEMP%\%4
+xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
+:NextLST
+if errorlevel 1 goto ErrorEnd
+vprogres /fGreen %2 OF %3
+goto End
+
 :ClearAttributes
 if "%2" == "" goto End
 if exist %TDRIVE%\%2 attrib -r -s -h %TDRIVE%\%2 >NUL
@@ -263,13 +274,15 @@ if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
-rem set OS name and version
-type %TEMP%\%2.TMP|vstr /n/s $OSNAME$ %OS_NAME%>%TEMP%\%2.OUT
+rem set OS name
+type %TEMP%\%2.TMP|vstr /n/s $OS_NAME$ %OS_NAME%>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
-type %TEMP%\%2.TMP|vstr /n/s $OSVER$ %OS_VERSION%>%TEMP%\%2.OUT
+
+rem set OS version
+type %TEMP%\%2.TMP|vstr /n/s $OS_VERSION$ %OS_VERSION%>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
@@ -353,6 +366,7 @@ set COPTS=/Y /B
 set KERNL=KERNL86.SYS
 set TMODE=
 set OCPU=
+set TDONE=
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -750,6 +764,7 @@ if "%ADVANCED%" == "no" goto InstallNow
 :PrintSettings
 vecho /p /g /T %LANGFILE% STATUS_MSG
 vecho /g /T %LANGFILE% STATUS_CPU %TCPU% %TTAGS%
+vecho /g /T %LANGFILE% STATUS_FROM %TSRC%
 vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE% %TDRVID% %TPRTID%
 vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
 if "%TMODE%" == "MBR" goto InstallNow
@@ -914,15 +929,23 @@ call %0 MKDIR %TDOSDIR%\TEMP
 if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
 
+rem copy minimal for continuance, archive extraction and shutdown
+xcopy /y FREEDOS\BIN\VERSION.FDI %TEMP%\ >NUL
+if errorlevel 1 goto ERROR_XfrFiles
 xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+xxcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFiles
 xcopy /y SETUP.BAT %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFiles
 set /e FEXT=vfdutil /e %LANGFILE%
 xcopy /y %LANGFILE% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFiles
+set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
 
-vfdutil /c /p %TEMP%\
+vfdutil /c /p %TDOSDIR%\
 if errorlevel 1 goto ERROR_XfrFiles
 
 set /e FEXT=vfdutil /e %LANGFILE%
@@ -935,9 +958,32 @@ call %0 SUCCESS
 
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
+
+:Diskette
+vfdutil /u %TSRC%\????????.??? >nul
+if errorlevel 1 goto InsertDiskette
+if not exist %TSRC%\FREEDOS.SAF goto InsertDiskette
+
+slicer /qoxf %TSRC%\FREEDOS.SAF /g %TTAGS%
+if errorlevel 1 goto ERROR_SAF
+
 call %0 SUCCESS
 
+rem Update List files
+if "%TDOSDIR%" == "C:\FDOS" goto NoLstUpdate
+
+vecho /g /p /T %LANGFILE% UPDATE_LST
+veach /D %TDOSDIR%\PACKAGES\*.LST /X %0 ULST @ # *
+call %0 SUCCESS
+
+:NoLstUpdate
+
 rem Add OS ID Tag File
+xcopy /y %TEMP%\VERSION.FDI %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+
+set DOSDIR=%TDOSDIR%
+set COMSPEC=%DOSDIR%\BIN\COMMAND.COM
 
 rem Done Reboot
 
@@ -946,13 +992,18 @@ vecho /g /p /T %LANGFILE% DONE_NOW %OS_NAME% %OS_VERSION%
 vecho /g /p /n /T %LANGFILE% REBOOT_NOW
 if "%AUTOMATIC%" == "yes" call %0 YES
 if "%AUTOMATIC%" == "no"  choice
-if errorlevel 2 goto NoDoReboot
+set TDONE=REBOOT
+if errorlevel 2 set TDONE=CMD
 
-vecho /g /p /T %LANGFILE% REMOVE_MEDIA
-
-:NoDoReboot
 vecho /g
 goto Done
+
+:InsertDiskette
+vecho /q /p /T %LANGFILE% INSERT_DISK 2 FREEDOS-D01 %TSRC%
+if "%AUTOMATIC%" == "yes" vpause /D10 CTRL-C
+if "%AUTOMATIC%" == "no" vpause CTRL-C
+if errorlevel 200 goto UserAbortExit
+goto Diskette
 
 REM ***************************************************************************
 
@@ -976,6 +1027,13 @@ rem set TTMP=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
+goto AbortExit
+
+:ERROR_SAF
+rem set TTMP=
+vecho /g /r2 /c32 /T %LANGFILE% FAILED
+vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /T %LANGFILE% ERROR_SAF %TSRC%\FREEDOS.SAF
 goto AbortExit
 
 :ERROR_Partition
@@ -1103,6 +1161,7 @@ rem Batch completed, shutdown
 :Done
 set EXITCODE=0
 
+if not "%FDONE%" == "" goto KeepSome
 :Cleanup
 if "%TTMP%" == "" goto NoTempSpace
 if not exist %TTMP%\NUL goto NoTempSpace
@@ -1112,6 +1171,8 @@ rmdir %TTMP% >NUL
 
 :NoTempSpace
 rem Internal and processing variables
+set TTMP=
+:KeepSome
 set LANGFILE=
 set AUTOMATIC=
 set ADVANCED=
@@ -1122,7 +1183,6 @@ set VAL=
 set VALD=
 set VALP=
 set MSG=
-set TTMP=
 set LOADED=
 set REPLY=
 set PAERNT=
@@ -1148,8 +1208,15 @@ set SYSFILES=
 set CFGFILES=
 set TMODE=
 
+if not "%FDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
 set EXITCODE=
+goto End
+
+:WrapUp
+if exist %DOSDIR%\BIN\FDWRAPUP.BAT %DOSDIR%\BIN\FDWRAPUP.BAT %FDONE%
+set FDONE=
+goto Done
 
 rem Exit point
 :End

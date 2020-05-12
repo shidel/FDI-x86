@@ -28,6 +28,8 @@ FORMAT_DEF=Do you want to format your drive /c32
 FORMAT_ADV=How do you want to format your drive /s- /c32 ( /fWhite F /fGray ull, /c32 /fWhite Q /fGray uick, /c32 /fWhite N /fGray o) /c32
 
 FILESYSTEM_TEST=Testing filesystem on drive /fWhite %1 /s- /fGray .
+INSERT_DISKETTE=Insert diskette /fWhite #%1 /fGray (%2) in /fWhite %3 /s- /fGray .
+PRESS_KEY=Press a key to continue.
 
 TARGET_ASK=Where do you wish to install /fLightGreen %1 /s- /fGray ? /c32
 TARGET_PROMPT=/fWhite /bBlue %1
@@ -48,8 +50,9 @@ CFG_FILES=Replace system configuration files on drive /fWhite %1 /fGray /c32
 
 STATUS_MSG=Installation settings: /p
 STATUS_CPU=/r4/c32 Platform (CPU) /fWhite %1 /fGray (%2)
+STATUS_FROM=/r4/c32 Install from /fWhite %1 /fGray
 STATUS_DRV=/r4/c32 Destination drive /fWhite %1 /fGray (%2:%3)
-STATUS_DOS=/r4/c32 Install path /fWhite %1 /fGray
+STATUS_DOS=/r4/c32 Install DOS path /fWhite %1 /fGray
 STATUS_BAK=/r4/c32 Backup previous OS /fWhite %1 /fGray
 STATUS_POS=/r4/c32 Previous OS directory /fWhite %1 /fGray
 STATUS_MBR=/r4/c32 Install new MBR /fWhite %1 /fGray
@@ -122,3 +125,4 @@ ERROR_MBRUpdate=Unable to update boot sector for drive %1.
 ERROR_Activate=Unable to set drive %1 to boot partition %2.
 ERROR_CfgFiles=Unable to install new configuration files on drive /fWhite %1 /fGray /s- .
 ERROR_XfrFiles=Unable to create duplicate installer files in /fWhite %1 /fGray /s- .
+ERROR_SAF=Problem occured while extracting /fWhite %1 /fGray archive.
