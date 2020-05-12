@@ -91,6 +91,18 @@ if "%2" == "info" goto SetInfoMode
 if "%2" == "INFO" goto SetInfoMode
 if "%2" == "mbr" goto SetMBRMode
 if "%2" == "MBR" goto SetMBRMode
+if "%2" == "8086" goto OptionCPU
+if "%2" == "186" goto OptionCPU
+if "%2" == "286" goto OptionCPU
+if "%2" == "386" goto OptionCPU
+if "%2" == "486" goto OptionCPU
+if "%2" == "586" goto OptionCPU
+if "%2" == "686" goto OptionCPU
+if "%2" == "DBX" goto OptionCPU
+if "%2" == "QEM" goto OptionCPU
+if "%2" == "VBX" goto OptionCPU
+if "%2" == "VMW" goto OptionCPU
+if "%2" == "EMU" goto OptionCPU
 
 if exist FREEDOS\NLS\SETUP.%2 goto ChangeLangFile
 if "%1" == "PRELOAD" goto OptionPreLoad
@@ -109,6 +121,10 @@ set /e VALP=vfdutil /p %VAL%\
 vfdutil /x /d %VALD%
 if errorlevel 3 goto OptionDrive
 goto ERROR_Option
+
+:OptionCPU
+set OCPU=%2
+goto OptionNext
 
 :OptionDrive
 if not "%VALD%" == "" set TDRIVE=%VALD%
@@ -336,6 +352,7 @@ set XOPTS=/Y /R /H /Q
 set COPTS=/Y /B
 set KERNL=KERNL86.SYS
 set TMODE=
+set OCPU=
 
 rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
@@ -370,6 +387,16 @@ if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
 if errorlevel 105 set TCPU=Emulated
 
+if "%OCPU%" == "" NoOverrideCPU
+verrlvl 1
+set TCPU=%OCPU%
+if "%TCPU%" == "DBX" verrlvl 101
+if "%TCPU%" == "QEM" verrlvl 102
+if "%TCPU%" == "VBX" verrlvl 103
+if "%TCPU%" == "VMW" verrlvl 104
+if "%TCPU%" == "EMU" verrlvl 200
+
+:NoOverrideCPU
 set TTAGS=%TCPU%
 if not errorlevel 101 TTAGS=i%TTAGS%
 if errorlevel 101 set TTAGS=i686,%TTAGS%
@@ -868,6 +895,9 @@ if errorlevel 102 set FEXT=QEM
 if errorlevel 103 set FEXT=VBX
 if errorlevel 104 set FEXT=VMW
 if errorlevel 200 set FEXT=EMU
+
+if not "%OCPU%" == "" FEXT=%OCPU%
+
 verrlvl 0
 call %0 XFR FDAUTO FDCONFIG
 if errorlevel 1 goto ERROR_CfgFiles
