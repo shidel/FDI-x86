@@ -914,15 +914,18 @@ call %0 MKDIR %TDOSDIR%\TEMP
 if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
 
-copy /y SETUP.BAT %TEMP%\SETUP.BAT >NUL
+xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFiles
+xcopy /y SETUP.BAT %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFiles
 set /e FEXT=vfdutil /e %LANGFILE%
-copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
+xcopy /y %LANGFILE% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFiles
 
 vfdutil /c /p %TEMP%\
 if errorlevel 1 goto ERROR_XfrFiles
 
+set /e FEXT=vfdutil /e %LANGFILE%
 set LANGFILE=%TEMP%\SETUP.%FEXT%
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
