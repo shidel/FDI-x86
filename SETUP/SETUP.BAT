@@ -448,8 +448,8 @@ if "%TCPU%" == "DOSBox" goto FileSystemTest
 if "%TCPU%" == "DBX" goto FileSystemTest
 
 rem Possible no pipe support yet, so uberdumb partition testing mode.
-rem vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
-rem if not errorlevel 1 goto FileSystemTest
+vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
+if not errorlevel 1 goto FileSystemTest
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
