@@ -337,8 +337,8 @@ if "%_CWD%" == "" goto ERROR_NotFreeCOM
 rem Reset Environment Variables using FDAUTO.BAT
 set AUTOFILE=
 set CFGFILE=
-if not exist %_CWD%\$AUTOEXEC$ goto ERROR_MissingAUTOEXEC
-call %_CWD%\$AUTOEXEC$ ENV_ONLY
+if not exist %_CWD%\FDAUTO.BAT goto ERROR_MissingAUTOEXEC
+call %_CWD%\FDAUTO.BAT ENV_ONLY
 if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
@@ -401,7 +401,7 @@ if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
 if errorlevel 105 set TCPU=Emulated
 
-if "%OCPU%" == "" NoOverrideCPU
+if "%OCPU%" == "" goto NoOverrideCPU
 verrlvl 1
 set TCPU=%OCPU%
 if "%TCPU%" == "DBX" verrlvl 101
@@ -412,7 +412,7 @@ if "%TCPU%" == "EMU" verrlvl 200
 
 :NoOverrideCPU
 set TTAGS=%TCPU%
-if not errorlevel 101 TTAGS=i%TTAGS%
+if not errorlevel 101 set TTAGS=i%TTAGS%
 if errorlevel 101 set TTAGS=i686,%TTAGS%
 if errorlevel 105 goto TagsDone
 if not errorlevel 103 goto TagsDone
@@ -444,9 +444,12 @@ vecho /g
 
 rem Test Drive State
 :TestDrive
+if "%TCPU%" == "DOSBox" goto FileSystemTest
+if "%TCPU%" == "DBX" goto FileSystemTest
+
 rem Possible no pipe support yet, so uberdumb partition testing mode.
-vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
-if not errorlevel 1 goto FileSystemTest
+rem vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
+rem if not errorlevel 1 goto FileSystemTest
 vinfo /d %TDRIVE%
 if errorlevel 15 goto Partition
 if errorlevel 5 goto Format
@@ -508,6 +511,7 @@ vecho /g
 vdelay 1000
 
 :PartitionManual
+vcls /g /fGray /bBlack
 %FDISK% %TDRVID%
 if errorlevel 1 goto ERROR_Partition
 goto NeedReboot
@@ -740,16 +744,16 @@ set TPRTID=0
 set TDRVID=0
 if "%TCPU%" == "DOSBox" goto NoFindPartID
 set TDRVID=1
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+%FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
 if not "%TPRTID%" == "" goto NoFindPartID
 set TDRVID=2
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+%FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
 if not "%TPRTID%" == "" goto NoFindPartID
 set TDRVID=3
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+%FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
 if not "%TPRTID%" == "" goto NoFindPartID
 set TDRVID=4
-%FDISK% %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
+%FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
 if not "%TPRTID%" == "" goto NoFindPartID
 goto ERROR_NoPartition
 :NoFindPartID
@@ -877,7 +881,7 @@ if errorlevel 2 goto UserAbortExit
 rem Do MBR Update
 if "%FORCEMBR%" == "no" goto NoDoForceMBR
 vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
-sys /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
+sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
 if errorlevel 1 goto ERROR_BootSector
 %FDISK% /MBR %TDRVID% >NUL
 if errorlevel 1 goto ERROR_MBRUpdate
@@ -887,9 +891,15 @@ call %0 SUCCESS
 if "%TCPU%" == "DOSBox" goto NoDoActivate
 rem Activate DOS Partition
 vecho /g /p /T %LANGFILE% DO_ACTIVATE %TDRVID% %TPRTID%
-%FDISK% /ACTIVATE:%TDRVID% %TPRTID% >NUL
+%FDISK% /ACTIVATE:%TPRTID% %TDRVID% >NUL
+if errorlevel 1 goto TryAlternate
+call %0 SUCCESS
+goto NoDoActivate
+:TryAlternate
+fdisk /ACTIVATE:%TPRTID% %TDRVID% >NUL
 if errorlevel 1 goto ERROR_Activate
 call %0 SUCCESS
+
 :NoDoActivate
 
 if "%TMODE%" == "MBR" goto Done
@@ -1114,9 +1124,9 @@ goto AbortExit
 
 :ERROR_Activate
 call %0 FAIL
-vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_Minor
 vecho /g /N /T %LANGFILE% ERROR_Activate %TDRVID% %TPRTID%
-goto AbortExit
+goto NoDoActivate
 
 :ERROR_CfgFiles
 call %0 FAIL
@@ -1146,6 +1156,7 @@ goto ErrorEnd
 :UserAbortExit
 
 :AbortExit
+
 vecho /g /p /T %LANGFILE% ABORTED %OS_NAME% %OS_VERSION%
 
 :ErrorExit
