@@ -343,8 +343,10 @@ if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
 :Configure
-set FDISK=%DOSDIR%\bin\fdisk131.exe
-if not exist %FDISK% set FDISK=%DOSDIR%\bin\fdisk.exe
+rem new FDISK has some exit code and other issues.
+rem set FDISK=%DOSDIR%\bin\fdisk131.exe
+rem if not exist %FDISK%
+set FDISK=%DOSDIR%\bin\fdisk.exe
 set AUTOMATIC=no
 set ADVANCED=no
 set MSG=DEF
