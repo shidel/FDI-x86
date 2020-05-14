@@ -1019,7 +1019,7 @@ goto Done
 vecho /g /p /T %LANGFILE% INSERT_DISKETTE 2 x86-DSK1 %TSRC%
 if "%AUTOMATIC%" == "yes" vpause /D10 CTRL-C
 if "%AUTOMATIC%" == "no" vpause CTRL-C
-if errorlevel 200 goto UserAbortExit
+if errorlevel 200 goto LateAbortExit
 goto Diskette
 
 REM ***************************************************************************
@@ -1171,6 +1171,10 @@ vgotoxy /g eot right
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /g
 goto ErrorEnd
+
+:LateAbortExit
+cd \
+vfdutil /c /p %TSRC%\ >NUL
 
 :UserAbortExit
 

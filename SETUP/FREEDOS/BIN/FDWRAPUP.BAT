@@ -24,6 +24,7 @@ alias reboot=%DOSDIR%\BIN\fdapm warmboot
 alias reset=%DOSDIR%\BIN\fdisk /reboot
 alias halt=%DOSDIR%\BIN\fdapm poweroff
 alias shutdown=%DOSDIR%\BIN\fdapm poweroff
-%comspec% %DOSDIR%\BIN /E:1024 /P
+cd \
+%comspec% %DOSDIR%\BIN /E:1024 /P=%DOSDIR%\BIN\FDWRAPUP.BAT
 
 :End
