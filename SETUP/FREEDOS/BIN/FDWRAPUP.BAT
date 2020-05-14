@@ -15,9 +15,10 @@ set TTMP=
 if "%1" == "CMD" goto NoReboot
 vpause /d 1 POSTAL
 :NoReboot
+vecho /g /p /fWhite Warning: you should reboot as soon as possible. /fGray /p
 set TEMP=%DOSDIR%\TEMP
 set PARENT=
-set EXITCODE=0
+set EXITCODE=
 set AUTOFILE=C:\$AUTOEXEC$
 set CFGFILE=C:\$CONFIG$
 alias reboot=%DOSDIR%\BIN\fdapm warmboot
