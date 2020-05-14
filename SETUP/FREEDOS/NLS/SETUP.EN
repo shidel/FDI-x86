@@ -60,7 +60,7 @@ STATUS_SYS=/r4/c32 Copy system files /fWhite %1 /fGray
 STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 
 INSTALL_NOW=We are now ready to install /fLightGreen %1 /fCyan %2 /fGray /s- .
-EXTRACTION=/fLightGreen %1 /fCyan %2 /fGray /s- file extraction.
+EXTRACTION=/fLightGreen %1 /fCyan %2 /fGray file extraction.
 UPDATE_LST=Update package listing files. /p
 
 DO_BACKUP=Creating backup of previous OS files to /fWhite %1 /fGray /s- .

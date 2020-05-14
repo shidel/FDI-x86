@@ -66,7 +66,7 @@ set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto LangFileDone
 
 :SetEnglish
-set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
+set LANGFILE=FREEDOS\NLS\SETUP.EN
 if exist %LANGFILE% goto LangFileDone
 set LANGFILE=%0.BAT
 if exist %LANGFILE% goto LangFileDone
@@ -986,7 +986,7 @@ if not exist %TSRC%\FREEDOS.SAF goto InsertDiskette
 slicer /qoxf %TSRC%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
-vecho /g /p /p %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
+vecho /g /p /p /T %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
 call %0 SUCCESS
 
 rem Update List files
