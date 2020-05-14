@@ -61,7 +61,7 @@ STATUS_CFG=/r4/c32 Copy config files /fWhite %1 /fGray
 
 INSTALL_NOW=We are now ready to install /fLightGreen %1 /fCyan %2 /fGray /s- .
 EXTRACTION=/fLightGreen %1 /fCyan %2 /fGray /s- file extraction.
-UPDATE_LST=Update package listing files.
+UPDATE_LST=Update package listing files. /p
 
 DO_BACKUP=Creating backup of previous OS files to /fWhite %1 /fGray /s- .
 DO_ERASE=Delete old /fWhite %1 /fGray directory and files.
@@ -107,7 +107,7 @@ HELP_15=/n
 ERROR_CRITICAL=/fLightRed CRITICAL error: /fGray /c32
 ERROR_NoHDD=Unable to locate a partitioned and formatted hard disk drive.
 ERROR_MINOR=/fLightRed error: /fGray /c32
-ERROR_Option=Unknown or invalid command line option /s- "` /fWhite %1 /fGray '."
+ERROR_Option=Unknown or invalid command line option /s- "`" /fWhite %1 /fGray "'."
 ERROR_NoCfgEnv=Unable to determine basic system configuration and path settings.
 ERROR_NotFreeCOM=This batch file requires the FreeCOM or compatible shell for FreeDOS.
 ERROR_MissingFreeCOM=Unable to locate FreeDOS's command shell FreeCOM.

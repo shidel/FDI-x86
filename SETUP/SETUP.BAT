@@ -986,7 +986,7 @@ if not exist %TSRC%\FREEDOS.SAF goto InsertDiskette
 slicer /qoxf %TSRC%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
-vecho /g /p /p %LANGFILE% EXTRACTIO %OS_NAME% %OS_VERSION%
+vecho /g /p /p %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
 call %0 SUCCESS
 
 rem Update List files
