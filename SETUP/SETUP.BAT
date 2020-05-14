@@ -944,7 +944,7 @@ xcopy /y FREEDOS\VERSION.FDI %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xxcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
+xcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
