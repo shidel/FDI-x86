@@ -1124,7 +1124,7 @@ goto AbortExit
 
 :ERROR_Activate
 call %0 FAIL
-vecho /g /N /T %LANGFILE% ERROR_Minor
+vecho /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /N /T %LANGFILE% ERROR_Activate %TDRVID% %TPRTID%
 goto NoDoActivate
 
