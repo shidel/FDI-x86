@@ -547,6 +547,7 @@ goto FormatDone
 
 :FormatDone
 if errorlevel 1 goto ERROR_Format
+vecho /g
 
 REM ***************************************************************************
 
