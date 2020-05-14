@@ -15,6 +15,15 @@ set TTMP=
 if "%1" == "CMD" goto NoReboot
 vpause /d 1 POSTAL
 :NoReboot
-%comspec% \%DOSDIR%\BIN /E:1024 /P
+set TEMP=%DOSDIR%\TEMP
+set PARENT=
+set EXITCODE=0
+set AUTOFILE=C:\$AUTOEXEC$
+set CFGFILE=C:\$CONFIG$
+alias reboot=%DOSDIR%\BIN\fdapm warmboot
+alias reset=%DOSDIR%\BIN\fdisk /reboot
+alias halt=%DOSDIR%\BIN\fdapm poweroff
+alias shutdown=%DOSDIR%\BIN\fdapm poweroff
+%comspec% %DOSDIR%\BIN /E:1024 /P
 
 :End

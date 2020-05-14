@@ -296,7 +296,7 @@ del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
 rem set dos directory
-type %TEMP%\%2.TMP|vstr /n/s $FTARGET$ "%FDOS%">%TEMP%\%2.OUT
+type %TEMP%\%2.TMP|vstr /n/s $FTARGET$ "%TDOSDIR%">%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
@@ -389,18 +389,6 @@ REM ***************************************************************************
 
 set TCPU=8086
 vinfo /M
-if errorlevel 1 set TCPU=186
-if errorlevel 2 set TCPU=286
-if errorlevel 3 set TCPU=386
-if errorlevel 4 set TCPU=486
-if errorlevel 5 set TCPU=586
-if errorlevel 6 set TCPU=686
-if errorlevel 101 set TCPU=DOSBox
-if errorlevel 102 set TCPU=QEMU
-if errorlevel 103 set TCPU=VirtualBox
-if errorlevel 104 set TCPU=VMware
-if errorlevel 105 set TCPU=Emulated
-
 if "%OCPU%" == "" goto NoOverrideCPU
 verrlvl 1
 set TCPU=%OCPU%
@@ -410,10 +398,22 @@ if "%TCPU%" == "VBX" verrlvl 103
 if "%TCPU%" == "VMW" verrlvl 104
 if "%TCPU%" == "EMU" verrlvl 200
 
+if errorlevel 1 set TCPU=186
+if errorlevel 2 set TCPU=286
+if errorlevel 3 set TCPU=386
+if errorlevel 4 set TCPU=486
+if errorlevel 5 set TCPU=586
+if errorlevel 6 set TCPU=686
 :NoOverrideCPU
+if errorlevel 101 set TCPU=DOSBox
+if errorlevel 102 set TCPU=QEMU
+if errorlevel 103 set TCPU=VirtualBox
+if errorlevel 104 set TCPU=VMware
+if errorlevel 105 set TCPU=Emulated
+
 set TTAGS=%TCPU%
-if not errorlevel 101 set TTAGS=i%TTAGS%
-if errorlevel 101 set TTAGS=i686,%TTAGS%
+if not errorlevel 101 set TTAGS=%TTAGS%
+if errorlevel 101 set TTAGS=686,%TTAGS%
 if errorlevel 105 goto TagsDone
 if not errorlevel 103 goto TagsDone
 set TTAGS=%TTAGS%,Network
@@ -948,6 +948,8 @@ xcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
+xcopy /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y SETUP.BAT %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set /e FEXT=vfdutil /e %LANGFILE%
@@ -1009,7 +1011,7 @@ vecho /g
 goto Done
 
 :InsertDiskette
-vecho /q /p /T %LANGFILE% INSERT_DISK 2 FREEDOS-D01 %TSRC%
+vecho /g /p /T %LANGFILE% INSERT_DISKETTE 2 x86-DSK1 %TSRC%
 if "%AUTOMATIC%" == "yes" vpause /D10 CTRL-C
 if "%AUTOMATIC%" == "no" vpause CTRL-C
 if errorlevel 200 goto UserAbortExit
