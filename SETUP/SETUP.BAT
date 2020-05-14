@@ -940,23 +940,23 @@ if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
 
 rem copy minimal for continuance, archive extraction and shutdown
-xcopy /y FREEDOS\BIN\VERSION.FDI %TEMP%\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+xcopy /y FREEDOS\VERSION.FDI %TEMP%\ >NUL
+if errorlevel 1 goto ERROR_XfrFilesTEMP
 xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_XfrFilesDOS
 xxcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y SETUP.BAT %TEMP%\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_XfrFilesTEMP
 set /e FEXT=vfdutil /e %LANGFILE%
 xcopy /y %LANGFILE% %TEMP%\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_XfrFilesTEMP
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
 
 vfdutil /c /p %TDOSDIR%\
-if errorlevel 1 goto ERROR_XfrFiles
+if errorlevel 1 goto ERROR_WTF
 
 set /e FEXT=vfdutil /e %LANGFILE%
 set LANGFILE=%TEMP%\SETUP.%FEXT%
@@ -989,8 +989,8 @@ call %0 SUCCESS
 :NoLstUpdate
 
 rem Add OS ID Tag File
-xcopy /y %TEMP%\VERSION.FDI %TDOSDIR%\BIN\ >NUL
-if errorlevel 1 goto ERROR_XfrFiles
+xcopy /y %TEMP%\VERSION.FDI %TDOSDIR%\ >NUL
+if errorlevel 1 goto ERROR_XfrFilesDOS
 
 set DOSDIR=%TDOSDIR%
 set COMSPEC=%DOSDIR%\BIN\COMMAND.COM
@@ -1134,10 +1134,22 @@ vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_CfgFiles %TDRIVE%
 goto AbortExit
 
-:ERROR_XfrFiles
+:ERROR_XfrFilesDOS
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_XfrFiles %TDOSDIR%
+goto AbortExit
+
+:ERROR_XfrFilesTEMP
 call %0 FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_XfrFiles %TEMP%
+goto AbortExit
+
+:ERROR_WTF
+call %0 FAIL
+vecho /g /N /T %LANGFILE% ERROR_CRITICAL
+vecho /g /N /T %LANGFILE% ERROR_WTF
 goto AbortExit
 
 :SuccessExit
