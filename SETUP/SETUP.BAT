@@ -928,7 +928,7 @@ if errorlevel 103 set FEXT=VBX
 if errorlevel 104 set FEXT=VMW
 if errorlevel 200 set FEXT=EMU
 
-if not "%OCPU%" == "" FEXT=%OCPU%
+if not "%OCPU%" == "" set FEXT=%OCPU%
 
 verrlvl 0
 call %0 XFR FDAUTO FDCONFIG
