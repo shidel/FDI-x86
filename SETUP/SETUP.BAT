@@ -484,12 +484,12 @@ if errorlevel 1 goto NoPartitionAuto
 if errorlevel 1 goto NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
-vecho /g /n /T %LANGFILE% PARTITION_MBR %TDRIVE%
+vecho /g /p /n /T %LANGFILE% PARTITION_MBR %TDRIVE%
 %FDISK% /mbr %TDRVID% >NUL
 if errorlevel 1 goto NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
-vecho /g /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
+vecho /g /p /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
 %FDISK% /activate:1 %TDRVID% >NUL
 if not errorlevel 1 goto AutoPartitioned
 fdisk /ACTIVATE:1 %TDRVID% >NUL
