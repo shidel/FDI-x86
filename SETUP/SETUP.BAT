@@ -392,7 +392,7 @@ REM ***************************************************************************
 set TCPU=8086
 vinfo /M
 if "%OCPU%" == "" goto NoOverrideCPU
-verrlvl 1
+verrlvl 0
 set TCPU=%OCPU%
 if "%TCPU%" == "DBX" verrlvl 101
 if "%TCPU%" == "QEM" verrlvl 102
@@ -400,13 +400,13 @@ if "%TCPU%" == "VBX" verrlvl 103
 if "%TCPU%" == "VMW" verrlvl 104
 if "%TCPU%" == "EMU" verrlvl 200
 
+:NoOverrideCPU
 if errorlevel 1 set TCPU=186
 if errorlevel 2 set TCPU=286
 if errorlevel 3 set TCPU=386
 if errorlevel 4 set TCPU=486
 if errorlevel 5 set TCPU=586
 if errorlevel 6 set TCPU=686
-:NoOverrideCPU
 if errorlevel 101 set TCPU=DOSBox
 if errorlevel 102 set TCPU=QEMU
 if errorlevel 103 set TCPU=VirtualBox
