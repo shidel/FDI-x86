@@ -518,8 +518,9 @@ vdelay 1000
 
 :PartitionManual
 vcls /g /fGray /bBlack
-echo NOTICE: FAT16 partition under 2Gb is needed for KERNL86.   
-vdelay 2000
+vecho /g /t %LANGFILE% PARTITION_WARN
+vecho /g /n /t %LANGFILE% PRESS_KEY
+vpause /t 5
 %FDISK% %TDRVID%
 if errorlevel 1 goto ERROR_Partition
 goto NeedReboot
