@@ -22,7 +22,7 @@ archiver\slicer
 # tags: +CGA
 
 util\callver
-base\welcome
+base\fdhelper
 
 util\fdimples
 
