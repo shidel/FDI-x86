@@ -15,6 +15,9 @@ base\nlsfunc
 base\cpidos
 base\debug
 base\fdisk
+base\fdhelper
+base\ambhelp
+util\ambread
 
 # tags: -CGA
 util\v8power
@@ -45,7 +48,7 @@ base\edlin
 base\exe2bin
 base\fc
 base\find
-base\help
+; base\help
 base\label
 base\mirror
 base\mkeyb
