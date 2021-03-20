@@ -399,6 +399,13 @@ if "%TCPU%" == "QEM" verrlvl 102
 if "%TCPU%" == "VBX" verrlvl 103
 if "%TCPU%" == "VMW" verrlvl 104
 if "%TCPU%" == "EMU" verrlvl 200
+if "%TCPU%" == "686" verrlvl 6
+if "%TCPU%" == "586" verrlvl 5
+if "%TCPU%" == "486" verrlvl 4
+if "%TCPU%" == "386" verrlvl 3
+if "%TCPU%" == "286" verrlvl 2
+if "%TCPU%" == "186" verrlvl 1
+if "%TCPU%" == "8086" verrlvl 0
 
 :NoOverrideCPU
 if errorlevel 1 set TCPU=186
