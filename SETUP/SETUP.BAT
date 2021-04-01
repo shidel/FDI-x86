@@ -408,9 +408,10 @@ if "%TCPU%" == "186" verrlvl 1
 if "%TCPU%" == "8086" verrlvl 0
 
 :NoOverrideCPU
-if errorlevel 1 set TCPU=186
-if errorlevel 2 set TCPU=286
-if errorlevel 3 set TCPU=386
+REM if errorlevel 1 set TCPU=186
+REM if errorlevel 2 set TCPU=286
+REM if errorlevel 3 set TCPU=386
+if errorlevel 1 set TCPU=386
 if errorlevel 4 set TCPU=486
 if errorlevel 5 set TCPU=586
 if errorlevel 6 set TCPU=686
