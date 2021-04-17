@@ -354,6 +354,7 @@ set FORCE=no
 set TDRIVE=
 set TDOSDIR=
 set TSRC=%_CWD%
+if exist %TSRC%\SLICED\NUL TSRC=%TSRC%\SLICED
 set TTMP=
 set PREVOS=
 set LOADED=no
