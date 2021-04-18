@@ -1,10 +1,10 @@
 ; Items removed from x86 boot diskette packages
 
 SOURCE
-; APPINFO
-; PACKAGES
-; DOC
-; HELP
+APPINFO
+PACKAGES
+DOC
+HELP
 NLS\CMD-*.*
 NLS\MAKECMD.BAT
 NLS\FC.*
