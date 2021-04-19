@@ -92,7 +92,6 @@ util\cwsdpmi
 base\fdxms
 drivers\udvd2
 drivers\shsufdrv
-base\dosfsck
 
 ; Only on <386 install made up sub package of FDINST
 # tags: +8086,+8088,+186,-386,-486,-586,-686
