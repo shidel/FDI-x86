@@ -385,13 +385,8 @@ set TDOSDIR=
 set TBHD=C:
 set TSRC=%_CWD%
 if not exist %TSRC%\SLICED\NUL goto NoSilceDir
-if "%_CWD%" == "C:\" set TSRC=C:\SLICED
-if not "%_CWD%" == "%TSRC%" goto NoSliceDir
-if "%_CWD%" == "D:\" set TSRC=D:\SLICED
-if not "%_CWD%" == "%TSRC%" goto NoSliceDir
-if "%_CWD%" == "E:\" set TSRC=E:\SLICED
-if not "%_CWD%" == "%TSRC%" goto NoSliceDir
 set TSRC=%_CWD%\SLICED
+for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set TSRC=%%i\SLICED
 :NoSliceDir
 set TTMP=
 set PREVOS=
@@ -917,9 +912,11 @@ vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
 if errorlevel 3 set KERNL=KERNL386.SYS
 verrlvl 0
-copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+copy /y FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
-copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
+copy /y FREEDOS\BIN\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+copy /y FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
@@ -941,7 +938,7 @@ if errorlevel 2 goto UserAbortExit
 rem Do MBR Update
 if "%FORCEMBR%" == "no" goto NoDoForceMBR
 vecho /g /p /T %LANGFILE% DO_FORCEMBR %TDRIVE%
-sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
+sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\MBR.BSS >NUL
 if errorlevel 1 goto ERROR_BootSector
 %FDISK% /MBR %TDRVID% >NUL
 if errorlevel 1 goto ERROR_MBRUpdate

@@ -1,6 +1,8 @@
 @echo off
 
 SET DOSDIR=%_CWD%\FREEDOS
+for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set DOSDIR=%%i:\FREEDOS
+
 SET COMSPEC=%dosdir%\BIN\COMMAND.COM
 SET LANG=EN
 
