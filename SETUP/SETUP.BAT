@@ -176,6 +176,7 @@ goto OptionNext
 
 :SetUSBMode
 set USBMODE=yes
+if "%_CWD%" == "C:\" set TDRIVE=D:
 goto OptionNext
 
 :SetMBRMode
@@ -373,8 +374,15 @@ set USBMODE=no
 set TDRIVE=
 set TDOSDIR=
 set TSRC=%_CWD%
-if exist %TSRC%\SLICED\NUL set TSRC=%TSRC%\SLICED
-if exist %TSRC%SLICED\NUL set TSRC=%TSRC%SLICED
+if not exist %TSRC%\SLICED\NUL goto NoSilceDir
+if "%_CWD%" == "C:\" set TSRC=C:\SLICED
+if not "%_CWD%" == "%TSRC%" goto NoSliceDir
+if "%_CWD%" == "D:\" set TSRC=D:\SLICED
+if not "%_CWD%" == "%TSRC%" goto NoSliceDir
+if "%_CWD%" == "E:\" set TSRC=E:\SLICED
+if not "%_CWD%" == "%TSRC%" goto NoSliceDir
+set TSRC=%_CWD%\SLICED
+:NoSliceDir
 set TTMP=
 set PREVOS=
 set LOADED=no
