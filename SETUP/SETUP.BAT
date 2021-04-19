@@ -314,6 +314,15 @@ if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
+rem config dos boot drive
+if "%TDRIVE%" == "A:" then :SkipSetBootDrive
+type %TEMP%\%2.TMP|vstr /n/s %TDRIVE% C:>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+:SkipSetBootDrive
+
 rem set default menu
 type %TEMP%\%2.TMP|vstr /n/s $FDEFMENU$ 1>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
@@ -373,6 +382,7 @@ set FORCE=no
 set USBMODE=no
 set TDRIVE=
 set TDOSDIR=
+set TBHD=C:
 set TSRC=%_CWD%
 if not exist %TSRC%\SLICED\NUL goto NoSilceDir
 if "%_CWD%" == "C:\" set TSRC=C:\SLICED
@@ -1275,6 +1285,7 @@ set FEXT=
 rem Install variables
 set TDRIVE=
 set TDOSDIR=
+set TBHD=
 set TCPU=
 set TTAGS=
 set TSRC=
