@@ -912,11 +912,10 @@ vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
 if errorlevel 3 set KERNL=KERNL386.SYS
 verrlvl 0
-copy /y FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
-copy /y FREEDOS\BIN\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
-copy /y FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
+copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
@@ -926,6 +925,8 @@ goto ERROR_BootSector
 :DoSysFilesDone
 call %0 SUCCESS
 :NoDoSysFiles
+echo Duplicate of Command in DOS Binaries Directory
+copy FREEDOS\BIN\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS%
 goto DoMBRUpdate
 
 :DoMBROnly
