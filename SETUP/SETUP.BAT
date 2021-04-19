@@ -92,6 +92,8 @@ if "%2" == "info" goto SetInfoMode
 if "%2" == "INFO" goto SetInfoMode
 if "%2" == "mbr" goto SetMBRMode
 if "%2" == "MBR" goto SetMBRMode
+if "%2" == "usb" goto SetUSBMode
+if "%2" == "USB" goto SetUSBMode
 if "%2" == "8086" goto OptionCPU
 if "%2" == "186" goto OptionCPU
 if "%2" == "286" goto OptionCPU
@@ -172,6 +174,10 @@ goto OptionNext
 set TMODE=INFO
 goto OptionNext
 
+:SetUSBMode
+set USBMODE=yes
+goto OptionNext
+
 :SetMBRMode
 if "%TMODE%" == "" set TMODE=MBR
 set FORCEMBR=yes
@@ -227,6 +233,11 @@ type %TDOSDIR%\PACKAGES\%4 | vstr /n /s C:\FDOS "%TDOSDIR%">%TEMP%\%4
 xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
 :NextLST
 if errorlevel 1 goto ErrorEnd
+if "USBMODE" == "no" goto NotUSBMode
+type %TDOSDIR%\PACKAGES\%4 | vstr /n /s %TDRIVE% "C:">%TEMP%\%4
+xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
+if errorlevel 1 goto ErrorEnd
+:NotUSBMode
 vprogres /fGreen %2 OF %3
 goto End
 
@@ -316,6 +327,13 @@ if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
+rem fix any double slashes
+type %TEMP%\%2.TMP|vstr /n/s \\ \>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
 rem move into place
 copy /y %TEMP%\%2.TMP %TDRIVE%\%FOUT% >NUL
 if errorlevel 1 goto CopyConfigFilesNext
@@ -351,10 +369,12 @@ set AUTOMATIC=no
 set ADVANCED=no
 set MSG=DEF
 set FORCE=no
+set USBMODE=no
 set TDRIVE=
 set TDOSDIR=
 set TSRC=%_CWD%
 if exist %TSRC%\SLICED\NUL set TSRC=%TSRC%\SLICED
+if exist %TSRC%SLICED\NUL set TSRC=%TSRC%SLICED
 set TTMP=
 set PREVOS=
 set LOADED=no
@@ -375,7 +395,10 @@ rem Pre-load some command line options.
 if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 
-if "%TDRIVE%" == "" set TDRIVE=C:
+if not "%TDRIVE%" == "" goto TDriveConfiged
+set TDRIVE=C:
+if "%TSRC%" == "C:\" set TDRIVE=D:
+:TDriveConfiged
 if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FDOS
 
 if not "%1" == "BOOT" goto Install
