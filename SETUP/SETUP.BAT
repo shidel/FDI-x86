@@ -504,11 +504,6 @@ goto FileSystemTest
 
 :Partition
 if not "%TMODE%" == "" goto ERROR_NoHDD
-if "%AUTOMATIC%" == "yes" goto PartitionAuto
-if "%ADVANCED%" == "yes" goto PartitionManual
-
-:PartitionAuto
-vecho /g /n /T %LANGFILE% PARTITION_AUTO %TDRIVE%
 set TDRVID=
 if "%TDRIVE%" == "A:" goto NoPartitionAuto
 if "%TDRIVE%" == "B:" goto NoPartitionAuto
@@ -521,6 +516,11 @@ if "%TDRIVE%" == "H:" set TDRVID=6
 if "%TDRIVE%" == "I:" set TDRVID=7
 if "%TDRIVE%" == "J:" set TDRVID=8
 if "%TDRVID%" == "" goto NoPartitionAuto
+if "%AUTOMATIC%" == "yes" goto PartitionAuto
+if "%ADVANCED%" == "yes" goto PartitionManual
+
+:PartitionAuto
+vecho /g /n /T %LANGFILE% PARTITION_AUTO %TDRIVE%
 
 %FDISK% /info %TDRVID% >NUL
 if errorlevel 1 goto NoPartitionAuto
