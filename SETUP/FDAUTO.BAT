@@ -3,7 +3,7 @@
 SET DOSDRV=%_CWD%
 for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set DOSDRV=%%i:
 
-SET DOSDIR=%DOSDRV%\FREEDDOS
+SET DOSDIR=%DOSDRV%\FREEDOS
 SET COMSPEC=%dosdir%\BIN\COMMAND.COM
 SET LANG=EN
 
