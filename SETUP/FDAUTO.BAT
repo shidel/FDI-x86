@@ -1,8 +1,9 @@
 @echo off
 
-SET DOSDIR=%_CWD%\FREEDOS
-for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set DOSDIR=%%i:\FREEDOS
+SET DOSDRV=%_CWD%
+for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set DOSDRV=%%i:
 
+SET DOSDIR=%DOSDRV%\FREEDDOS
 SET COMSPEC=%dosdir%\BIN\COMMAND.COM
 SET LANG=EN
 
@@ -16,8 +17,10 @@ SET COPYCMD=/-Y
 
 SET OS_NAME=$OS_NAME$
 SET OS_VERSION=$OS_VERSION$
-SET AUTOFILE=%_CWD%\$AUTOEXEC$
-SET CFGFILE=%_CWD%\$CONFIG$
+SET CFGPATH=
+SET AUTOFILE=%DOSDRV%\$AUTOEXEC$
+SET CFGFILE=%DOSDRV%\$CONFIG$
+SET DOSDRV=
 
 alias reboot=fdapm warmboot
 alias reset=fdisk /reboot
