@@ -384,7 +384,7 @@ set TDRIVE=
 set TDOSDIR=
 set TBHD=C:
 set TSRC=%_CWD%
-if not exist %TSRC%\SLICED\NUL goto NoSilceDir
+if not exist %TSRC%\SLICED\NUL goto NoSliceDir
 set TSRC=%_CWD%\SLICED
 for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set TSRC=%%i:\SLICED
 :NoSliceDir
