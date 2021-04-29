@@ -94,10 +94,10 @@ drivers\udvd2
 drivers\shsufdrv
 
 ; Only on <386 install made up sub package of FDINST
-# tags: +8086,+8088,+186,-386,-486,-586,-686
+# tags: +8086,+8088,+186,+286,-386,-486,-586,-686
 util\fdinst
 
-# tags: -8086,-8088,-186,+386,+486,+586,+686
+# tags: -8086,-8088,-186,-286,+386,+486,+586,+686
 
 ; FDNPKG (i386+) contains the offline version of FDINST (8086+), not much
 ; point installing without CD or Networking support.
