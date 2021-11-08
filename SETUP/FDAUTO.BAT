@@ -31,7 +31,7 @@ if "%1" == "ENV_ONLY" goto Done
 
 if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 
-if exist %DOSDIR%\BIN\FDBANNER.BAT call FDBANNER.BAT BOOT
+if exist %DOSDIR%\BIN\FDBANNER.COM FDBANNER.COM
 if exist SETUP.BAT CALL SETUP.BAT BOOT
 if exist %DOSDIR%\BIN\WELCOME.BAT call WELCOME.BAT BOOT
 

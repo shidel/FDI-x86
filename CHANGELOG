@@ -1,0 +1,22 @@
+# Change Log
+
+    The FDI-x86 change log only covers the FreeDOS Installer Floppy Edition.
+    It does not cover any of the tools used by the installer or any of the
+    programs installed by FDI-x86.
+
+## FDI-x86 1.3-RC5
+
+    Added usage of FDBANNER.COM to boot process.
+    Removed V8PT generated FreeDOS boot banner.
+    People like change logs. So, I started one for FDI-x86. :-)
+
+## FDI-x86 1.3-RC4
+
+    With the release of FreeDOS 1.3-RC4, several different diskette size copies
+    of installation media for FDI-x86 were released. Also, it was used to
+    provide an "easter-egg" alternative install method on the LiveCD.
+
+## FDI-x86 1.3-RC3
+
+    Starting with FreeDOS v1.3-RC3, an initial version of FDI-x86 was included
+    with the standard release media.

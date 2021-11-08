@@ -394,7 +394,7 @@ set LOADED=no
 set BACKUP=yes
 set LABEL=$OS_VOLUME$
 set LAYOUT=
-set FORCEMBR=yes
+set FORCEMBR=maybe
 set SYSFILES=yes
 set CFGFILES=yes
 set XOPTS=/Y /R /H /Q
@@ -529,16 +529,17 @@ if errorlevel 1 goto NoPartitionAuto
 if errorlevel 1 goto NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
-vecho /g /p /n /T %LANGFILE% PARTITION_MBR %TDRIVE%
-%FDISK% /mbr %TDRVID% >NUL
-if errorlevel 1 goto NoPartitionAuto
-vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+rem Overwritting the MBR and activating the Parition should be done later
+rem vecho /g /p /n /T %LANGFILE% PARTITION_MBR %TDRIVE%
+rem %FDISK% /mbr %TDRVID% >NUL
+rem if errorlevel 1 goto NoPartitionAuto
+rem vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
-vecho /g /p /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
-%FDISK% /activate:1 %TDRVID% >NUL
-if not errorlevel 1 goto AutoPartitioned
-fdisk /ACTIVATE:1 %TDRVID% >NUL
-if errorlevel 1 goto NoPartitionAuto
+rem vecho /g /p /n /T %LANGFILE% PARTITION_ACTIVE %TDRIVE%
+rem %FDISK% /activate:1 %TDRVID% >NUL
+rem if not errorlevel 1 goto AutoPartitioned
+rem fdisk /ACTIVATE:1 %TDRVID% >NUL
+rem if errorlevel 1 goto NoPartitionAuto
 
 :AutoPartitioned
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
@@ -753,6 +754,7 @@ goto BackupSelect
 
 if not "%TCPU%" == "DOSBox" goto AdvOptions
 set FORCEMBR=no
+
 :AdvOptions
 if not "%TMODE%" == "" goto NoAdvOptions
 if "%AUTOMATIC%" == "yes" goto NoAdvOptions
@@ -800,21 +802,33 @@ set TDRVID=0
 if "%TCPU%" == "DOSBox" goto NoFindPartID
 set TDRVID=1
 %FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
+if not "%TPRTID%" == "" goto FoundPartID
 set TDRVID=2
 %FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
+if not "%TPRTID%" == "" goto FoundPartID
 set TDRVID=3
 %FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
+if not "%TPRTID%" == "" goto FoundPartID
 set TDRVID=4
 %FDISK% /info %TDRVID% | vstr /f %TDRIVE% 2- | vstr /i/b/f ' ' 1 | set /p TPRTID=
-if not "%TPRTID%" == "" goto NoFindPartID
+if not "%TPRTID%" == "" goto FoundPartID
 goto ERROR_NoPartition
+
+:FoundPartID
+
 :NoFindPartID
 
 REM ***************************************************************************
 if "%TMODE%" == "MBR" set FORCEMBR=yes
+
+if not "%FORCEMBR%" == "maybe" goto SkipMBRCodeTest
+vinfo /E %TDRVID%
+if errorlevel 10 goto AssumeNoMBRWrite
+set FORCEMBR=yes
+goto :SkipMBRCodeTest
+:AssumeNoMBRWrite
+set FORCEMBR=no
+:SkipMBRCodeTest
 
 rem Display Settings
 :DisplaySettings
