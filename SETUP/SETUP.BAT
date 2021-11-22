@@ -389,6 +389,7 @@ set TSRC=%_CWD%\SLICED
 for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set TSRC=%%i:\SLICED
 :NoSliceDir
 set TTMP=
+set TSWAP=
 set PREVOS=
 set LOADED=no
 set BACKUP=yes
@@ -457,6 +458,13 @@ if errorlevel 102 set TCPU=QEMU
 if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
 if errorlevel 105 set TCPU=Emulated
+
+if not "%TSWAP" == "" goto NoSetCOMSwapType
+set TSWAP=XSWAP
+if "%TCPU%" == "286" set TSWAP=KSWAP
+if "%TCPU%" == "186" set TSWAP=KSWAP
+if "%TCPU%" == "8086" set TSWAP=KSWAP
+:NoSetCOMSwapType
 
 set TTAGS=%TCPU%
 if not errorlevel 101 set TTAGS=%TTAGS%
@@ -926,8 +934,27 @@ vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
 if errorlevel 3 set KERNL=KERNL386.SYS
 verrlvl 0
+if not exist %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-%LANG%.COM goto NoLangSpecCOM
+copy %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-%LANG%.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+goto SecondCommandCopy
+
+:NoLangSpecCOM
+if not exist %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-EN.COM goto NoFreeCOM
+copy %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-EN.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+goto SecondCommandCopy
+
+:NoFreeCOM
+REM Use whatever command.com installer is using.
 copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
+
+:SecondCommandCopy
+copy %TDRIVE%\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
+if errorlevel 1 goto ERROR_SysFiles
+
+:TransferKernel
 copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
@@ -1294,6 +1321,7 @@ set FEXT=
 rem Install variables
 set TDRIVE=
 set TDOSDIR=
+set TSWAP=
 set TBHD=
 set TCPU=
 set TTAGS=
