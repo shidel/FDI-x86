@@ -30,7 +30,7 @@ base\fdhelper
 apps\fdimples
 
 # Unknown, assumed to be fully compatible
-base\command
+base\freecom
 base\format
 base\deltree
 base\attrib

@@ -2,7 +2,7 @@
 
 ; These are the packages that are on the FreeDOS x86 floppy only version.
 
-base\command
+base\freecom
 base\attrib
 base\kernel
 base\fdisk
