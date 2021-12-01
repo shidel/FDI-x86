@@ -20,16 +20,20 @@ base\ambhelp
 util\ambread
 
 # tags: -CGA
+
 util\v8power
-archiver\slicer
+apps\fdimples
+
+# No longer going to install slicer
+# archiver\slicer
+
 # tags: +CGA
 
 util\callver
 base\fdhelper
 
-apps\fdimples
-
 # Unknown, assumed to be fully compatible
+# FreeCOM should be split in separate files based on swap type
 base\freecom
 base\format
 base\deltree
