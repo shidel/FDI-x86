@@ -1,4 +1,4 @@
-Things planned for x86 installer .. Eventually.
+Things planned for FDI-x86 installer .. Eventually.
 
 * Language selection when run at boot or when LANG is not set.
 * Install only XMSSWAP or KSWAP version of FreeCOM based on CPU, probably English + Language specific version
