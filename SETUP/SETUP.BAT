@@ -1,8 +1,8 @@
 @echo off
 
-rem FreeDOS 1.3+ Installer version 1.00.
-rem Released Under GPL v2.0 License.
-rem Copyright 2020 Jerome Shidel.
+rem FreeDOS 1.3+ Installer, version 2021-12-01.
+rem GNU General Public License, (any version)
+rem Copyright 2020-2021 Jerome Shidel.
 
 rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 
@@ -230,7 +230,7 @@ goto End
 :UpdateLST
 if "%2" == "" goto End
 if not exist %TDOSDIR%\PACKAGES\%4 goto NextLST
-type %TDOSDIR%\PACKAGES\%4 | vstr /n /s C:\FDOS "%TDOSDIR%">%TEMP%\%4
+type %TDOSDIR%\PACKAGES\%4 | vstr /n /s C:\FreeDOS "%TDOSDIR%">%TEMP%\%4
 xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
 :NextLST
 if errorlevel 1 goto ErrorEnd
@@ -413,7 +413,7 @@ if not "%TDRIVE%" == "" goto TDriveConfiged
 set TDRIVE=C:
 if "%TSRC%" == "C:\" set TDRIVE=D:
 :TDriveConfiged
-if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FDOS
+if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FREEDOS
 
 if not "%1" == "BOOT" goto Install
 
@@ -1079,7 +1079,7 @@ vecho /g /p /p /T %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
 call %0 SUCCESS
 
 rem Update List files
-if "%TDOSDIR%" == "C:\FDOS" goto NoLstUpdate
+if "%TDOSDIR%" == "C:\FREEDOS" goto NoLstUpdate
 
 vecho /g /p /T %LANGFILE% UPDATE_LST
 veach /D %TDOSDIR%\PACKAGES\*.LST /X %0 ULST @ # *
