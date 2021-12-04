@@ -29,6 +29,14 @@ alias shutdown=fdapm poweroff
 
 if "%1" == "ENV_ONLY" goto Done
 
+if not exist %dosdir%\bin\lbacache.com goto NoLBACache
+vecho /g
+LBACACHE.COM buf 20 flop
+if errorlevel 1 goto NoLBACache
+if not exist %dosdir%\bin\tickle.com goto NoLBACache
+TICKLE.COM
+:NoLBACache
+
 if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 
 if exist %DOSDIR%\BIN\FDBANNER.COM FDBANNER.COM

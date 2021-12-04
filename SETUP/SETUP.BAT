@@ -400,7 +400,8 @@ set SYSFILES=yes
 set CFGFILES=yes
 set XOPTS=/Y /R /H /Q
 set COPTS=/Y /B
-set KERNL=KERNL86.SYS
+rem Boots 8086 Kernel and it is in same dir as SETUP.BAT
+set KERNL=KERNEL.SYS
 set TMODE=
 set OCPU=
 set TDONE=
@@ -932,7 +933,7 @@ rem Do System Transfer
 if "%SYSFILES%" == "no" goto NoDoSysFiles
 vecho /g /p /T %LANGFILE% DO_SYSFILES %TDRIVE% %TCPU%
 vinfo /m
-if errorlevel 3 set KERNL=KERNL386.SYS
+if errorlevel 3 set KERNL=FREEDOS\BIN\KERNL386.SYS
 verrlvl 0
 if not exist %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-%LANG%.COM goto NoLangSpecCOM
 copy %TDOSDIR%\BIN\FREEDOS\%TSWAP%\CMD-%LANG%.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
@@ -947,15 +948,15 @@ goto SecondCommandCopy
 
 :NoFreeCOM
 REM Use whatever command.com installer is using.
-copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+copy FREEDOS\BIN\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 
 :SecondCommandCopy
-copy %TDRIVE%\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
+copy %TDOSDIR%\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 
 :TransferKernel
-copy FREEDOS\BIN\%KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
+copy %KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
