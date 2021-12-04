@@ -337,6 +337,20 @@ if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
+rem set country US, part 1
+type %TEMP%\%2.TMP|vstr /n/s $FCCC$ 001>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
+rem set country US, part 2
+type %TEMP%\%2.TMP|vstr /n/s $FCKC$ 858>%TEMP%\%2.OUT
+copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+del %TEMP%\%2.OUT >NUL
+if errorlevel 1 goto CopyConfigFilesNext
+
 rem fix any double slashes
 type %TEMP%\%2.TMP|vstr /n/s \\ \>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
@@ -948,12 +962,15 @@ goto SecondCommandCopy
 
 :NoFreeCOM
 REM Use whatever command.com installer is using.
-copy FREEDOS\BIN\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
+copy FREEDOS\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
+goto NoSecondCopy
 
 :SecondCommandCopy
-copy %TDOSDIR%\BIN\COMMAND.COM %TDRIVE%\COMMAND.COM %COPTS% >NUL
+REM Replace installed COMMAND.COM with Language Specific Version
+copy %TDRIVE%\COMMAND.COM %TDOSDIR%\BIN\COMMAND.COM %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
+:NoSecondCopy
 
 :TransferKernel
 copy %KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
