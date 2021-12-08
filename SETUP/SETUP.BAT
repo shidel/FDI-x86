@@ -593,9 +593,9 @@ vdelay 1000
 
 :PartitionManual
 vcls /g /fGray /bBlack
-vecho /g /t %LANGFILE% PARTITION_WARN
-vecho /g /n /t %LANGFILE% PRESS_KEY
-vpause /t 5
+rem vecho /g /t %LANGFILE% PARTITION_WARN
+rem vecho /g /n /t %LANGFILE% PRESS_KEY
+rem vpause /t 5
 %FDISK% %TDRVID%
 if errorlevel 1 goto ERROR_Partition
 goto NeedReboot
