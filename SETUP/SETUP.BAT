@@ -1066,6 +1066,10 @@ xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
+if not exist FREEDOS\BIN\GZIP.EXE goto HasNoGZIP
+xcopy /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\ >NUL
+if errorlevel 1 goto ERROR_XfrFilesDOS
+:HasNoGZIP
 xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
