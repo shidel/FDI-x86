@@ -983,7 +983,7 @@ copy %KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
 if "%FORCEMBR%" == "yes" goto DoSysFilesDone
-sys /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
+sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
 if not errorlevel 1 goto DoSysFilesDone
 goto ERROR_BootSector
 :DoSysFilesDone
