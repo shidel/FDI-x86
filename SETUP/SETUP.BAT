@@ -36,7 +36,7 @@ if "%LANGFILE%" == "" goto SetLangFile
 if "%1" == "LANG" goto End
 if "%1" == "OPTION" goto Option
 if "%1" == "PRELOAD" goto Option
-if "%1" == "BOOT" goto Configure
+if "%1" == "BOOT" goto BootConfigure
 if "%1" == "RELOAD" goto Reload
 if "%1" == "help" goto ShowHelp
 if "%1" == "HELP" goto ShowHelp
@@ -160,6 +160,7 @@ goto OptionNext
 :SetAdvanced
 set ADVANCED=yes
 set MSG=ADV
+set SHR=
 goto OptionNext
 
 :SetAutomatic
@@ -383,6 +384,10 @@ if not exist %_CWD%\FDAUTO.BAT goto ERROR_MissingAUTOEXEC
 call %_CWD%\FDAUTO.BAT ENV_ONLY
 if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
+goto Configure
+
+:BootConfigure
+set SHR=yes
 
 :Configure
 rem new FDISK has some exit code and other issues.
@@ -502,6 +507,7 @@ vecho /g
 
 :Welcome
 if not "%TMODE%" == "" goto TestDrive
+if "%SHR%" == "yes" vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
@@ -1353,6 +1359,7 @@ set FORCEMBR=
 set SYSFILES=
 set CFGFILES=
 set TMODE=
+set SHR=
 
 if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
