@@ -1,5 +1,8 @@
 ; Items removed from x86 boot diskette packages
 
+; not including non-fat 32 version of kernel on boot media
+BIN\KERNL86N.SYS
+
 SOURCE
 APPINFO
 PACKAGES
@@ -25,7 +28,6 @@ BIN\VREADKEY.COM
 BIN\VMODE.COM
 BIN\VVER.COM
 BIN\VFONT.COM
-
 
 BIN\V8HELP.BAT
 BIN\ONELANG.BAT
