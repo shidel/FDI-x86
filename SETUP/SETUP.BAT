@@ -850,11 +850,12 @@ goto ERROR_NoPartition
 REM ***************************************************************************
 if "%TMODE%" == "MBR" set FORCEMBR=yes
 
+goto SkipMBRCodeTest
 if not "%FORCEMBR%" == "maybe" goto SkipMBRCodeTest
 vinfo /E %TDRVID%
 if errorlevel 10 goto AssumeNoMBRWrite
 set FORCEMBR=yes
-goto :SkipMBRCodeTest
+goto SkipMBRCodeTest
 :AssumeNoMBRWrite
 set FORCEMBR=no
 :SkipMBRCodeTest
@@ -982,7 +983,7 @@ if errorlevel 1 goto ERROR_SysFiles
 copy %KERNL% %TDRIVE%\KERNEL.SYS %COPTS% >NUL
 if errorlevel 1 goto ERROR_SysFiles
 if "%TCPU%" == "DOSBox" goto DoSysFilesDone
-if "%FORCEMBR%" == "yes" goto DoSysFilesDone
+if not "%FORCEMBR%" == "no" goto DoSysFilesDone
 sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
 if not errorlevel 1 goto DoSysFilesDone
 goto ERROR_BootSector
