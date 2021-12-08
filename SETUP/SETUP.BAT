@@ -571,7 +571,7 @@ rem fdisk /ACTIVATE:1 %TDRVID% >NUL
 rem if errorlevel 1 goto NoPartitionAuto
 
 :AutoPartitioned
-vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
+rem vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
 :NeedReboot
 vecho /g /T %LANGFILE% PARTITION_DONE
