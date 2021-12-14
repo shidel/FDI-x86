@@ -1138,6 +1138,7 @@ goto Done
 
 :InsertDiskette
 vecho /g /p /T %LANGFILE% INSERT_DISKETTE 2 x86-DSK1 %TSRC%
+vecho /g /n /t %LANGFILE% PRESS_KEY
 if "%AUTOMATIC%" == "yes" vpause /D10 CTRL-C
 if "%AUTOMATIC%" == "no" vpause CTRL-C
 if errorlevel 200 goto LateAbortExit
