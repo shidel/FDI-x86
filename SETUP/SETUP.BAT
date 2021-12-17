@@ -204,10 +204,11 @@ set /e PARENT=vfdutil /p %2
 vfdutil /u %PARENT%\????????.$$$ >NUL
 if errorlevel 1 call %0 MKDIR %PARENT%
 mkdir %2 >NUL
-if errorlevel 1 goto ERROR_MakeDir
+if not exist %2\nul goto ERROR_MakeDir
 goto End
 
 :BootBackup
+verrlvl 0
 if "%2" == "" goto End
 if exist %TDRIVE%\%2 xcopy %TDRIVE%\%2 %BACKUP% %XOPTS% >NUL
 if errorlevel 1 goto ErrorEnd
@@ -222,9 +223,12 @@ goto DOSBackupCheck
 :DOSBackupDir
 call %0 MKDIR %BACKUP%\%4
 if errorlevel 1 goto AbortExit
+vfdutil /a %TDOSDIR%\%4
+if errorlevel 1 goto SkipEmptyDir
 xcopy %TDOSDIR%\%4 %BACKUP%\%4\ /E %XOPTS% >NUL
 :DOSBackupCheck
 if errorlevel 1 goto ErrorEnd
+:SkipEmptyDir
 vprogres /fGreen %2 OF %3
 goto End
 
