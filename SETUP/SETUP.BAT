@@ -319,8 +319,9 @@ if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
-rem config dos boot drive
-if "%TDRIVE%" == "A:" then :SkipSetBootDrive
+rem config dos boot drive, legacy stuff, skip for NOW
+goto SkipSetBootDrive
+if "%TDRIVE%" == "A:" then goto :SkipSetBootDrive
 type %TEMP%\%2.TMP|vstr /n/s %TDRIVE% C:>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
