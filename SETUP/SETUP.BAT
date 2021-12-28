@@ -321,7 +321,7 @@ if errorlevel 1 goto CopyConfigFilesNext
 
 rem config dos boot drive, legacy stuff, skip for NOW
 goto SkipSetBootDrive
-if "%TDRIVE%" == "A:" then goto :SkipSetBootDrive
+if "%TDRIVE%" == "A:" goto :SkipSetBootDrive
 type %TEMP%\%2.TMP|vstr /n/s %TDRIVE% C:>%TEMP%\%2.OUT
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
@@ -407,11 +407,13 @@ set USBMODE=no
 set TDRIVE=
 set TDOSDIR=
 set TBHD=C:
-set TSRC=%_CWD%
-if not exist %TSRC%\SLICED\NUL goto NoSliceDir
 set TSRC=%_CWD%\SLICED
+if exist %TSRC%\FREEDOS.SAF goto NoSliceSearch
+set TSRC=%_CWD%
+goto NoSliceSearch
+rem Probably not needed, skipped
 for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set TSRC=%%i:\SLICED
-:NoSliceDir
+:NoSliceSearch
 set TTMP=
 set TSWAP=
 set PREVOS=
@@ -1174,7 +1176,9 @@ vecho /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
 goto AbortExit
 
 :ERROR_SAF
-rem set TTMP=
+vfdutil /d %TSRC% | set /p TSD=
+if "%TSD%\" == "%TSRC%" set TSRC=%TSD%
+set TSD=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_SAF %TSRC%\FREEDOS.SAF
