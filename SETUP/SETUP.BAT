@@ -874,7 +874,9 @@ if "%ADVANCED%" == "no" goto InstallNow
 :PrintSettings
 vecho /p /g /T %LANGFILE% STATUS_MSG
 vecho /g /T %LANGFILE% STATUS_CPU %TCPU% %TTAGS%
-vecho /g /T %LANGFILE% STATUS_FROM %TSRC%
+vfdutil /p %TSRC%\ | set /p XSRC=
+vecho /g /T %LANGFILE% STATUS_FROM %XSRC%
+set XSRC=
 vecho /g /T %LANGFILE% STATUS_DRV %TDRIVE% %TDRVID% %TPRTID%
 vecho /g /T %LANGFILE% STATUS_MBR %FORCEMBR%
 if "%TMODE%" == "MBR" goto InstallNow
