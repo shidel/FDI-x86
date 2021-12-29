@@ -82,18 +82,12 @@ goto OptionNext
 
 :Option
 if "%2" == "" goto End
-if "%2" == "auto" goto SetAutomatic
-if "%2" == "AUTO" goto SetAutomatic
-if "%2" == "adv" goto SetAdvanced
-if "%2" == "ADV" goto SetAdvanced
-if "%2" == "force" goto SetForced
-if "%2" == "FORCE" goto SetForced
-if "%2" == "info" goto SetInfoMode
-if "%2" == "INFO" goto SetInfoMode
-if "%2" == "mbr" goto SetMBRMode
-if "%2" == "MBR" goto SetMBRMode
-if "%2" == "usb" goto SetUSBMode
-if "%2" == "USB" goto SetUSBMode
+if /I "%2" == "AUTO" goto SetAutomatic
+if /I "%2" == "ADV" goto SetAdvanced
+if /I "%2" == "FORCE" goto SetForced
+if /I "%2" == "INFO" goto SetInfoMode
+if /I "%2" == "MBR" goto SetMBRMode
+if /I "%2" == "USB" goto SetUSBMode
 if "%2" == "8086" goto OptionCPU
 if "%2" == "186" goto OptionCPU
 if "%2" == "286" goto OptionCPU
@@ -101,11 +95,11 @@ if "%2" == "386" goto OptionCPU
 if "%2" == "486" goto OptionCPU
 if "%2" == "586" goto OptionCPU
 if "%2" == "686" goto OptionCPU
-if "%2" == "DBX" goto OptionCPU
-if "%2" == "QEM" goto OptionCPU
-if "%2" == "VBX" goto OptionCPU
-if "%2" == "VMW" goto OptionCPU
-if "%2" == "EMU" goto OptionCPU
+if /I "%2" == "DBX" goto OptionCPU
+if /I "%2" == "QEM" goto OptionCPU
+if /I "%2" == "VBX" goto OptionCPU
+if /I "%2" == "VMW" goto OptionCPU
+if /I "%2" == "EMU" goto OptionCPU
 
 if exist FREEDOS\NLS\SETUP.%2 goto ChangeLangFile
 if "%1" == "PRELOAD" goto OptionPreLoad
