@@ -452,7 +452,7 @@ REM ***************************************************************************
 
 set TCPU=8086
 vinfo /M
-if "%OCPU%" == "" goto NoOverrideCPU
+if "%OCPU%" == "" goto Assume386orBetter
 verrlvl 0
 set TCPU=%OCPU%
 if "%TCPU%" == "DBX" verrlvl 101
@@ -467,12 +467,16 @@ if "%TCPU%" == "386" verrlvl 3
 if "%TCPU%" == "286" verrlvl 2
 if "%TCPU%" == "186" verrlvl 1
 if "%TCPU%" == "8086" verrlvl 0
+goto NoOverrideCPU
+
+:Assume386orBetter
+if errorlevel 3 goto NoOverrideCPU
+verrlvl 3
 
 :NoOverrideCPU
-REM if errorlevel 1 set TCPU=186
-REM if errorlevel 2 set TCPU=286
-REM if errorlevel 3 set TCPU=386
-if errorlevel 1 set TCPU=386
+if errorlevel 1 set TCPU=186
+if errorlevel 2 set TCPU=286
+if errorlevel 3 set TCPU=386
 if errorlevel 4 set TCPU=486
 if errorlevel 5 set TCPU=586
 if errorlevel 6 set TCPU=686
