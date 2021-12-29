@@ -313,7 +313,9 @@ del %TEMP%\%2.OUT >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 
 rem set dos directory
-type %TEMP%\%2.TMP|vstr /n/s $FTARGET$ "%TDOSDIR%">%TEMP%\%2.OUT
+vfdutil /p %TDOSDIR%\ | vstr /s %TDRIVE% C: | set /p XDOSDIR=
+type %TEMP%\%2.TMP|vstr /n/s $FTARGET$ "%XDOSDIR%">%TEMP%\%2.OUT
+set XDOSDIR=
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
 del %TEMP%\%2.OUT >NUL
