@@ -1178,12 +1178,11 @@ vecho /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
 goto AbortExit
 
 :ERROR_SAF
-vfdutil /d %TSRC% | set /p TSD=
-if "%TSD%\" == "%TSRC%" set TSRC=%TSD%
-set TSD=
+vfdutil /f %TSRC%\FREEDOS.SAF | set /p TSD=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
-vecho /g /T %LANGFILE% ERROR_SAF %TSRC%\FREEDOS.SAF
+vecho /g /T %LANGFILE% ERROR_SAF %TSD%
+set TSD=
 goto AbortExit
 
 :ERROR_Partition
