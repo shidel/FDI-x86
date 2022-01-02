@@ -24,3 +24,4 @@ base\fdapm
 
 ; these are for dev only, will be removed in release
 base\mem
+base\edit

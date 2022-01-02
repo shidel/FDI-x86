@@ -23,7 +23,6 @@ SET OS_VERSION=$OS_VERSION$
 SET CFGPATH=
 SET AUTOFILE=%DOSDRV%\$AUTOEXEC$
 SET CFGFILE=%DOSDRV%\$CONFIG$
-SET DOSDRV=
 
 alias reboot=fdapm warmboot
 alias reset=fdisk /reboot
