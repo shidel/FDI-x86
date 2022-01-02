@@ -42,11 +42,13 @@ if "%1" == "LANG" goto End
 if "%1" == "OPTION" goto Option
 if "%1" == "PRELOAD" goto Option
 if "%1" == "BOOT" goto BootConfigure
+if "%1" == "RELOAD" goto ReloadConfig
 if /I "%1" == "HELP" goto ShowHelp
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
-goto ReloadConfig
+call %0 OPTION RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
+goto Install
 
 :AnswerYes
 vecho /g /T %LANGFILE% AUTO_YES
@@ -436,6 +438,7 @@ if "%TSRC%" == "C:\" set TDRIVE=D:
 :TDriveConfiged
 if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FREEDOS
 
+if "%1" == "RELOAD" goto end
 if not "%1" == "BOOT" goto Install
 
 rem Boot only test for install
