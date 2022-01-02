@@ -5,7 +5,10 @@ for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%
 
 SET DOSDIR=%DOSDRV%\FREEDOS
 SET COMSPEC=%dosdir%\BIN\COMMAND.COM
+if "%1" == "ENV_ONLY"  goto SkipLocalize
 SET LANG=EN
+SET TZ=EST
+:SkipLocalize
 
 SET NLSPATH=%dosdir%\NLS
 SET HELPPATH=%dosdir%\HELP

@@ -22,3 +22,5 @@ base\fdhelper
 base\fdapm
 ; base\lbacache
 
+; these are for dev only, will be removed in release
+base\mem

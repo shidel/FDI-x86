@@ -6,6 +6,13 @@ rem Copyright 2020-2021 Jerome Shidel.
 
 rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
 
+REM Some FreeCOM Tests
+if "%_CWD%" == "" goto NotFreeCOM
+if /I "A" == "a" goto ProbabyFreeCOM
+goto NotFreeCOM
+:ProbabyFreeCOM
+
+
 if "%1" == "YES" goto AnswerYes
 if "%1" == "NO" goto AnswerNo
 if "%1" == "DBACK" goto DOSBackup
@@ -18,10 +25,8 @@ if "%1" == "XFR" goto CopyConfigFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
-if "%0" == "SETUP" goto GoodCWD
-if "%0" == "setup" goto GoodCWD
-if "%0" == "SETUP.BAT" goto GoodCWD
-if "%0" == "setup.bat" goto GoodCWD
+if /I "%0" == "SETUP.BAT" goto GoodCWD
+if /I "%0" == "SETUP" goto GoodCWD
 
 echo ERROR: The Setup program must only be executed from it's directory.
 echo Please change directories and re-launch the SETUP program.
@@ -37,17 +42,11 @@ if "%1" == "LANG" goto End
 if "%1" == "OPTION" goto Option
 if "%1" == "PRELOAD" goto Option
 if "%1" == "BOOT" goto BootConfigure
-if "%1" == "RELOAD" goto Reload
-if "%1" == "help" goto ShowHelp
-if "%1" == "HELP" goto ShowHelp
+if /I "%1" == "HELP" goto ShowHelp
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 
-rem Unless we were told that it is boot time or we've already reloaded,
-rem respawn ourself using FreeCOM to insure proper shell and preserve env table
-FREEDOS\BIN\COMMAND.COM /E:4096 /C %0 RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
-set LANGFILE=
-goto End
+goto ReloadConfig
 
 :AnswerYes
 vecho /g /T %LANGFILE% AUTO_YES
@@ -375,8 +374,7 @@ shift
 goto CopyConfigFiles
 
 REM ***************************************************************************
-:Reload
-if "%_CWD%" == "" goto ERROR_NotFreeCOM
+:ReloadConfig
 
 rem Reset Environment Variables using FDAUTO.BAT
 set AUTOFILE=
@@ -1154,6 +1152,9 @@ if errorlevel 200 goto LateAbortExit
 goto Diskette
 
 REM ***************************************************************************
+:NotFreeCOM
+echo The installer requires functions provided by the FreeCOM Shell.
+goto ErrorEnd
 
 :ERROR_Option
 vecho /p /g /N /T %LANGFILE% ERROR_MINOR
