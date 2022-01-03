@@ -39,6 +39,15 @@ if not exist %dosdir%\bin\tickle.com goto NoLBACache
 TICKLE.COM
 :NoLBACache
 
+if not exist %dosdir%\bin\setlang.bat goto NoSetLang
+if "%config%"=="1" set LANG=EN
+if "%config%"=="2" set LANG=ES
+if "%config%"=="3" set LANG=FR
+if "%config%"=="4" set LANG=DE
+if "%config%"=="5" set LANG=TR
+call %dosdir%\bin\setlang.bat SIMPLE %LANG%
+:NoSetLang
+
 if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 
 if exist %DOSDIR%\BIN\FDBANNER.COM FDBANNER.COM

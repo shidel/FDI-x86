@@ -2,17 +2,18 @@
 
 rem FreeDOS 1.3+ Installer, version 2021-12-01.
 rem GNU General Public License, (any version)
-rem Copyright 2020-2021 Jerome Shidel.
+rem Copyright 2020-2022 Jerome Shidel.
 
-rem vecho /g /p /fDarkGray (%1 %2 %3 %4 %5 %6 %7 %8 %9) /fGray
+REM When booted we want to draw an HRULE bellow the banner
+if not "%1" == "BOOT" goto NotBootMode
+set BOOTED=yes
+set SHR=yes
+shift
+:NotBootMode
 
-REM Some FreeCOM Tests
-if "%_CWD%" == "" goto NotFreeCOM
-if /I "A" == "a" goto ProbabyFreeCOM
-goto NotFreeCOM
-:ProbabyFreeCOM
-
-
+REM ***************************************************************************
+REM internal commands recursively executed by the installer itself
+if "%1" == "OPTION" goto Option
 if "%1" == "YES" goto AnswerYes
 if "%1" == "NO" goto AnswerNo
 if "%1" == "DBACK" goto DOSBackup
@@ -25,62 +26,89 @@ if "%1" == "XFR" goto CopyConfigFiles
 if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
+if "%1" == "PRELOAD" goto OptionPreload
+
+REM ***************************************************************************
+REM Some FreeCOM Tests
+if "%_CWD%" == "" goto NotFreeCOM
+if /I "A" == "a" goto ProbabyFreeCOM
+goto NotFreeCOM
+:ProbabyFreeCOM
+
+if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
+if /I "%1" == "HELP" goto ShowHelp
+
+REM make sure batch was executed from current Directory. Does not guarantee it
+REM is in the PATHSPEC somewhere. :-(
 if /I "%0" == "SETUP.BAT" goto GoodCWD
 if /I "%0" == "SETUP" goto GoodCWD
-
 echo ERROR: The Setup program must only be executed from it's directory.
 echo Please change directories and re-launch the SETUP program.
 goto End
-
 :GoodCWD
 
-if "%LANGFILE%" == "" goto SetLangFile
-
-:Startup
-
-if "%1" == "LANG" goto End
-if "%1" == "OPTION" goto Option
-if "%1" == "PRELOAD" goto Option
-if "%1" == "BOOT" goto BootConfigure
-if "%1" == "RELOAD" goto ReloadConfig
-if /I "%1" == "HELP" goto ShowHelp
-
-if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
-
-call %0 OPTION RELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
-goto Install
-
-:AnswerYes
-vecho /g /T %LANGFILE% AUTO_YES
-verrlvl 1
-goto End
-
-:AnswerNo
-vecho /g /T %LANGFILE% AUTO_NO
-verrlvl 2
-goto End
-
-:SetLangFile
+REM ***************************************************************************
+REM if needed, set the NLS translation file for the installer
+if not "%LANGFILE%" == "" goto LangFileDone
 if "%LANG%" == "" goto SetEnglish
 if not exist FREEDOS\NLS\SETUP.%LANG% goto SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto LangFileDone
-
 :SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.EN
 if exist %LANGFILE% goto LangFileDone
 set LANGFILE=%0.BAT
 if exist %LANGFILE% goto LangFileDone
 set LANGFILE=%0
-
 :LangFileDone
-goto Startup
 
-:ChangeLangFile
-set LANG=%2
-set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
-goto OptionNext
+rem Reset Environment Variables using FDAUTO.BAT
+set AUTOFILE=
+set CFGFILE=
+if not exist %_CWD%\FDAUTO.BAT goto ERROR_MissingAUTOEXEC
+call %_CWD%\FDAUTO.BAT ENV_ONLY
+if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
+if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
+rem Initialize installer variables
+set AUTOMATIC=no
+set ADVANCED=no
+set MSG=DEF
+set FORCE=no
+set USBMODE=no
+set TDRIVE=
+set TDOSDIR=
+set TBHD=C:
+set TSRC=%_CWD%\SLICED
+if exist %TSRC%\FREEDOS.SAF goto NoSliceSearch
+set TSRC=%_CWD%
+:NoSliceSearch
+set TTMP=
+set TSWAP=
+set PREVOS=
+set BACKUP=yes
+set LABEL=$OS_VOLUME$
+set LAYOUT=
+set FORCEMBR=maybe
+set SYSFILES=yes
+set CFGFILES=yes
+set XOPTS=/Y /R /H /Q
+set COPTS=/Y /B
+rem Boots 8086 Kernel and it is in same dir as SETUP.BAT
+set KERNL=KERNEL.SYS
+set TMODE=
+set OCPU=
+set TDONE=
+
+if "%1" == "" goto NoUserOptions
+call %0 PRELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
+call %0 OPTION %1 %2 %3 %4 %5 %6 %7 %8 %9
+if errorlevel 1 goto Cleanup
+:NoUserOptions
+
+goto Configure
+
+REM ***************************************************************************
 :Option
 if "%2" == "" goto End
 if /I "%2" == "AUTO" goto SetAutomatic
@@ -103,8 +131,9 @@ if /I "%2" == "VMW" goto OptionCPU
 if /I "%2" == "EMU" goto OptionCPU
 
 if exist FREEDOS\NLS\SETUP.%2 goto ChangeLangFile
-if "%1" == "PRELOAD" goto OptionPreLoad
-if "%TEMP%" == "" goto OptionPreLoad
+
+REM no temp dir so cannot pipe stuff, yet.
+if not "%TEMP%" == "" goto End
 
 set VAL=
 set VALD=
@@ -119,6 +148,21 @@ set /e VALP=vfdutil /p %VAL%\
 vfdutil /x /d %VALD%
 if errorlevel 3 goto OptionDrive
 goto ERROR_Option
+
+:AnswerYes
+vecho /g /T %LANGFILE% AUTO_YES
+verrlvl 1
+goto End
+
+:AnswerNo
+vecho /g /T %LANGFILE% AUTO_NO
+verrlvl 2
+goto End
+
+:ChangeLangFile
+set LANG=%2
+set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
+goto OptionNext
 
 :OptionCPU
 set OCPU=%2
@@ -187,6 +231,7 @@ for %%i in (0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) do vecho /g /T %LANGFILE% HEL
 vecho /g /T %LANGFILE% TRADEMARK
 goto ErrorExit
 
+REM ***************************************************************************
 :MakeDirectory
 vfdutil /u %2\????????.$$$ >NUL
 if errorlevel 1 goto NeedDirectory
@@ -376,83 +421,32 @@ shift
 goto CopyConfigFiles
 
 REM ***************************************************************************
-:ReloadConfig
-
-rem Reset Environment Variables using FDAUTO.BAT
-set AUTOFILE=
-set CFGFILE=
-if not exist %_CWD%\FDAUTO.BAT goto ERROR_MissingAUTOEXEC
-call %_CWD%\FDAUTO.BAT ENV_ONLY
-if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
-if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
-goto Configure
-
-:BootConfigure
-set SHR=yes
-
 :Configure
-rem new FDISK has some exit code and other issues.
-rem set FDISK=%DOSDIR%\bin\fdisk131.exe
-rem if not exist %FDISK%
-set FDISK=%DOSDIR%\bin\fdisk.exe
-set AUTOMATIC=no
-set ADVANCED=no
-set MSG=DEF
-set FORCE=no
-set USBMODE=no
-set TDRIVE=
-set TDOSDIR=
-set TBHD=C:
-set TSRC=%_CWD%\SLICED
-if exist %TSRC%\FREEDOS.SAF goto NoSliceSearch
-set TSRC=%_CWD%
-goto NoSliceSearch
-rem Probably not needed, skipped
-for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%" == "%%i:\" set TSRC=%%i:\SLICED
-:NoSliceSearch
-set TTMP=
-set TSWAP=
-set PREVOS=
-set LOADED=no
-set BACKUP=yes
-set LABEL=$OS_VOLUME$
-set LAYOUT=
-set FORCEMBR=maybe
-set SYSFILES=yes
-set CFGFILES=yes
-set XOPTS=/Y /R /H /Q
-set COPTS=/Y /B
-rem Boots 8086 Kernel and it is in same dir as SETUP.BAT
-set KERNL=KERNEL.SYS
-set TMODE=
-set OCPU=
-set TDONE=
 
-rem Pre-load some command line options.
-if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
-if errorlevel 1 goto Cleanup
-
+rem test if Target drive is already set otherwise set it now.
 if not "%TDRIVE%" == "" goto TDriveConfiged
 set TDRIVE=C:
 if "%TSRC%" == "C:\" set TDRIVE=D:
+if "%TSRC%" == "C:\FDOS-x86" set TDRIVE=D:
+if "%TSRC%" == "C:\FDOS_x86" set TDRIVE=D:
 :TDriveConfiged
 if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FREEDOS
 
-if "%1" == "RELOAD" goto end
-if not "%1" == "BOOT" goto Install
-
-rem Boot only test for install
+rem Only test for already installed when booted
+if not "%BOOTED%" == "" goto NoCheckInstalled
 vinfo /d %TDRIVE%
-if errorlevel 1 goto Install
+if errorlevel 1 goto NoCheckInstalled
 fc /L FREEDOS\VERSION.FDI %TDOSDIR%\VERSION.FDI>NUL
-if errorlevel 1 goto Install
+if errorlevel 1 goto NoCheckInstalled
 goto Done
 
-REM ***************************************************************************
-:Install
+:NoCheckInstalled
 
+REM configure target CPU
 set TCPU=8086
 vinfo /M
+REM vinfo detects some real hardware at lower machine level, if not overridden
+REM assume anythine lower than a 386 is wrong.
 if "%OCPU%" == "" goto Assume386orBetter
 verrlvl 0
 set TCPU=%OCPU%
@@ -487,6 +481,7 @@ if errorlevel 103 set TCPU=VirtualBox
 if errorlevel 104 set TCPU=VMware
 if errorlevel 105 set TCPU=Emulated
 
+REM set type of FreeCOM to install
 if not "%TSWAP" == "" goto NoSetCOMSwapType
 set TSWAP=XSWAP
 if "%TCPU%" == "286" set TSWAP=KSWAP
@@ -494,6 +489,8 @@ if "%TCPU%" == "186" set TSWAP=KSWAP
 if "%TCPU%" == "8086" set TSWAP=KSWAP
 :NoSetCOMSwapType
 
+REM Update some more tags, Virtual machines are i686 and VirtualBox & VMware
+REM also get networking.
 set TTAGS=%TCPU%
 if not errorlevel 101 set TTAGS=%TTAGS%
 if errorlevel 101 set TTAGS=686,%TTAGS%
@@ -501,6 +498,9 @@ if errorlevel 105 goto TagsDone
 if not errorlevel 103 goto TagsDone
 set TTAGS=%TTAGS%,Network
 :TagsDone
+
+REM ***************************************************************************
+:Install
 
 if not "%TMODE%" == "" goto PrintHeader
 rem Display Welcome Message and prompt to continue
@@ -515,7 +515,7 @@ vecho /g
 
 :Welcome
 if not "%TMODE%" == "" goto TestDrive
-if "%SHR%" == "yes" vecho /g /T %LANGFILE% HRULE
+if not "%BOOTED%" == "" vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
@@ -1380,6 +1380,7 @@ set SYSFILES=
 set CFGFILES=
 set TMODE=
 set SHR=
+set BOOTED=
 
 if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
