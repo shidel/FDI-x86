@@ -25,7 +25,6 @@ if /I "%1" == "BOOT" goto BootMode
 goto NotBootMode
 :BootMode
 set BOOTED=yes
-set SHR=yes
 shift
 :NotBootMode
 
@@ -510,12 +509,10 @@ vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% TITLE %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% COPYRIGHT %OS_NAME% %OS_VERSION%
 vecho /g /T %LANGFILE% TRADEMARK %OS_NAME% %OS_VERSION%
-vecho /g /T %LANGFILE% HRULE
-vecho /g
 
 :Welcome
+vecho /g /T %LANGFILE% HRULE
 if not "%TMODE%" == "" goto TestDrive
-if not "%BOOTED%" == "" vecho /g /T %LANGFILE% HRULE
 vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
