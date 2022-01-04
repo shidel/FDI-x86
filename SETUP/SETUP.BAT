@@ -4,6 +4,13 @@ rem FreeDOS 1.3+ Installer, version 2022.
 rem GNU General Public License, (any version)
 rem Copyright 2020-2022 Jerome Shidel.
 
+REM ***************************************************************************
+REM Some FreeCOM Tests
+if "%_CWD%" == "" goto NotFreeCOM
+if /I "A" == "a" goto ProbabyFreeCOM
+goto NotFreeCOM
+:ProbabyFreeCOM
+
 REM make sure batch was executed from current Directory. Does not guarantee it
 REM is in the PATHSPEC somewhere. :-(
 if /I "%0" == "SETUP.BAT" goto GoodCWD
@@ -14,7 +21,7 @@ goto End
 :GoodCWD
 
 REM When booted we want to draw an HRULE bellow the banner
-if not "%1" == "BOOT" goto NotBootMode
+if not /I "%1" == "BOOT" goto NotBootMode
 set BOOTED=yes
 set SHR=yes
 shift
@@ -37,13 +44,6 @@ if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
 if "%1" == "PRELOAD" goto OptionPreload
 
-REM ***************************************************************************
-REM Some FreeCOM Tests
-if "%_CWD%" == "" goto NotFreeCOM
-if /I "A" == "a" goto ProbabyFreeCOM
-goto NotFreeCOM
-:ProbabyFreeCOM
-
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 if /I "%1" == "HELP" goto ShowHelp
 
@@ -57,9 +57,7 @@ goto LangFileDone
 :SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.EN
 if exist %LANGFILE% goto LangFileDone
-set LANGFILE=%0.BAT
-if exist %LANGFILE% goto LangFileDone
-set LANGFILE=%0
+set LANGFILE=SETUP.BAT
 :LangFileDone
 
 rem Reset Environment Variables using FDAUTO.BAT
@@ -101,8 +99,8 @@ set OCPU=
 set TDONE=
 
 if "%1" == "" goto NoUserOptions
-call %0 PRELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
-call %0 OPTION %1 %2 %3 %4 %5 %6 %7 %8 %9
+call SETUP.BAT PRELOAD %1 %2 %3 %4 %5 %6 %7 %8 %9
+call SETUP.BAT OPTION %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 :NoUserOptions
 
@@ -177,7 +175,7 @@ set VALP=
 
 :OptionNext
 verrlvl 0
-if not "%3" == "" call %0 OPTION %3 %4 %5 %6 %7 %8 %9
+if not "%3" == "" call SETUP.BAT OPTION %3 %4 %5 %6 %7 %8 %9
 goto End
 
 :OptionPreload
@@ -242,7 +240,7 @@ vfdutil /u %PARENT%\????????.$$$ >NUL
 if errorlevel 1 goto ERROR_MakeDir
 set /e PARENT=vfdutil /p %2
 vfdutil /u %PARENT%\????????.$$$ >NUL
-if errorlevel 1 call %0 MKDIR %PARENT%
+if errorlevel 1 call SETUP.BAT MKDIR %PARENT%
 mkdir %2 >NUL
 if not exist %2\nul goto ERROR_MakeDir
 goto End
@@ -261,7 +259,7 @@ if exist %TDOSDIR%\%4\nul goto DOSBackupDir
 xcopy %TDOSDIR%\%4 %BACKUP%\ /E %XOPTS% >NUL
 goto DOSBackupCheck
 :DOSBackupDir
-call %0 MKDIR %BACKUP%\%4
+call SETUP.BAT MKDIR %BACKUP%\%4
 if errorlevel 1 goto AbortExit
 vfdutil /a %TDOSDIR%\%4
 if errorlevel 1 goto SkipEmptyDir
@@ -520,7 +518,7 @@ vecho /g /T %LANGFILE% WELCOME_%MSG% %OS_NAME% %OS_VERSION%
 for %%i in (0 1 2 3 4 5) do vecho /n /g /T %LANGFILE% WELCOME_%%i %OS_NAME% %OS_VERSION%
 
 vecho /g /n /T %LANGFILE% CONTINUE
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 
@@ -584,7 +582,7 @@ rem vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 :NeedReboot
 vecho /g /T %LANGFILE% PARTITION_DONE
 vecho /g /n /T %LANGFILE% REBOOT
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 
@@ -616,7 +614,7 @@ if "%ADVANCED%" == "yes" goto FormatAdvanced
 
 :FormatNormal
 vecho /g /n /p /T %LANGFILE% FORMAT_DEF %TDRIVE%
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 goto FormatQuick
@@ -675,7 +673,7 @@ goto DriveDone
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
 rem Final load of command line options.
-if "%LOADED%" == "no" call %0 OPTION %2 %3 %4 %5 %6 %7 %8 %9
+if "%LOADED%" == "no" call SETUP.BAT OPTION %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
 set LOADED=yes
 
@@ -691,7 +689,7 @@ if "%LAYOUT%" == ""  set LAYOUT=EN
 rem Reset installer language translation file
 :ResetLangFile
 set LANGFILE=
-call %0 LANG %LANG%
+call SETUP.BAT LANG %LANG%
 
 :SetTarget
 if not "%TMODE%" == "" goto TargetDone
@@ -759,7 +757,7 @@ goto BackupDone
 :BackupQuery
 if not "%TMODE%" == "" goto BackupSet
 vecho /g /p /n /T %LANGFILE% BACKUP_OLD %TDRIVE%
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto BackupDisable
 
@@ -895,7 +893,7 @@ if "%TMODE%" == "MBR" goto DoMBROnly
 
 vecho /g /T %LANGFILE% INSTALL_NOW %OS_NAME% %OS_VERSION%
 vecho /g /n /T %LANGFILE% CONTINUE
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 
@@ -906,7 +904,7 @@ if "%BACKUP%" == "no" goto NoDoBackup
 vecho /g /p /T %LANGFILE% DO_BACKUP %BACKUP%
 vecho /g
 vprogres /fGreen 0 of 1
-call %0 MKDIR %BACKUP%
+call SETUP.BAT MKDIR %BACKUP%
 if errorlevel 1 goto ERROR_MakeDir
 
 rem Backup Master Boot Record
@@ -925,21 +923,21 @@ goto ERROR_MBRBackup
 rem Backup System and Configuration files.
 rem yes, it would be a little faster to just test and do each file without
 rem a callback. But, this is easier to read and maintain...
-call %0 BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+call SETUP.BAT BBACK FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
 if errorlevel 1 goto ERROR_BackupCfg
-call %0 BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
+call SETUP.BAT BBACK IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto ERROR_BackupCfg
 
 rem Backup Old OS Directory
 if not exist %TDOSDIR%\NUL goto NoDoBackupOS
-veach /A+ /D %TDOSDIR%\*.* /X %0 DBACK @ # *
+veach /A+ /D %TDOSDIR%\*.* /X SETUP.BAT DBACK @ # *
 if errorlevel 1 goto ERROR_BackupOS
 :NoDoBackupOS
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 
 :NoDoBackup
-call %0 CATTR FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
-call %0 CATTR IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
+call SETUP.BAT CATTR FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+call SETUP.BAT CATTR IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 
 rem Do Deletes
 if "%PREVOS%" == "overwrite" goto NoDoErase
@@ -947,14 +945,14 @@ if "%PREVOS%" == "no" goto NoDoErase
 vecho /g /p /T %LANGFILE% DO_ERASE %TDOSDIR%
 deltree /y %TDOSDIR%\*.* >NUL
 if errorlevel 1 goto ErasedFailed
-call %0 DEL FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
+call SETUP.BAT DEL FDAUTO.BAT FDCONFIG.SYS AUTOEXEC.BAT CONFIG.SYS KERNEL.SYS COMMAND.COM
 if errorlevel 1 goto ErasedFailed
-call %0 DEL IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
+call SETUP.BAT DEL IO.SYS MSDOS.SYS WINA20.386 IBMBIO.COM IBMDOS.COM DRDOS.386
 if errorlevel 1 goto ErasedFailed
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 goto NoDoErase
 :ErasedFailed
-call %0 FAIL
+call SETUP.BAT FAIL
 rem Going to continue install anyway...
 goto DoSysFiles
 :NoDoErase
@@ -998,13 +996,13 @@ sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\BOOT.BSS >NUL
 if not errorlevel 1 goto DoSysFilesDone
 goto ERROR_BootSector
 :DoSysFilesDone
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 :NoDoSysFiles
 goto DoMBRUpdate
 
 :DoMBROnly
 vecho /g /n /T %LANGFILE% FORCE_MBR %TDRIVE%
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 if errorlevel 2 goto UserAbortExit
 
@@ -1016,7 +1014,7 @@ sys %TDRIVE% /BOOTONLY /OEM:FD /BACKUPBS %TEMP%\MBR.BSS >NUL
 if errorlevel 1 goto ERROR_BootSector
 %FDISK% /MBR %TDRVID% >NUL
 if errorlevel 1 goto ERROR_MBRUpdate
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 :NoDoForceMBR
 
 if "%TCPU%" == "DOSBox" goto NoDoActivate
@@ -1024,12 +1022,12 @@ rem Activate DOS Partition
 vecho /g /p /T %LANGFILE% DO_ACTIVATE %TDRVID% %TPRTID%
 %FDISK% /ACTIVATE:%TPRTID% %TDRVID% >NUL
 if errorlevel 1 goto TryAlternate
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 goto NoDoActivate
 :TryAlternate
 fdisk /ACTIVATE:%TPRTID% %TDRVID% >NUL
 if errorlevel 1 goto ERROR_Activate
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 
 :NoDoActivate
 
@@ -1055,18 +1053,18 @@ if errorlevel 200 set FEXT=EMU
 if not "%OCPU%" == "" set FEXT=%OCPU%
 
 verrlvl 0
-call %0 XFR FDAUTO FDCONFIG
+call SETUP.BAT XFR FDAUTO FDCONFIG
 if errorlevel 1 goto ERROR_CfgFiles
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 :NoDoCfgFiles
 
 rem Prepare to Extract Files
 vecho /g /p /T %LANGFILE% DO_PREPARE %OS_NAME% %TCPU%
-call %0 MKDIR %TDOSDIR%\BIN
+call SETUP.BAT MKDIR %TDOSDIR%\BIN
 if errorlevel 1 goto ERROR_MakeDir
-call %0 MKDIR %TDOSDIR%\LINKS
+call SETUP.BAT MKDIR %TDOSDIR%\LINKS
 if errorlevel 1 goto ERROR_MakeDir
-call %0 MKDIR %TDOSDIR%\TEMP
+call SETUP.BAT MKDIR %TDOSDIR%\TEMP
 if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
 
@@ -1101,7 +1099,7 @@ set LANGFILE=%TEMP%\SETUP.%FEXT%
 goto AbortExit
 
 :ExtractFiles
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
@@ -1115,14 +1113,14 @@ slicer /qoxf %TSRC%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
 vecho /g /p /p /T %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
-call %0 SUCCESS
+call SETUP.BAT SUCCESS
 
 rem Update List files
 if "%TDOSDIR%" == "C:\FREEDOS" goto NoLstUpdate
 
 vecho /g /p /T %LANGFILE% UPDATE_LST
-veach /D %TDOSDIR%\PACKAGES\*.LST /X %0 ULST @ # *
-call %0 SUCCESS
+veach /D %TDOSDIR%\PACKAGES\*.LST /X SETUP.BAT ULST @ # *
+call SETUP.BAT SUCCESS
 
 :NoLstUpdate
 
@@ -1138,7 +1136,7 @@ rem Done Reboot
 vecho /g /p /T %LANGFILE% HRULE
 vecho /g /p /T %LANGFILE% DONE_NOW %OS_NAME% %OS_VERSION%
 vecho /g /p /n /T %LANGFILE% REBOOT_NOW
-if "%AUTOMATIC%" == "yes" call %0 YES
+if "%AUTOMATIC%" == "yes" call SETUP.BAT YES
 if "%AUTOMATIC%" == "no"  choice
 set TDONE=REBOOT
 if errorlevel 2 set TDONE=CMD
@@ -1230,67 +1228,67 @@ vecho /g /T %LANGFILE% ERROR_MakeDir %2
 goto AbortExit
 
 :ERROR_MBRBackup
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_MBRBackup %TDRVID%
 goto AbortExit
 
 :ERROR_BackupCfg
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_BackupCfg
 goto AbortExit
 
 :ERROR_BackupOS
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_BackupOS
 goto AbortExit
 
 :ERROR_SysFiles
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_SysFiles %TDRVID%
 goto AbortExit
 
 :ERROR_BootSector
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_BootSector %TDRVID%
 goto AbortExit
 
 :ERROR_MBRUpdate
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_MBRUpdate %TDRVID%
 goto AbortExit
 
 :ERROR_Activate
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_MINOR
 vecho /g /N /T %LANGFILE% ERROR_Activate %TDRVID% %TPRTID%
 goto NoDoActivate
 
 :ERROR_CfgFiles
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_CfgFiles %TDRIVE%
 goto AbortExit
 
 :ERROR_XfrFilesDOS
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_XfrFiles %TDOSDIR%
 goto AbortExit
 
 :ERROR_XfrFilesTEMP
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_XfrFiles %TEMP%
 goto AbortExit
 
 :ERROR_WTF
-call %0 FAIL
+call SETUP.BAT FAIL
 vecho /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /N /T %LANGFILE% ERROR_WTF
 goto AbortExit
