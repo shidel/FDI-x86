@@ -7,7 +7,7 @@
 ## FreeDOS 1.3-Final
 
 	Startup Language Selection
-	Rework initialization
+	Rework installer initialization
 	Only runs on FreeCOM now. Does not Reload Shell on another OS. Without a
 		memory manager being loaded, it used to much memory and would cause
 		pass-through decompression issues.
