@@ -11,23 +11,6 @@ if /I "A" == "a" goto ProbabyFreeCOM
 goto NotFreeCOM
 :ProbabyFreeCOM
 
-REM make sure batch was executed from current Directory. Does not guarantee it
-REM is in the PATHSPEC somewhere. :-(
-if /I "%0" == "SETUP.BAT" goto GoodCWD
-if /I "%0" == "SETUP" goto GoodCWD
-echo ERROR: The Setup program must only be executed from it's directory.
-echo Please change directories and re-launch the SETUP program.
-goto End
-:GoodCWD
-
-REM When booted we want to draw an HRULE bellow the banner
-if /I "%1" == "BOOT" goto BootMode
-goto NotBootMode
-:BootMode
-set BOOTED=yes
-shift
-:NotBootMode
-
 REM ***************************************************************************
 REM internal commands recursively executed by the installer itself
 if "%1" == "OPTION" goto Option
@@ -44,6 +27,24 @@ if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
 if "%1" == "PRELOAD" goto OptionPreload
+
+REM ***************************************************************************
+REM make sure batch was executed from current Directory. Does not guarantee it
+REM is in the PATHSPEC somewhere. :-(
+if /I "%0" == "SETUP.BAT" goto GoodCWD
+if /I "%0" == "SETUP" goto GoodCWD
+echo ERROR: The Setup program must only be executed from it's directory.
+echo Please change directories and re-launch the SETUP program.
+goto End
+:GoodCWD
+
+REM When booted we want to draw an HRULE bellow the banner
+if /I "%1" == "BOOT" goto BootMode
+goto NotBootMode
+:BootMode
+set BOOTED=yes
+shift
+:NotBootMode
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 if /I "%1" == "HELP" goto ShowHelp
@@ -70,6 +71,7 @@ if "%AUTOFILE%" == "" goto ERROR_NoCfgEnv
 if "%CFGFILE%" == "" goto ERROR_NoCfgEnv
 
 rem Initialize installer variables
+set FDISK=FDISK.EXE
 set AUTOMATIC=no
 set ADVANCED=no
 set MSG=DEF
@@ -650,11 +652,13 @@ vecho /g
 REM ***************************************************************************
 
 :FileSystemTest
+set POSTOPT=
 vecho /g /n /T %LANGFILE% FILESYSTEM_TEST %TDRIVE%
 vfdutil /u %TDRIVE%\TEST????.$$$ >NUL
 if errorlevel 1 goto ERROR_FileSystem
 
 if not "%TTMP%" == "" goto DriveDone
+set POSTOPT=yes
 
 vfdutil /u %TDRIVE%\TEMP\TEST????.$$$ >NUL
 if errorlevel 1 goto NoTempDir
@@ -681,23 +685,14 @@ goto DriveDone
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
 rem Final load of command line options.
-if "%LOADED%" == "no" call SETUP.BAT OPTION %2 %3 %4 %5 %6 %7 %8 %9
+if "%POSTOPT%" == "" goto NoNeedReload
+if "%1" == "" goto NoNeedReload
+call SETUP.BAT OPTION %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto Cleanup
-set LOADED=yes
+:NoNeedReload
+set POSTOPT=
 
 REM ***************************************************************************
-
-rem Set Language & Keyboard Layout (unused at present, maybe later, maybe not)
-:SetLanguage
-if "%LANG%" == "" set LANG=EN
-
-:SetKeyboard
-if "%LAYOUT%" == ""  set LAYOUT=EN
-
-rem Reset installer language translation file
-:ResetLangFile
-set LANGFILE=
-call SETUP.BAT LANG %LANG%
 
 :SetTarget
 if not "%TMODE%" == "" goto TargetDone
@@ -1113,11 +1108,11 @@ rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
 
 :Diskette
-vfdutil /u %TSRC%\????????.??? >nul
+vfdutil /u %TSLICE%\????????.??? >nul
 if errorlevel 1 goto InsertDiskette
-if not exist %TSRC%\FREEDOS.SAF goto InsertDiskette
+if not exist %TSLICE%\FREEDOS.SAF goto InsertDiskette
 
-slicer /qoxf %TSRC%\FREEDOS.SAF /g %TTAGS%
+slicer /qoxf %TSLICE%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
 vecho /g /p /p /T %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
@@ -1188,7 +1183,7 @@ vecho /g /T %LANGFILE% ERROR_FileSystem %TDRIVE%
 goto AbortExit
 
 :ERROR_SAF
-vfdutil /f %TSRC%\FREEDOS.SAF | set /p TSD=
+vfdutil /f %TSLICE%\FREEDOS.SAF | set /p TSD=
 vecho /g /r2 /c32 /T %LANGFILE% FAILED
 vecho /p /g /N /T %LANGFILE% ERROR_CRITICAL
 vecho /g /T %LANGFILE% ERROR_SAF %TSD%
@@ -1388,6 +1383,7 @@ set TMODE=
 set SHR=
 set BOOTED=
 set TSLICE=
+set POSTOPT=
 
 if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
