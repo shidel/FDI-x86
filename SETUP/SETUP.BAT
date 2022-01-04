@@ -1,8 +1,17 @@
 @echo off
 
-rem FreeDOS 1.3+ Installer, version 2021-12-01.
+rem FreeDOS 1.3+ Installer, version 2022.
 rem GNU General Public License, (any version)
 rem Copyright 2020-2022 Jerome Shidel.
+
+REM make sure batch was executed from current Directory. Does not guarantee it
+REM is in the PATHSPEC somewhere. :-(
+if /I "%0" == "SETUP.BAT" goto GoodCWD
+if /I "%0" == "SETUP" goto GoodCWD
+echo ERROR: The Setup program must only be executed from it's directory.
+echo Please change directories and re-launch the SETUP program.
+goto End
+:GoodCWD
 
 REM When booted we want to draw an HRULE bellow the banner
 if not "%1" == "BOOT" goto NotBootMode
@@ -37,15 +46,6 @@ goto NotFreeCOM
 
 if not exist FREEDOS\BIN\COMMAND.COM goto ERROR_MissingFreeCOM
 if /I "%1" == "HELP" goto ShowHelp
-
-REM make sure batch was executed from current Directory. Does not guarantee it
-REM is in the PATHSPEC somewhere. :-(
-if /I "%0" == "SETUP.BAT" goto GoodCWD
-if /I "%0" == "SETUP" goto GoodCWD
-echo ERROR: The Setup program must only be executed from it's directory.
-echo Please change directories and re-launch the SETUP program.
-goto End
-:GoodCWD
 
 REM ***************************************************************************
 REM if needed, set the NLS translation file for the installer
