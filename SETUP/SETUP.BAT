@@ -21,7 +21,9 @@ goto End
 :GoodCWD
 
 REM When booted we want to draw an HRULE bellow the banner
-if not /I "%1" == "BOOT" goto NotBootMode
+if /I "%1" == "BOOT" goto BootMode
+goto NotBootMode
+:BootMode
 set BOOTED=yes
 set SHR=yes
 shift

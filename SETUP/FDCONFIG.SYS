@@ -5,7 +5,7 @@
 
 !MENUCOLOR=7,0
 MENUDEFAULT=1,10
-MENU $OS_NAME$ $OS_VERSION$ Floppy Edition
+MENU $OS_NAME$ $OS_VERSION$ Floppy Edition:
 MENU
 MENU Please select your language
 MENU
