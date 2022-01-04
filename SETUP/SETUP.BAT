@@ -78,9 +78,10 @@ set USBMODE=no
 set TDRIVE=
 set TDOSDIR=
 set TBHD=C:
-set TSRC=%_CWD%\SLICED
-if exist %TSRC%\FREEDOS.SAF goto NoSliceSearch
 set TSRC=%_CWD%
+set TSLICE=%_CWD%\SLICED
+if exist %TSLICE%\FREEDOS.SAF goto NoSliceSearch
+set TSLICE=%_CWD%
 :NoSliceSearch
 set TTMP=
 set TSWAP=
@@ -182,15 +183,23 @@ goto End
 :OptionPreload
 if not "%TDRIVE%" == "" goto OptionNext
 set VAL=
-vfdutil /x /d %2
-if errorlevel 3 set VAL=C:
-if errorlevel 4 set VAL=D:
-if errorlevel 5 set VAL=E:
-if errorlevel 6 set VAL=F:
-if errorlevel 7 set VAL=G:
-if errorlevel 8 set VAL=H:
-if errorlevel 9 set VAL=I:
-if errorlevel 10 set VAL=J:
+vinfo /k 2 %2
+if errorlevel 59 goto OptionNext
+if errorlevel 58 goto OptionCheckDrive
+goto OptionNext
+:OptionCheckDrive
+vinfo /k 1 %2
+if errorlevel 65 set VAL=A:
+if errorlevel 66 set VAL=B:
+if errorlevel 67 set VAL=C:
+if errorlevel 68 set VAL=D:
+if errorlevel 69 set VAL=E:
+if errorlevel 70 set VAL=F:
+if errorlevel 71 set VAL=G:
+if errorlevel 72 set VAL=H:
+if errorlevel 73 set VAL=I:
+if errorlevel 74 set VAL=J:
+if errorlevel 75 set VAL=
 if not "%VAL%" == "" set TDRIVE=%VAL%
 set VAL=
 goto OptionNext
@@ -1378,6 +1387,7 @@ set CFGFILES=
 set TMODE=
 set SHR=
 set BOOTED=
+set TSLICE=
 
 if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
