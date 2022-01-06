@@ -1067,6 +1067,8 @@ call SETUP.BAT MKDIR %TDOSDIR%\BIN
 if errorlevel 1 goto ERROR_MakeDir
 call SETUP.BAT MKDIR %TDOSDIR%\LINKS
 if errorlevel 1 goto ERROR_MakeDir
+call SETUP.BAT MKDIR %TDOSDIR%\NLS
+if errorlevel 1 goto ERROR_MakeDir
 call SETUP.BAT MKDIR %TDOSDIR%\TEMP
 if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
@@ -1084,6 +1086,8 @@ if errorlevel 1 goto ERROR_XfrFilesDOS
 :HasNoGZIP
 xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
+xcopy /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\ >NUL
+if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y SETUP.BAT %TEMP%\ >NUL
@@ -1097,6 +1101,7 @@ vfdutil /c /p %TDOSDIR%\
 if errorlevel 1 goto ERROR_WTF
 
 set /e FEXT=vfdutil /e %LANGFILE%
+copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
 set LANGFILE=%TEMP%\SETUP.%FEXT%
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
