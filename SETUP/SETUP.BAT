@@ -5,7 +5,7 @@ rem GNU General Public License, (any version)
 rem Copyright 2020-2022 Jerome Shidel.
 
 set XBAT=%0
-if not exist "%XBAT%" set XBAT=%0.BAT
+if exist %0.BAT set XBAT=%0.BAT
 
 REM ***************************************************************************
 REM Some FreeCOM Tests
@@ -1075,6 +1075,8 @@ if errorlevel 1 goto ERROR_MakeDir
 call %XBAT% MKDIR %TDOSDIR%\TEMP
 if errorlevel 1 goto ERROR_MakeDir
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS;%PATH%
+rem call %XBAT% MKDIR %TEMP%
+rem if errorlevel 1 goto ERROR_MakeDir
 
 rem copy minimal for continuance, archive extraction and shutdown
 xcopy /y FREEDOS\VERSION.FDI %TEMP%\ >NUL
@@ -1116,7 +1118,8 @@ call %XBAT% SUCCESS
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
 
-vecho /g/p
+vecho /g /p
+
 :Diskette
 vfdutil /u %TSLICE%\????????.??? >nul
 if errorlevel 1 goto InsertDiskette
