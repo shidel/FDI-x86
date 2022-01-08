@@ -1097,12 +1097,13 @@ xcopy /y %LANGFILE% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
 
-vfdutil /c /p %TDOSDIR%\
-if errorlevel 1 goto ERROR_WTF
-
 set /e FEXT=vfdutil /e %LANGFILE%
 copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
 set LANGFILE=%TEMP%\SETUP.%FEXT%
+
+vfdutil /c /p %TDOSDIR%\
+if errorlevel 1 goto ERROR_WTF
+
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
 
