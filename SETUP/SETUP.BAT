@@ -446,7 +446,7 @@ if "%TSRC%" == "C:\FDOS_x86" set TDRIVE=D:
 if "%TDOSDIR%" == "" set TDOSDIR=%TDRIVE%\FREEDOS
 
 rem Only test for already installed when booted
-if not /I "%BOOTED%" == "yes" goto NoCheckInstalled
+if not "%BOOTED%" == "yes" goto NoCheckInstalled
 vinfo /d %TDRIVE%
 if errorlevel 1 goto NoCheckInstalled
 fc /L FREEDOS\VERSION.FDI %TDOSDIR%\VERSION.FDI>NUL
