@@ -1102,6 +1102,7 @@ set /e FEXT=vfdutil /e %LANGFILE%
 xcopy /y %LANGFILE% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
+set NLSPATH=%TDOSDIR%\NLS\
 
 set /e FEXT=vfdutil /e %LANGFILE%
 copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
