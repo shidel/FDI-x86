@@ -1057,6 +1057,7 @@ if errorlevel 104 set FEXT=VMW
 if errorlevel 200 set FEXT=EMU
 
 if not "%OCPU%" == "" set FEXT=%OCPU%
+if "%OCPU%" == "8086" set FEXT=086
 
 verrlvl 0
 call %XBAT% XFR FDAUTO FDCONFIG
