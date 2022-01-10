@@ -5,7 +5,10 @@ for %%i in ( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ) do if "%_CWD%
 
 SET DOSDIR=%DOSDRV%\FREEDOS
 SET COMSPEC=%dosdir%\BIN\COMMAND.COM
+if "%1" == "ENV_ONLY"  goto SkipLocalize
 SET LANG=EN
+SET TZ=EST
+:SkipLocalize
 
 SET NLSPATH=%dosdir%\NLS
 SET HELPPATH=%dosdir%\HELP
@@ -20,7 +23,6 @@ SET OS_VERSION=$OS_VERSION$
 SET CFGPATH=
 SET AUTOFILE=%DOSDRV%\$AUTOEXEC$
 SET CFGFILE=%DOSDRV%\$CONFIG$
-SET DOSDRV=
 
 alias reboot=fdapm warmboot
 alias reset=fdisk /reboot
@@ -36,6 +38,15 @@ if errorlevel 1 goto NoLBACache
 if not exist %dosdir%\bin\tickle.com goto NoLBACache
 TICKLE.COM
 :NoLBACache
+
+if not exist %dosdir%\bin\setlang.bat goto NoSetLang
+if "%config%"=="1" set LANG=EN
+if "%config%"=="2" set LANG=ES
+if "%config%"=="3" set LANG=FR
+if "%config%"=="4" set LANG=DE
+if "%config%"=="5" set LANG=TR
+call %dosdir%\bin\setlang.bat SIMPLE %LANG%
+:NoSetLang
 
 if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 

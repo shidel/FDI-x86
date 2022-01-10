@@ -27,8 +27,8 @@ util\ambread
 util\v8power
 apps\fdimples
 
-# No longer going to install slicer
-# archiver\slicer
+# Back by request
+archiver\slicer
 
 # tags: +CGA
 
