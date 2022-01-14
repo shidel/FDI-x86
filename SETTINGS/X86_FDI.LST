@@ -22,9 +22,9 @@ base\fdhelper
 base\fdapm
 ; base\lbacache
 
+base\more
+base\mem
 
 ; these are for dev only, will be removed in release
-; base\more
-; base\mem
 ; base\edit
 ; base\edlin
