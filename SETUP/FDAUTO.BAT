@@ -52,6 +52,7 @@ if exist %dosdir%\bin\fdassist.bat call %dosdir%\bin\fdassist.bat
 
 if exist %DOSDIR%\BIN\FDBANNER.COM FDBANNER.COM
 if exist SETUP.BAT CALL SETUP.BAT BOOT
+if errorlevel 1 goto Done
 if exist %DOSDIR%\BIN\WELCOME.BAT call WELCOME.BAT BOOT
 
 :Done

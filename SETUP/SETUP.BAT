@@ -1114,8 +1114,10 @@ if errorlevel 1 goto ERROR_WTF
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
 
+REM ***************************************************************************
 :ExtractFiles
 call %XBAT% SUCCESS
+set SLICER.LOG=%TDRIVE%\SLICER.LOG
 
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
