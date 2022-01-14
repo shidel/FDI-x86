@@ -1090,7 +1090,7 @@ if not exist FREEDOS\BIN\GZIP.EXE goto HasNoGZIP
 xcopy /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 :HasNoGZIP
-xcopy /y FREEDOS\BIN\SLICER.EXE %TDOSDIR%\BIN\ >NUL
+xcopy /y FREEDOS\BIN\SLICEREX.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
@@ -1117,7 +1117,7 @@ goto AbortExit
 REM ***************************************************************************
 :ExtractFiles
 call %XBAT% SUCCESS
-set SLICER.LOG=%TDRIVE%\SLICER.LOG
+rem set SLICER.LOG=%TDRIVE%\SLICER.LOG
 
 rem Extract Files
 vecho /g /p /T %LANGFILE% DO_INSTALL %OS_NAME% %TTAGS%
@@ -1129,7 +1129,7 @@ vfdutil /u %TSLICE%\????????.??? >nul
 if errorlevel 1 goto InsertDiskette
 if not exist %TSLICE%\FREEDOS.SAF goto InsertDiskette
 
-slicer /qoxf %TSLICE%\FREEDOS.SAF /g %TTAGS%
+slicerex /qoxf %TSLICE%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
 vecho /g /p /p /T %LANGFILE% EXTRACTION %OS_NAME% %OS_VERSION%
