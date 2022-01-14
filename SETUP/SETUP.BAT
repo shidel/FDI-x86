@@ -54,8 +54,8 @@ if /I "%1" == "HELP" goto ShowHelp
 
 REM ***************************************************************************
 REM if needed, set the NLS translation file for the installer
+if "%LANG%" == "" SET LANG=EN
 if not "%LANGFILE%" == "" goto LangFileDone
-if "%LANG%" == "" goto SetEnglish
 if not exist FREEDOS\NLS\SETUP.%LANG% goto SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto LangFileDone
