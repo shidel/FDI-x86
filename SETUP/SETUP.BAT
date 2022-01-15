@@ -59,6 +59,7 @@ if not "%LANGFILE%" == "" goto LangFileDone
 if not exist FREEDOS\NLS\SETUP.%LANG% goto SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.%LANG%
 goto LangFileDone
+
 :SetEnglish
 set LANGFILE=FREEDOS\NLS\SETUP.EN
 if exist %LANGFILE% goto LangFileDone
@@ -1098,15 +1099,14 @@ xcopy /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 xcopy /y %XBAT% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
-set /e FEXT=vfdutil /e %LANGFILE%
-xcopy /y %LANGFILE% %TEMP%\ >NUL
-if errorlevel 1 goto ERROR_XfrFilesTEMP
-set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
-set NLSPATH=%TDOSDIR%\NLS\
 
 set /e FEXT=vfdutil /e %LANGFILE%
 copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
+if errorlevel 1 goto ERROR_XfrFilesTEMP
 set LANGFILE=%TEMP%\SETUP.%FEXT%
+
+set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
+set NLSPATH=%TDOSDIR%\NLS
 
 vfdutil /c /p %TDOSDIR%\
 if errorlevel 1 goto ERROR_WTF
