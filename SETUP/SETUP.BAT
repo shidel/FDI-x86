@@ -1129,6 +1129,7 @@ vfdutil /u %TSLICE%\????????.??? >nul
 if errorlevel 1 goto InsertDiskette
 if not exist %TSLICE%\FREEDOS.SAF goto InsertDiskette
 
+set COMSPEC=%DOSDIR%\BIN\COMMAND.COM
 slicerex /qoxf %TSLICE%\FREEDOS.SAF /g %TTAGS%
 if errorlevel 1 goto ERROR_SAF
 
@@ -1149,7 +1150,6 @@ xcopy /y %TEMP%\VERSION.FDI %TDOSDIR%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 
 set DOSDIR=%TDOSDIR%
-set COMSPEC=%DOSDIR%\BIN\COMMAND.COM
 
 rem Done Reboot
 
