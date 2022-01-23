@@ -30,6 +30,7 @@ if "%1" == "SUCCESS" goto SuccessExit
 if "%1" == "FAIL" goto FailedExit
 if "%1" == "EXTRACT" goto ExtractFiles
 if "%1" == "PRELOAD" goto OptionPreload
+if "%1" == "PERMS" goto AdjustPermissions
 
 REM ***************************************************************************
 REM make sure batch was executed from current Directory. Does not guarantee it
@@ -259,6 +260,12 @@ vfdutil /u %PARENT%\????????.$$$ >NUL
 if errorlevel 1 call %XBAT% MKDIR %PARENT%
 mkdir %2 >NUL
 if not exist %2\nul goto ERROR_MakeDir
+goto End
+
+:AdjustPermissions
+attrib -r -s -h /s /d %TDOSDIR% >nul
+attrib -r -s -h /s /d %TEMP% >nul
+verrlvl 0
 goto End
 
 :BootBackup
@@ -1068,6 +1075,9 @@ call %XBAT% SUCCESS
 
 rem Prepare to Extract Files
 vecho /g /p /T %LANGFILE% DO_PREPARE %OS_NAME% %TCPU%
+
+call %XBAT% PERMS
+
 call %XBAT% MKDIR %TDOSDIR%\BIN
 if errorlevel 1 goto ERROR_MakeDir
 call %XBAT% MKDIR %TDOSDIR%\LINKS
@@ -1111,6 +1121,7 @@ set NLSPATH=%TDOSDIR%\NLS
 vfdutil /c /p %TDOSDIR%\
 if errorlevel 1 goto ERROR_WTF
 
+call %XBAT% PERMS
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
 
