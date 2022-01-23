@@ -1115,13 +1115,14 @@ copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set LANGFILE=%TEMP%\SETUP.%FEXT%
 
+call %XBAT% PERMS
+
 set PATH=%TDOSDIR%\BIN;%TDOSDIR%\LINKS
 set NLSPATH=%TDOSDIR%\NLS
 
 vfdutil /c /p %TDOSDIR%\
 if errorlevel 1 goto ERROR_WTF
 
-call %XBAT% PERMS
 %TEMP%\SETUP.BAT EXTRACT
 goto AbortExit
 
