@@ -1111,7 +1111,7 @@ xcopy /r /y %XBAT% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 
 set /e FEXT=vfdutil /e %LANGFILE%
-copy /y %LANGFILE% %TEMP%\SETUP.%FEXT%
+copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set LANGFILE=%TEMP%\SETUP.%FEXT%
 
