@@ -297,12 +297,12 @@ goto End
 if "%2" == "" goto End
 if not exist %TDOSDIR%\PACKAGES\%4 goto NextLST
 type %TDOSDIR%\PACKAGES\%4 | vstr /n /s C:\FreeDOS "%TDOSDIR%">%TEMP%\%4
-xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
+xcopy /r /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
 :NextLST
 if errorlevel 1 goto ErrorEnd
 if "USBMODE" == "no" goto NotUSBMode
 type %TDOSDIR%\PACKAGES\%4 | vstr /n /s %TDRIVE% "C:">%TEMP%\%4
-xcopy /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
+xcopy /r /y %TEMP%\%4 %TDOSDIR%\PACKAGES\ >NUL
 if errorlevel 1 goto ErrorEnd
 :NotUSBMode
 vprogres /fGreen %2 OF %3
@@ -1091,27 +1091,27 @@ rem call %XBAT% MKDIR %TEMP%
 rem if errorlevel 1 goto ERROR_MakeDir
 
 rem copy minimal for continuance, archive extraction and shutdown
-xcopy /y FREEDOS\VERSION.FDI %TEMP%\ >NUL
+xcopy /r /y FREEDOS\VERSION.FDI %TEMP%\
 if errorlevel 1 goto ERROR_XfrFilesTEMP
-xcopy /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
+xcopy /r /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
+xcopy /r /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\
 if errorlevel 1 goto ERROR_XfrFilesDOS
 if not exist FREEDOS\BIN\GZIP.EXE goto HasNoGZIP
-xcopy /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\ >NUL
+xcopy /r /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\
 if errorlevel 1 goto ERROR_XfrFilesDOS
 :HasNoGZIP
-xcopy /y FREEDOS\BIN\SLICEREX.EXE %TDOSDIR%\BIN\ >NUL
+xcopy /r /y FREEDOS\BIN\SLICEREX.EXE %TDOSDIR%\BIN\
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\ >NUL
+xcopy /r /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
+xcopy /r /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /y %XBAT% %TEMP%\ >NUL
+xcopy /r /y %XBAT% %TEMP%\
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 
 set /e FEXT=vfdutil /e %LANGFILE%
-copy /y %LANGFILE% %TEMP%\SETUP.%FEXT% >NUL
+copy /y %LANGFILE% %TEMP%\SETUP.%FEXT%
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 set LANGFILE=%TEMP%\SETUP.%FEXT%
 
@@ -1158,7 +1158,7 @@ call %XBAT% SUCCESS
 :NoLstUpdate
 
 rem Add OS ID Tag File
-xcopy /y %TEMP%\VERSION.FDI %TDOSDIR%\ >NUL
+xcopy /r /y %TEMP%\VERSION.FDI %TDOSDIR%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 
 set DOSDIR=%TDOSDIR%
