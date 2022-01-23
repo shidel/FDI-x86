@@ -1091,23 +1091,23 @@ rem call %XBAT% MKDIR %TEMP%
 rem if errorlevel 1 goto ERROR_MakeDir
 
 rem copy minimal for continuance, archive extraction and shutdown
-xcopy /r /y FREEDOS\VERSION.FDI %TEMP%\
+xcopy /r /y FREEDOS\VERSION.FDI %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
-xcopy /r /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\
+xcopy /r /y FREEDOS\BIN\FDWRAPUP.BAT %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /r /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\
+xcopy /r /y FREEDOS\BIN\V*.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 if not exist FREEDOS\BIN\GZIP.EXE goto HasNoGZIP
-xcopy /r /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\
+xcopy /r /y FREEDOS\BIN\GZIP.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
 :HasNoGZIP
-xcopy /r /y FREEDOS\BIN\SLICEREX.EXE %TDOSDIR%\BIN\
+xcopy /r /y FREEDOS\BIN\SLICEREX.EXE %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /r /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\
+xcopy /r /y FREEDOS\NLS\SLICER.* %TDOSDIR%\NLS\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /r /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\
+xcopy /r /y FREEDOS\BIN\DELTREE.COM %TDOSDIR%\BIN\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesDOS
-xcopy /r /y %XBAT% %TEMP%\
+xcopy /r /y %XBAT% %TEMP%\ >NUL
 if errorlevel 1 goto ERROR_XfrFilesTEMP
 
 set /e FEXT=vfdutil /e %LANGFILE%
