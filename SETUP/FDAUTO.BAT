@@ -45,6 +45,7 @@ if "%config%"=="2" set LANG=ES
 if "%config%"=="3" set LANG=FR
 if "%config%"=="4" set LANG=DE
 if "%config%"=="5" set LANG=TR
+if "%config%"=="6" set LANG=SV
 call %dosdir%\bin\setlang.bat SIMPLE %LANG%
 :NoSetLang
 
