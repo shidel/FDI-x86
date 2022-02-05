@@ -263,8 +263,16 @@ if not exist %2\nul goto ERROR_MakeDir
 goto End
 
 :AdjustPermissions
+if not exist %TDOSDIR%\NUL goto AdjustPermTEMP
+echo tempfile >%TDOSDIR%\FDI-X86.TMP
 attrib -r -s -h /s /d %TDOSDIR% >nul
+deltree /y %TDOSDIR%\FDI-X86.TMP >NUL
+:AdjustPermTEMP
+verrlvl 0
+if not exist %TEMP%\NUL goto End
+echo tempfile >%TEMP%\FDI-X86.TMP
 attrib -r -s -h /s /d %TEMP% >nul
+deltree /y %TEMP%\FDI-X86.TMP >NUL
 verrlvl 0
 goto End
 
