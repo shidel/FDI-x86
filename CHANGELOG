@@ -6,6 +6,7 @@
 
 ## FreeDOS 1.3-Final
 
+	Switch out FreeDOS choice for vask.
 	Startup Language Selection
 	Rework installer initialization
 	Only runs on FreeCOM now. Does not Reload Shell on another OS. Without a

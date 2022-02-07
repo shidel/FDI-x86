@@ -16,7 +16,7 @@ util\v8power
 archiver\slicer
 util\fdbanner
 
-base\choice
+; base\choice
 
 base\fdhelper
 base\fdapm
