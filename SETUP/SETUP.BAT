@@ -595,7 +595,14 @@ vecho /g /n /T %LANGFILE% PARTITION_AUTO %TDRIVE%
 %FDISK% /info %TDRVID% >NUL
 if errorlevel 1 goto NoPartitionAuto
 
-%FDISK% /auto %TDRVID% >NUL
+rem %FDISK% /auto %TDRVID% >NUL
+
+set FDPRI=/PRIO:2000
+vinfo /m
+if errorlevel 100 set FDPRI=/PRI:100,100
+verrlvl 0
+%FDISK% %TDRVID% %FDPRI% >NUL
+
 if errorlevel 1 goto NoPartitionAuto
 vecho /g /r2 /c32 /T %LANGFILE% SUCCESS
 
@@ -1428,6 +1435,7 @@ set BOOTED=
 set TSLICE=
 set POSTOPT=
 set XBAT=
+set FDPRI=
 
 if not "%TDONE%" == "" goto WrapUp
 if not "%EXITCODE%" == "" verrlvl %EXITCODE%
