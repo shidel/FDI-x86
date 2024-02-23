@@ -19,8 +19,9 @@ base\cpidos
 base\debug
 base\fdisk
 base\fdhelper
-base\ambhelp
-util\ambread
+base\htmlhelp
+; base\ambhelp
+; util\ambread
 
 # tags: -CGA
 
