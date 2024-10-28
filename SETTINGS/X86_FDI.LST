@@ -12,7 +12,7 @@ base\deltree
 base\xcopy
 base\fc
 
-util\v8power
+tools\v8power
 archiver\slicer
 util\fdbanner
 

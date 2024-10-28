@@ -21,11 +21,11 @@ base\fdisk
 base\fdhelper
 base\htmlhelp
 ; base\ambhelp
-; util\ambread
+; tools\ambread
 
 # tags: -CGA
 
-util\v8power
+tools\v8power
 apps\fdimples
 
 # Back by request
@@ -33,7 +33,7 @@ archiver\slicer
 
 # tags: +CGA
 
-util\callver
+tools\callver
 base\fdhelper
 
 # Unknown, assumed to be fully compatible
@@ -96,20 +96,20 @@ base\jemm
 base\lbacache
 base\shsucdx
 archiver\unzip
-util\cwsdpmi
+tools\cwsdpmi
 base\fdxms
 drivers\udvd2
 drivers\shsufdrv
 
 ; Only on <386 install made up sub package of FDINST
 # tags: +8086,+8088,+186,+286,-386,-486,-586,-686
-util\fdinst
+net\fdinst
 
 # tags: -8086,-8088,-186,-286,+386,+486,+586,+686
 
 ; FDNPKG (i386+) contains the offline version of FDINST (8086+), not much
 ; point installing without CD or Networking support.
-util\fdnpkg
+net\fdnpkg
 
 # tags: -386,-486,-586,-686
 
