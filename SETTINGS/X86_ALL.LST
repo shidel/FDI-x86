@@ -27,7 +27,7 @@ base\htmlhelp
 
 tools\v8power
 apps\fdimples
-tools\pkginfo
+tools\pkgtools
 
 # Back by request
 archiver\slicer
