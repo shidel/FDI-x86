@@ -355,10 +355,10 @@ if not exist %TEMP%\%2.TMP goto CopyConfigFilesFail
 
 if "%LANG%" == "" goto SetForEnglish
 if /I "%LANG%" == "EN" goto SetForEnglish
-type %TEMP%\%2.TMP|vstr /n/s $LANG_SET$ "CALL %DOSDIR%\BIN\SETLANG.BAT %LANG%">%TEMP%\%2.OUT
+type %TEMP%\%2.TMP|vstr /n/s $LANG_SET$ "CALL %%DOSDIR%%\BIN\SETLANG.BAT %LANG%">%TEMP%\%2.OUT
 goto SetForAnyLang
 :SetForEnglish
-type %TEMP%\%2.TMP|vstr /n/s $LANG_SET$ "rem CALL %DOSDIR%\BIN\SETLANG.BAT EN">%TEMP%\%2.OUT
+type %TEMP%\%2.TMP|vstr /n/s $LANG_SET$ "rem CALL %%DOSDIR%%\BIN\SETLANG.BAT EN">%TEMP%\%2.OUT
 :SetForAnyLang
 copy /y %TEMP%\%2.OUT %TEMP%\%2.TMP >NUL
 if errorlevel 1 goto CopyConfigFilesNext
