@@ -47,3 +47,21 @@ NLS\MORE.*
 NLS\FDISK.*
 NLS\FDISK.LNG
 
+; filter out unused AI translations
+NLS\*.CZ
+NLS\*.DK
+NLS\*.ET
+NLS\*.FI
+NLS\*.HU
+NLS\*.IS
+NLS\*.IT
+NLS\*.LT
+NLS\*.LV
+NLS\*.NO
+NLS\*.PB
+NLS\*.PL
+NLS\*.PT
+NLS\*.SK
+NLS\*.SL
+NLS\*.SR
+NLS\*.UK
